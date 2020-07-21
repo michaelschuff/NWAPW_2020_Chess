@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Document</title>
-  </head>
-  <form action="http://localhost:8080/index.html" method="POST">
-    Move: <input type="text" name="move"><br>
-   <button type="submit">Send to backend</button>
-  </form>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Document</title>
+    </head>
+    <body>
+    Move: <input type="text" id="move" value="e2e4"><br>
+    <button onclick="submitPressed()">submit</button>
+    <script>
+        function submitPressed() {
+            console.log(document.getElementById("move").value)
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: document.getElementById('move').value
+            };
+
+            fetch('/api', options)
+        }
+    </script>
+  </body>
 </html>
