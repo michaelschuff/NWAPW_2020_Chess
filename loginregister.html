@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Document</title>
+    </head>
+    <body>
+    Username: <input type="text" id="username" value=""><br>
+    Password: <input type="text" id="password" value=""><br>
+    <button onclick="loginPressed()">login</button>
+    <button onclick="registerPressed()">register</button>
+    <script>
+        function loginPressed() {
+            let data = JSON({
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            })
+            console.log("username: " + data.username)
+            console.log("password: " + data.password)
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+          fetch('/api', options)
+        }
+        function registerPressed() {
+            let data = JSON({
+                username: document.getElementById('username').value,
+                password: document.getElementById('password').value
+            })
+            console.log("username: " + data.username)
+            console.log("password: " + data.password)
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+            fetch('/api', options)
+        }
+    </script>
+  </body>
+</html>

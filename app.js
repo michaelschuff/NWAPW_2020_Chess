@@ -1,34 +1,40 @@
-var http = require('http');
-var url = require('url');
-var fs = require('fs');
-var ip = require("ip");
-
-http.createServer(function (req, res) {
-  var q = url.parse(req.url, true);
-  var filename = "." + q.pathname;
-  fs.readFile(filename, function(err, data) {
-    if (err) {
-      res.writeHead(404, {'Content-Type': 'text/html'});
-      return res.end("404 Not Found");
-    } 
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write(data);
-    
-    return res.end();
-  });
-
-  console.log(req.method)
-  if (req.method == 'POST') {
-    var body = ''
-    req.on('data', function(data) {
-      body += data
-    })
-    req.on('end', function() {
-      console.log('Body: ' + body)
-      res.writeHead(200, {'Content-Type': 'text/html'})
-      res.end('post received')
-      console.log('post received')
-    })
-  }
-
-}).listen(8080);
+var http = require("http");
+var express = require('express');
+var app = express();
+var bodyParser = require('body-parser');
+var urlencodedParser = bodyParser.urlencoded({ extended: true });
+ 
+// Running Server Details.
+var server = app.listen(8080, function () {
+  var host = server.address().address
+  var port = server.address().port
+  console.log("Listening at %s:%s Port", host, port)
+});
+ 
+ 
+app.get('/', function (req, res) {
+  var html='';
+  html +="<body>";
+  html += "<form action='/loggedin'  method='post' name='login'>";
+  html += "<p> Username: <input type= 'text' name='name'></p>";
+  html += "<p> Password: <input type='text' name='email'></p>";
+  html += "<p> <input type='submit' value='submit'>";
+  html += "</form>";
+  html += "<form action='/registered'  method='post' name='register'>";
+  html += "<INPUT type='submit' value='register'> </p>";
+  html += "</form>";
+  html += "</body>";
+  res.send(html);
+});
+ 
+app.post('/loggedin', urlencodedParser, function (req, res){
+  var reply='';
+  reply += "<body>";
+  reply += "<p>Your username is ";
+  reply += req.body.name;
+  reply += "</p><p>Your email is"
+  reply += req.body.email;
+  reply += "</p>";
+  reply += "</body>";
+  res.send(reply);
+ });
