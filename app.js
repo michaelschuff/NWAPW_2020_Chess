@@ -49,7 +49,7 @@ app.post('/registered', urlencodedParser, function (req, res){
   var reply='';
   accounts.count({username: req.body.username, password: req.body.password}, function(err, num) {
     var reply='';
-    if (num == 0) {
+    if (num == 0) { // account doesnt exist, return to login with error message
       reply +="<body>";
       reply += "<p> No account with that username and password </p>";
       reply += "<form action='/loggedin'  method='post' name='login'>";
@@ -60,7 +60,7 @@ app.post('/registered', urlencodedParser, function (req, res){
       reply += "<INPUT type='submit' value='register'> </p>";
       reply += "</form>";
       reply += "</body>";
-    } else {
+    } else { //continue to home screen
       reply += "<body>";
       reply += "<p>Login successful </p>";
       reply += "</body>";
