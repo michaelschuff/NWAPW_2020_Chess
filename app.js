@@ -1,6 +1,6 @@
 var http = require("http");
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: true });
 const Datastore = require('nedb')
@@ -68,3 +68,19 @@ app.post('/registered', urlencodedParser, function (req, res){
     res.send(reply);
   });
  });
+
+app.get('/', (req, res) => res.send('Hello World!'))
+
+app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
+
+app.get('/', function (req, res) {
+  res.sendFile()
+})
+
+app.post('/', function (req, res) {
+  res.send('Got a POST request')
+})
+
+/*http.get('move', function(res){
+  console.log(res);
+})*/
