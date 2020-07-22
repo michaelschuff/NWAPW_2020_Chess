@@ -1,0 +1,23 @@
+{
+  "name": "text_based_chess",
+  "version": "1.0.0",
+  "description": "text based chess",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michaelschuff/NWAPW_2020_Chess.git"
+  },
+  "keywords": [
+    "chess",
+    "game"
+  ],
+  "author": "Michael Schuff",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/michaelschuff/NWAPW_2020_Chess/issues"
+  },
+  "homepage": "https://github.com/michaelschuff/NWAPW_2020_Chess#readme"
+}
