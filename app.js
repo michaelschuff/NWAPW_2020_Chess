@@ -16,17 +16,7 @@ const accounts = new Datastore('accounts.db')
 accounts.loadDatabase();
 
 app.get('/', function (req, res) {
-  var html='';
-  html +="<body>";
-  html += "<form action='/loggedin'  method='post' name='login'>";
-  html += "<p> Username: <input type= 'text' name='username'></p>";
-  html += "<p> Password: <input type='text' name='password'></p>";
-  html += "<p> <input type='submit' value='login'> </form>";
-  html += "<form action='/registered'  method='post' name='register'>";
-  html += "<INPUT type='submit' value='register'> </p>";
-  html += "</form>";
-  html += "</body>";
-  res.send(html);
+  res.sendFile("index.html");
 });
  
 app.post('/registered', urlencodedParser, function (req, res){
