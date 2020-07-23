@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Chess</title>
+        <script src='/socket.io/socket.io.js'></script>
+        <script src='getUserIP.js'></script>
+    </head>
+    
+    <body>
+        <h1 id='h1'>hi</h1>
+        <script>
+            
+            var socket = io();
+
+
+            socket.on('connect', function() {
+                console.log('Connected to server sucessfully.');
+                getUserIP(function(ip) {
+                    console.log(ip);
+                    socket.emit('username from ip', {'ip': ip, 'socketid': socket.id});
+                });
+                
+            });
+            socket.on('reconnect', function() {console.log('Successfully reconnected.');});
+            socket.on('connect_error', function() {console.log('Failed to connect to server.');});
+            socket.on('connect_timeout', function() {console.log('Connection timed out.');});
+            socket.on('reconnect_attempt', function() {console.log('Reconnecting...');});
+            socket.on('reconnect_error', function() {console.log('Failed to reconnect');});
+
+            socket.on('username', function(data) {
+                document.getElementById('h1').innerText = data;
+            });
+            
+        </script>
+    </body>
+</html>

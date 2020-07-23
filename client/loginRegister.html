@@ -2,20 +2,24 @@
 <html>
     <head>
         <title>Chess</title>
+        <script src='/socket.io/socket.io.js'></script>
+        <script src='getUserIP.js'></script>
     </head>
     
     <body>
         <p><input id='username' autocomplete='on'/></p>
         <p><input id='password' autocomplete='on'/></p>
         <button id='login' onclick='loginPressed()'>Login</button><button id='register' onclick='registerPressed()'>Register</button>
-        <script src='/socket.io/socket.io.js'></script>
-        <script src='getClientIp.js'></script>
         <script>
             usernameInput = document.getElementById('username');
             passwordInput = document.getElementById('password');
+            
             var socket = io();
+
+
             function loginPressed() {
-                socket.emit('new login', {'username': usernameInput.value, 'password': passwordInput.value, 'ip': getClientIP()});
+                console.log("login clicked");
+                socket.emit('new login', {'username': usernameInput.value, 'password': passwordInput.value, 'ip': 0});
             }
 
             function registerPressed() {
@@ -30,13 +34,13 @@
             socket.on('reconnect_attempt', function() {console.log('Reconnecting...');});
             socket.on('reconnect_error', function() {console.log('Failed to reconnect');});
 
-            socket.on('login success', function(data) {
-                
+            socket.on('login success', function() {
+                window.location.href = "home.html";
             });
             socket.on('login failure', function(data) {
                 alert(data);
             });
-            socket.on('register success', function(data) {
+            socket.on('register success', function() {
                 window.location.href = "home.html";
             });
             socket.on('register failure', function(data) {

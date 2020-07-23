@@ -3,24 +3,25 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Datastore = require('nedb');
-const { allowedNodeEnvironmentFlags } = require('process');
+
 var port = process.env.PORT || 8080;
 
 const accounts = new Datastore('accounts.db')
 accounts.loadDatabase();
 
-// app.get('/client/home.html', function(req, res) {
-//     res.sendFile(__dirname + '/client/home.html');
-// });
-
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/client/loginRegister.html');
+  res.send({rediskey: req.sessionID});
+});
+
+http.listen(port, function(){
+    console.log('listening on http://localhost:' + port);
 });
 
 app.use(express.static('client'));
+
 var clients = [];
 var onlineUsers = [];
-
 
 io.on('connection', function(socket) {
     clients.push(socket.id);
@@ -56,7 +57,7 @@ io.on('connection', function(socket) {
             console.log(docs)
             if (docs.length == 0) { // username is availiable
                 accounts.insert({username: data.username, password: data.password});
-                io.to(socket.id).emit('register success', data.username);
+                io.to(socket.id).emit('register success');
                 onlineUsers.push({'username': data.username, 'ip': data.ip, 'socketid': socket.socketid});
                 console.log('register success');
             } else { //username already exists
@@ -64,10 +65,20 @@ io.on('connection', function(socket) {
                 console.log('register failed');
             }
         });
+        console.log();
+    });
+
+    socket.on('username from ip', function(data) {
+        console.log('username requested');
+        console.log(onlineUsers);
+        console.log('ip: ' + data.ip);
+        for (user in onlineUsers) {
+            if (user.ip == data.ip) {
+                console.log('found matching ip\n old socket id: ' + user.socketid + '\nnew socket id: ' + data.socketid);
+                user.socketid = data.socketid;
+                io.to(user.socketid).emit('username', user.username);
+                break;
+            }
+        }
     });
 });
-
-
-http.listen(port, function(){
-    console.log('listening on http://localhost:' + port);
-  });
