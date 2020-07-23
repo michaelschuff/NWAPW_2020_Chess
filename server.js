@@ -1,9 +1,10 @@
-const express = require('express');
-const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-const Datastore = require('nedb');
-
+var express = require('express');
+var app = express();
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+var Datastore = require('nedb');
+const { allowedNodeEnvironmentFlags } = require('process');
+var port = process.env.PORT || 8080;
 
 const accounts = new Datastore('accounts.db')
 accounts.loadDatabase();
@@ -13,16 +14,12 @@ accounts.loadDatabase();
 // });
 
 
-
-
-app.listen(8080, function() {
-    console.log('listening to http://localhost:8080');
+app.listen(8080);
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/client/loginRegister.html');
 });
 
 app.use(express.static('client'));
-// app.get('/', function(req, res) {
-//     res.sendFile(__dirname + '/client/loginRegister.html');
-// });
 var clients = [];
 var onlineUsers = [];
 
