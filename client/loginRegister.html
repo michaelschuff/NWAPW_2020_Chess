@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Chess</title>
+    </head>
+    
+    <body>
+        <p><input id='username' autocomplete='on'/></p>
+        <p><input id='password' autocomplete='on'/></p>
+        <button id='login' onclick='loginPressed()'>Login</button><button id='register' onclick='registerPressed()'>Register</button>
+        <script src='socket.io.js'></script>
+        <script src='getClientIp.js'></script>
+        <script>
+            usernameInput = document.getElementById('username');
+            passwordInput = document.getElementById('password');
+
+            function loginPressed() {
+                socket.to(sessionID).emit('new login', [usernameInput.innerText, passwordInput.innerText, getClientIP]);
+            }
+
+            function registerPressed() {
+                socket.to(sessionID).emit('new register', [usernameInput.innerText, passwordInput.innerText]);
+            }
+
+            var socket = io();
+
+            var socketConnection = socket.connect();
+            var sessionID;
+
+            socket.on('connect', function() {
+                sessionID = socketConnection.socket.sessionID;
+                console.log('Connected to server sucessfully.');
+            });
+            socket.on('reconnect', function() {
+                sessionID = socketConnection.socket.socketid;
+                console.log('Successfully reconnected.');
+            });
+            socket.on('connect_error', function() {console.log('Failed to connect to server.');});
+            socket.on('connect_timeout', function() {console.log('Connection timed out.');});
+            socket.on('reconnect_attempt', function() {console.log('Reconnecting...');});
+            socket.on('reconnect_error', function() {console.log('Failed to reconnect');});
+
+            socket.on('login success', function(data) {
+                loadPage('home.html');
+            });
+            socket.on('login failure', function(data) {
+                alert(data);
+            });
+            socket.on('register success', function(data) {
+                loadPage('home.html');
+            });
+            socket.on('register failure', function(data) {
+                alert(data);
+            });
+
+            
+            
+        </script>
+
+
+
+
+
+
+
+
+
+
+
+    </body>
+</html>

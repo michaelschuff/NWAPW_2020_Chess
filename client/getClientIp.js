@@ -1,4 +1,4 @@
-function getUserIP(onNewIP) {
+function getClientIP(onNewIP) {
     var myPeerConnection = window.RTCPeerConnection || window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
     var pc = new myPeerConnection({
         iceServers: []
