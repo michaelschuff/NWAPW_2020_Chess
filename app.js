@@ -1,22 +1,23 @@
 var http = require("http");
-const express = require('express');
+const express = require('express'); 
+const path = require('path');
 const app = express();
+const io = require('socket.io')(http);
 var bodyParser = require('body-parser');
 var urlencodedParser = bodyParser.urlencoded({ extended: true });
 const Datastore = require('nedb')
 
 // Running Server Details.
-var server = app.listen(8080, function () {
-  var host = server.address().address
-  var port = server.address().port
-  console.log("Listening at %s:%s Port", host, port)
-});
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`Server is listening on port ${PORT}`);
+})
  
 const accounts = new Datastore('accounts.db')
 accounts.loadDatabase();
 
 app.get('/', function (req, res) {
-  res.sendFile("index.html");
+ res.sendFile("/index.html", {root: path.join(__dirname, 'public')});
 });
  
 app.post('/registered', urlencodedParser, function (req, res){
@@ -59,18 +60,9 @@ app.post('/registered', urlencodedParser, function (req, res){
   });
  });
 
-app.get('/', (req, res) => res.send('Hello World!'))
+io.on('connection', (socket) => {
+  socket.emit({piece: king, startingx: 2, startingy: 2, endingx: 3, endingy: 3});
+});
 
-app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`))
 
-app.get('/', function (req, res) {
-  res.sendFile()
-})
 
-app.post('/', function (req, res) {
-  res.send('Got a POST request')
-})
-
-/*http.get('move', function(res){
-  console.log(res);
-})*/
