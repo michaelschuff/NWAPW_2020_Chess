@@ -13,8 +13,6 @@ accounts.loadDatabase();
 //     res.sendFile(__dirname + '/client/home.html');
 // });
 
-
-app.listen(8080);
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/client/loginRegister.html');
 });
@@ -30,30 +28,46 @@ io.on('connection', function(socket) {
     socket.on('disconnect', function() {
         console.log('A client has disconnected');
         clients.splice(socket.id, 1);
-    }); 
-});
-
-io.on('new login', function(data) {
-    console.log('Client attempting to login...');
-    accounts.find({username: data.username, password: data.password}, function(err, docs) {
-        if (docs == []) { // account doesnt exist, return to login with error message
-            io.to(socket.id).emit('login failure','No account with that username and password combination');
-        } else { //continue to home screen
-            io.to(socket.id).emit('login success', data.username);
-            onlineUsers.push(data);
+        for (user in onlineUsers) {
+            if (user.socketid == socket.id) {
+                onlineUsers.splice(user, 1);
+                break;
+            }
         }
+    });
+
+    socket.on('new login', function(data) {
+        console.log('Client attempting to login...');
+        accounts.find({username: data.username, password: data.password}, function(err, docs) {
+            if (docs == []) { // account doesnt exist, return to login with error message
+                io.to(socket.id).emit('login failure','No account with that username and password combination');
+                console.log('login failed');
+            } else { //continue to home screen
+                io.to(socket.id).emit('login success', data.username);
+                onlineUsers.push(data);
+                console.log('login success');
+            }
+        });
+    });
+
+    socket.on('new register', function(data) {
+        console.log('Client attempting to register...');
+        accounts.find({username: data.username}, function(err, docs) {
+            console.log(docs)
+            if (docs.length == 0) { // username is availiable
+                accounts.insert({username: data.username, password: data.password});
+                io.to(socket.id).emit('register success', data.username);
+                onlineUsers.push({'username': data.username, 'ip': data.ip, 'socketid': socket.socketid});
+                console.log('register success');
+            } else { //username already exists
+                io.to(socket.id).emit('register failure', 'Username already in use!');
+                console.log('register failed');
+            }
+        });
     });
 });
 
-io.on('new register', function(data) {
-    console.log('Client attempting to register...');
-    accounts.find({username: data.username}, function(err, docs) {
-        if (docs == []) { // username is availiable
-            accounts.insert({username: data.username, password: data.password});
-            io.to(socket.id).emit('register success', data.username);
-            onlineUsers.push(data);
-        } else { //username already exists
-            io.to(socket.id).emit('register failure', 'Username already in use!');
-        }
-    });
-});
+
+http.listen(port, function(){
+    console.log('listening on http://localhost:' + port);
+  });
