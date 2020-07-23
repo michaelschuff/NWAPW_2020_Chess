@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/michaelschuff/NWAPW_2020_Chess/issues"
   },
-  "homepage": "https://github.com/michaelschuff/NWAPW_2020_Chess#readme"
+  "homepage": "https://github.com/michaelschuff/NWAPW_2020_Chess#readme",
+  "dependencies": {
+    "socket.io-client": "^2.3.0"
+  }
 }

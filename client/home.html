@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Chess</title>
+    </head>
+    
+    <body>
+        <!-- text input for submitting moves -->
+        <p><input id='username' autocomplete='on'/></p>
+        <p><input id='password' autocomplete='on'/></p>
+        <button id='login' onclick='loginPressed()'>Login</button><button id='register' onclick='registerPressed()'>Register</button>
+        <script src='/socket.io/socket.io.js'></script>
+        <script src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
+        <script>
+            
+            usernameInput = document.getElementById('username');
+            passwordInput = document.getElementById('password');
+
+            function loginPressed() {
+                socket.emit('New login', [document.getElementById('username').innerText, document.getElementById('password').innerText]);
+            }
+
+
+            $(function () {
+                
+                //send message back to server when submit button pressed
+                $('form').submit(function() {
+                    
+                    $('#m').val('');
+                    return false;
+                });
+
+                //enter when receive a new board from server
+                socket.on('board update', function(newboard) {
+                    //format board
+                    var str = '+--+--+--+--+--+--+--+--+\n';
+                    for (row of newboard) {
+                        for (column of row.reverse()) {
+                            str += '|' + column;
+                        }
+                        str += '|\n+--+--+--+--+--+--+--+--+\n'
+                    }
+                    document.getElementById('header 1').innerText = str;
+                });
+            });
+        </script>
+    </body>
+</html>

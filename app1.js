@@ -23,10 +23,10 @@ var clients;
 
 //redirect player to index.html page
 app.get('/', function(req, res){
-  res.sendFile(__dirname + '/client/index.html');
+  res.sendFile(__dirname + '/client/home.html');
 });
 
-io.on('connection', function(socket){
+io.on('connect', function(socket){
   if (!playing) {//create a room with two clients
     socket.join('game1');
     clients = Object.keys(socket.adapter.rooms['game1'].sockets);
