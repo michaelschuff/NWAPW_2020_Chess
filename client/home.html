@@ -10,39 +10,47 @@
         <p><input id='password' autocomplete='on'/></p>
         <button id='login' onclick='loginPressed()'>Login</button><button id='register' onclick='registerPressed()'>Register</button>
         <script src='/socket.io/socket.io.js'></script>
-        <script src='https://code.jquery.com/jquery-3.4.1.min.js'></script>
         <script>
-            
+            var socketConnection = io.connect();
+            var sessionID;
+
+            socket = io();
+
+            socket.on('connect', function() {
+                sessionID = socketConnection.socket.socketid;
+                console.log('Connected to server sucessfully.');
+            });
+            socket.on('reconnect', function() {
+                sessionID = socketConnection.socket.socketid;
+                console.log('Successfully reconnected.');
+            });
+            socket.on('connect_error', function() {console.log('Failed to connect to server.');});
+            socket.on('connect_timeout', function() {console.log('Connection timed out.');});
+            socket.on('reconnect_attempt', function() {console.log('Reconnecting...');});
+            socket.on('reconnect_error', function() {console.log('Failed to reconnect');});
+
             usernameInput = document.getElementById('username');
             passwordInput = document.getElementById('password');
 
             function loginPressed() {
-                socket.emit('New login', [document.getElementById('username').innerText, document.getElementById('password').innerText]);
+                socket.to(sessionID).emit('New login', [usernameInput.innerText, passwordInput.innerText]);
             }
 
-
-            $(function () {
-                
-                //send message back to server when submit button pressed
-                $('form').submit(function() {
-                    
-                    $('#m').val('');
-                    return false;
-                });
-
-                //enter when receive a new board from server
-                socket.on('board update', function(newboard) {
-                    //format board
-                    var str = '+--+--+--+--+--+--+--+--+\n';
-                    for (row of newboard) {
-                        for (column of row.reverse()) {
-                            str += '|' + column;
-                        }
-                        str += '|\n+--+--+--+--+--+--+--+--+\n'
-                    }
-                    document.getElementById('header 1').innerText = str;
-                });
-            });
+            function registerPressed() {
+                socket.io(sessionID).emit('New register', [usernameInput.innerText, passwordInput.innerText]);
+            }
+            
         </script>
+
+
+
+
+
+
+
+
+
+
+
     </body>
 </html>
