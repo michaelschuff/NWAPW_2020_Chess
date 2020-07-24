@@ -1,0 +1,10 @@
+#currentuser {
+    position: absolute;
+    text-align: center;
+    font-size: 20px;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    width: auto;
+    margin: 10px;
+}

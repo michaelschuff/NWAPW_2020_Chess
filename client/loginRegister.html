@@ -3,7 +3,7 @@
     <head>
         <title>Chess</title>
         <script src='/socket.io/socket.io.js'></script>
-        <script src='getUserIP.js'></script>
+        <script src='/client/socketFunctions.js'></script>
     </head>
     
     <body>
@@ -18,36 +18,32 @@
 
 
             function loginPressed() {
-                console.log("login clicked");
-                socket.emit('new login', {'username': usernameInput.value, 'password': passwordInput.value, 'ip': 0});
+                console.log('login clicked');
+                socket.emit('new login', {'username': usernameInput.value, 'password': passwordInput.value});
             }
 
             function registerPressed() {
+                console.log('register clicked');
                 socket.emit('new register', {'username': usernameInput.value, 'password': passwordInput.value});
             }
 
 
-            socket.on('connect', function() {console.log('Connected to server sucessfully.');});
-            socket.on('reconnect', function() {console.log('Successfully reconnected.');});
-            socket.on('connect_error', function() {console.log('Failed to connect to server.');});
-            socket.on('connect_timeout', function() {console.log('Connection timed out.');});
-            socket.on('reconnect_attempt', function() {console.log('Reconnecting...');});
-            socket.on('reconnect_error', function() {console.log('Failed to reconnect');});
+            socket.on('connect', function() {connectionSuccessful();});
+            socket.on('reconnect', function() {reconnectionSuccessful();});
+            socket.on('connect_error', function() {connectionFailed();});
+            socket.on('connect_timeout', function() {connectionTimeout();});
+            socket.on('reconnect_attempt', function() {attemptingReconnection();});
+            socket.on('reconnect_error', function() {reconnectionFailed();});
 
-            socket.on('login success', function() {
-                window.location.href = "home.html";
-            });
-            socket.on('login failure', function(data) {
-                alert(data);
-            });
-            socket.on('register success', function() {
-                window.location.href = "home.html";
-            });
-            socket.on('register failure', function(data) {
-                alert(data);
-            });
+            socket.on('login_success', function(data) {login_success(data);});
+            socket.on('login_failure', function(data) {login_failure(data);});
+            socket.on('register_success', function(data) {register_success(data);});
+            socket.on('register_failure', function(data) {register_failure(data);});
+            socket.on('redirect', function(path) {redirect();});
 
-            
+            function logoutPressed() {
+                
+            }
             
         </script>
     </body>

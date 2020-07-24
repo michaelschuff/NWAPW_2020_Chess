@@ -2,34 +2,32 @@
 <html>
     <head>
         <title>Chess</title>
+        <link rel="stylesheet" type="text/css" href="home.css" />
         <script src='/socket.io/socket.io.js'></script>
-        <script src='getUserIP.js'></script>
+        <script src='socketFunctions.js'></script>
     </head>
     
     <body>
-        <h1 id='h1'>hi</h1>
+        <p id=currentuser></p>
         <script>
             
             var socket = io();
 
 
-            socket.on('connect', function() {
-                console.log('Connected to server sucessfully.');
-                getUserIP(function(ip) {
-                    console.log(ip);
-                    socket.emit('username from ip', {'ip': ip, 'socketid': socket.id});
-                });
-                
-            });
-            socket.on('reconnect', function() {console.log('Successfully reconnected.');});
-            socket.on('connect_error', function() {console.log('Failed to connect to server.');});
-            socket.on('connect_timeout', function() {console.log('Connection timed out.');});
-            socket.on('reconnect_attempt', function() {console.log('Reconnecting...');});
-            socket.on('reconnect_error', function() {console.log('Failed to reconnect');});
+            socket.on('connect', function() {connectionSuccessful();});
+            socket.on('reconnect', function() {reconnectionSuccessful();});
+            socket.on('connect_error', function() {connectionFailed();});
+            socket.on('connect_timeout', function() {connectionTimeout();});
+            socket.on('reconnect_attempt', function() {attemptingReconnection();});
+            socket.on('reconnect_error', function() {reconnectionFailed();});
+            
+            document.getElementById('currentuser').innerText = 'Logged in as ' + document.cookie.split('; ').find(row => row.startsWith('username=')).split('=')[1];
 
-            socket.on('username', function(data) {
-                document.getElementById('h1').innerText = data;
-            });
+            socket.on('redirect', function(path) {redirect();});
+            function logout(socket) {
+                socket.emit('logout', document.cookie.split('; ').find(row => row.startsWith('sessionID')).split('=')[1]);
+                document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            }
             
         </script>
     </body>

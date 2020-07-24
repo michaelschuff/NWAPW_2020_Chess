@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Chess</title>
+        <script src='/socket.io/socket.io.js'></script>
+    </head>
+    
+    <body>
+        Connecting to server...
+        <script>
+            var socket = io();
+            console.log(document.cookie);
+
+            var SSID = document.cookie.split(';').find(row => row.startsWith('sessionID=') ? row.split('=')[1] : 'null');
+            
+            socket.emit('thisIsMySessionID', {sessionID: SSID});
+
+            socket.on('redirect', function(path) {
+                window.location.href = path;
+            });
+
+            
+        </script>
+    </body>
+</html>
