@@ -28,12 +28,12 @@
 
             function loginPressed() {
                 console.log('login clicked');
-                socket.emit('new login', {'username': usernameInput.value, 'password': passwordInput.value});
+                socket.emit('new_login', {'username': usernameInput.value, 'password': passwordInput.value});
             }
 
             function registerPressed() {
                 console.log('register clicked');
-                socket.emit('new register', {'username': usernameInput.value, 'password': passwordInput.value});
+                socket.emit('new_register', {'username': usernameInput.value, 'password': passwordInput.value});
             }
 
 

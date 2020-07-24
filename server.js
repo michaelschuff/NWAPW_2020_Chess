@@ -28,7 +28,7 @@ io.on('connection', function(socket) {
         console.log('A client has disconnected');
     });
 
-    socket.on('new login', function(data) {
+    socket.on('new_login', function(data) {
         console.log('Client attempting to login...');
         accounts.find({username: data.username, password: data.password}, function(err, docs) {
             if (docs == []) { // account doesnt exist, return to login with error message
