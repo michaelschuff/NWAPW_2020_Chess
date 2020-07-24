@@ -1,10 +1,25 @@
-#currentuser {
+#accountoptions {
     position: absolute;
     text-align: center;
-    font-size: 20px;
     right: 0;
     bottom: 0;
     height: auto;
     width: auto;
     margin: 10px;
+}
+
+#currentuser {
+    position: relative;
+    text-align: center;
+    align-self: center;
+    font-size: 20px;
+    margin: 0;
+}
+
+#logout {
+    position: relative;
+    text-align: center;
+    align-self: center;
+    font-size: 10px;
+    margin: 0;
 }

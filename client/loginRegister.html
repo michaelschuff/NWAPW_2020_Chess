@@ -9,7 +9,7 @@
     <body>
         <p><input id='username' autocomplete='on'/></p>
         <p><input id='password' autocomplete='on'/></p>
-        <button id='login' onclick='loginPressed()'>Login</button><button id='register' onclick='registerPressed()'>Register</button>
+        <button id='login' onclick=loginPressed()>Login</button><button id='register' onclick=registerPressed()>Register</button>
         <script>
             usernameInput = document.getElementById('username');
             passwordInput = document.getElementById('password');
@@ -40,10 +40,6 @@
             socket.on('register_success', function(data) {register_success(data);});
             socket.on('register_failure', function(data) {register_failure(data);});
             socket.on('redirect', function(path) {redirect();});
-
-            function logoutPressed() {
-                
-            }
             
         </script>
     </body>

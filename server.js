@@ -63,16 +63,17 @@ io.on('connection', function(socket) {
 
     socket.on('logout', function(data) {
       for (item in clients) {
-        if (item.sessionID == sessionID) {
+        if (item.sessionID == data.sessionID) {
           clients.splice(item, 1);
           break;
         }
       }
+      io.to(socket.id).emit('redirect', '/client/loginRegister.html');
     });
 
     socket.on('thisIsMySessionID', function(data) {
-      console.log('receiving session id');
-      if (data.sessionID == 'null') {
+      console.log('received session id: ' + data.sessionID);
+      if (data.sessionID.length != 20) {
         io.to(socket.id).emit('redirect', '/client/loginRegister.html');
         console.log('null session id, redirecting to login/register');
       } else {
@@ -84,11 +85,20 @@ io.on('connection', function(socket) {
 
 function generateUniqueSessionID() {
   while (true) {
-    var temp = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    var temp = makeid();
     if (!clients.find(row => row.sessionID == temp)) {
       break;
     };
   }
 
   return temp;
+}
+
+function makeid() {
+  var result = '';
+  var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for ( var i = 0; i < 20; i++ ) {
+     result += chars.charAt(Math.floor(Math.random() * 62));
+  }
+  return result;
 }
