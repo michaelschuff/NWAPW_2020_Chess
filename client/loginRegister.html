@@ -2,14 +2,23 @@
 <html>
     <head>
         <title>Chess</title>
+        <link rel="stylesheet" type="text/css" href="css/loginRegister.css" />
         <script src='/socket.io/socket.io.js'></script>
         <script src='/client/socketFunctions.js'></script>
     </head>
     
     <body>
-        <p><input id='username' autocomplete='on'/></p>
-        <p><input id='password' autocomplete='on'/></p>
-        <button id='login' onclick=loginPressed()>Login</button><button id='register' onclick=registerPressed()>Register</button>
+        <div id=loginBox>
+            <form id=loginForm>
+                <input id='username' autocomplete='on' placeholder='username'/></br>
+                <input id='password' autocomplete='on' placeholder='password'/>
+            </form>
+            <div id=loginregisterbuttons>
+                <button id='login' onclick=loginPressed()>Login</button><button id='register' onclick=registerPressed()>Register</button>
+            </div>
+            
+        </div>
+        
         <script>
             usernameInput = document.getElementById('username');
             passwordInput = document.getElementById('password');
