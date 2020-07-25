@@ -3,6 +3,8 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 8080;
+const { v1: uuidv1 } = require('uuid');
+
 
 //vars
 var board = [
@@ -15,10 +17,9 @@ var board = [
   ['BP','BP','BP','BP','BP','BP','BP','BP'],
   ['BR','BN','BB','BQ','BK','BB','BN','BR'],
 ];
-flippedBoard = [[]];
+let flippedBoard = [[]];
 
-wTurn = true;
-playing = false;
+let wTurn = true;
 var clients;
 
 //redirect player to index.html page
@@ -26,12 +27,21 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/client/index.html');
 });
 
+let players = new Set(); //TODO: make this list all of the players currently playing, replacing both clients and playing.
+let waitingUser = false;
+let room;
 io.on('connection', function(socket){
+  if(waitingUser){ //if somebody is waiting to be paired...
+    socket.join(waitingUser);
+    waitingUser = false;
+  } else {
+    waitingUser = socket.request.user.id;
+  }
   if (!playing) {//create a room with two clients
-    socket.join('game1');
-    clients = Object.keys(socket.adapter.rooms['game1'].sockets);
+    clients = Object.keys(socket.adapter.rooms[room].sockets);
     console.log("user ", clients.length, " has connected");
   }
+  number++;
   if (clients.length == 2) {
     playing = true;
     wTurn = !wTurn;
@@ -58,8 +68,6 @@ io.on('connection', function(socket){
       board[from[1]][from[0]] = board[to[1]][to[0]]
       board[to[1]][to[0]] = temp;
     }
-
-
 
     wTurn = !wTurn;
     flippedBoard = [];//create a board that is rotated 180 degrees, so black is on the bottom. will be sent to black player
