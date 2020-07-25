@@ -14,6 +14,11 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/client/communicationSetup.html');
 });
 
+app.get('/client/game.html', function(req, res){
+  res.sendFile(__dirname + '/client/game.html');
+  
+});
+
 http.listen(port, function(){
     console.log('listening on ' + port);
 });

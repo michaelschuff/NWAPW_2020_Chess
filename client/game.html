@@ -2,37 +2,103 @@
 <html>
     <head>
         <title>Chess</title>
+        <link rel='stylesheet' type='text/css' href='css/game.css' />
+        <script src='/socket.io/socket.io.js'></script>
+        <script src='socketFunctions.js'></script>
     </head>
-    <h1 id="header 1" style="font-family:'Lucida Console', monospace"></h1> 
-    <body>
-        <!-- text input for submitting moves -->
-        <form action="">
-            <input id="m" autocomplete="off" /><button>Move</button>
-        </form>
-        <script src="/socket.io/socket.io.js"></script>
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-        <script>
-            $(function () {
-                var socket = io();
-                //send message back to server when submit button pressed
-                $('form').submit(function() {
-                    socket.emit('move', $('#m').val());
-                    $('#m').val('');
-                    return false;
-                });
+    <body id=body>
+        <input id='moveinput' autocomplete='off' onclick='moveEntered()'/><button>Move</button>
+        
+        <div id=accountoptions>
+            <p id=currentuser></p>
+            <button id=logout onclick=logoutPressed()>Logout</button>
+        </div>
 
-                //enter when receive a new board from server
-                socket.on('board update', function(newboard) {
-                    //format board
-                    var str = "+--+--+--+--+--+--+--+--+\n";
-                    for (row of newboard) {
-                        for (column of row.reverse()) {
-                            str += '|' + column;
-                        }
-                        str += '|\n+--+--+--+--+--+--+--+--+\n'
-                    }
-                    document.getElementById('header 1').innerText = str;
-                });
+        <div id=chessboard>
+            <img src='/client/imgs/board.png' id=board>
+        </div>
+        <script>
+            var socket = io();
+            socket.on('connect', function() {connectionSuccessful();});
+            socket.on('reconnect', function() {reconnectionSuccessful();});
+            socket.on('connect_error', function() {connectionFailed();});
+            socket.on('connect_timeout', function() {connectionTimeout();});
+            socket.on('reconnect_attempt', function() {attemptingReconnection();});
+            socket.on('reconnect_error', function() {reconnectionFailed();});
+            
+            document.getElementById('currentuser').innerText = 'Logged in as ' + document.cookie.split('; ').find(row => row.startsWith('username=')).split('=')[1];
+
+            socket.on('redirect', function(path) {redirect(path);});
+
+            function logoutPressed() {
+                socket.emit('logout', (document.cookie.split('; ').find(row => row.startsWith('sessionID'))).split('=')[1]);
+                document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            }
+
+            function moveEntered() {
+                console.log('i dont give a fk');
+            }
+            var board = [
+                ['BR','BN','BB','BQ','BK','BB','BN','BR'],
+                ['BP','BP','BP','BP','BP','BP','BP','BP'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['WP','WP','WP','WP','WP','WP','WP','WP'],
+                ['WR','WN','WB','WQ','WK','WB','WN','WR']
+            ];
+            alphabet = 'abcdefgh';
+
+
+            for (y = 0; y < 8; y++) {
+                var div = document.createElement('div');
+                div.id = 'row' + y;
+                document.getElementById('chessboard').appendChild(div);
+                for (x = 0; x < 8; x++) {
+                    var img = document.createElement('img');
+                    img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
+                    img.className = 'piece';
+                    img.id = alphabet[y] + x.toString();
+                    img.style.top = y.toString() + '00px';
+                    img.style.left = x.toString() + '00px';
+                    document.getElementById('row' + y.toString()).appendChild(img);
+                }
+            }
+            
+            socket.on('displayboard', function(data) {
+                // console.log('makingboard');
+                // color = data.color;
+                // board = data.board;
+                // if (color == 'white') {
+                //     for (y = 7; y >=0; y--) {
+                //         var div = document.createElement('div');
+                //         div.id = 'row' + y;
+                //         document.getElementById('body').appendChild(div);
+                //         for (x = 7; x >= 0; x--) {
+                //             var img = document.createElement('img');
+                //             img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
+                //             img.className = 'piece';
+                //             img.id = board[y][x];
+                //             document.getElementById('row' + y).appendChild(img);
+                //         }
+                //     }
+                // } else {
+                //     for (y = 0; y < 8; y++) {
+                //         var div = document.createElement('div');
+                //         div.id = 'row' + y;
+                //         document.getElementById('body').appendChild(div);
+                //         for (x = 8; x >= 0; x--) {
+                //             var img = document.createElement('img');
+                //             img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
+                //             img.className = 'piece';
+                //             img.id = board[y][x];
+                //             document.getElementById('row' + y).appendChild(img);
+                //         }
+                //     }
+                // }
+                
             });
         </script>
     </body>

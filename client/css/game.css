@@ -1,0 +1,19 @@
+.piece {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+}
+
+#chessboard {
+    position: relative;
+    top: 0;
+    left: 0;
+}
+
+#board {
+    position: relative;
+    width: 800px;
+    height: 800px;
+    top: 0;
+    left: 0;
+}

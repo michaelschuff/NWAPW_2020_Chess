@@ -8,6 +8,7 @@
     </head>
     
     <body>
+        <img src="imgs/bp.png" class='piece' id=blackpawn>
         <div id=accountoptions>
             <p id=currentuser></p>
             <button id=logout onclick=logoutPressed()>Logout</button>
@@ -15,9 +16,9 @@
         
         
         <script>
-            
+            var color;
+            var board;
             var socket = io();
-
 
             socket.on('connect', function() {connectionSuccessful();});
             socket.on('reconnect', function() {reconnectionSuccessful();});
@@ -34,6 +35,8 @@
                 document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
                 document.cookie = 'username=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
             }
+
+            
             
         </script>
     </body>
