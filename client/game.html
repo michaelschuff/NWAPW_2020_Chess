@@ -18,6 +18,8 @@
             <img src='/client/imgs/board.png' id=board>
         </div>
         <script>
+            var fromSquare = '';
+            var toSquare = '';
             var socket = io();
             socket.on('connect', function() {connectionSuccessful();});
             socket.on('reconnect', function() {reconnectionSuccessful();});
@@ -60,46 +62,47 @@
                     var img = document.createElement('img');
                     img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
                     img.className = 'piece';
-                    img.id = alphabet[y] + x.toString();
+                    img.id = alphabet[x] + (8-y).toString();
                     img.style.top = y.toString() + '00px';
                     img.style.left = x.toString() + '00px';
+                    img.addEventListener('click', squareClicked, false);
+                    // img.onclick = squareClicked(img);
                     document.getElementById('row' + y.toString()).appendChild(img);
                 }
             }
             
             socket.on('displayboard', function(data) {
-                // console.log('makingboard');
-                // color = data.color;
-                // board = data.board;
-                // if (color == 'white') {
-                //     for (y = 7; y >=0; y--) {
-                //         var div = document.createElement('div');
-                //         div.id = 'row' + y;
-                //         document.getElementById('body').appendChild(div);
-                //         for (x = 7; x >= 0; x--) {
-                //             var img = document.createElement('img');
-                //             img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
-                //             img.className = 'piece';
-                //             img.id = board[y][x];
-                //             document.getElementById('row' + y).appendChild(img);
-                //         }
-                //     }
-                // } else {
-                //     for (y = 0; y < 8; y++) {
-                //         var div = document.createElement('div');
-                //         div.id = 'row' + y;
-                //         document.getElementById('body').appendChild(div);
-                //         for (x = 8; x >= 0; x--) {
-                //             var img = document.createElement('img');
-                //             img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
-                //             img.className = 'piece';
-                //             img.id = board[y][x];
-                //             document.getElementById('row' + y).appendChild(img);
-                //         }
-                //     }
-                // }
-                
+                console.log('makingboard');
+                color = data.color;
+                board = data.board;
+                if (color == 'white') {
+                    for (y = 7; y >=0; y--) {
+                        for (x = 0; x < 8; x++) {
+                            document.getElementById(alphabet[x] + (8-y).toString()).src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
+                        }
+                    }
+                } else {
+                    for (y = 0; y < 8; y++) {
+                        for (x = 7; x >= 0; x--) {
+                            document.getElementById(alphabet[x] + y.toString()).src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
+                        }
+                    }
+                }
             });
+
+            function squareClicked() {
+                if (fromSquare == '') {
+                    fromSquare = this.id;
+                } else {
+                    toSquare = this.id;
+                    var tempsrc = document.getElementById(fromSquare).src;
+                    document.getElementById(fromSquare).src = document.getElementById(toSquare).src
+                    document.getElementById(toSquare).src = tempsrc;
+                    fromSquare = '';
+                    toSquare = '';
+                }
+                console.log(fromSquare + toSquare);
+            }
         </script>
     </body>
 </html>
