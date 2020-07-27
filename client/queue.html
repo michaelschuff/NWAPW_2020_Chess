@@ -2,30 +2,37 @@
 <html>
     <head>
         <title>Chess</title>
+        <link rel="stylesheet" type="text/css" href="css/queue.css" />
         <script src='/socket.io/socket.io.js'></script>
         <script src='/client/socketFunctions.js'></script>
     </head>
     
     <body>
-        Connecting to server...
+        <p> waiting in queue... </p>
+        <div id=accountoptions>
+            <p id=currentuser></p>
+            <button id=logout onclick=logoutPressed()>Logout</button>
+        </div>
+        
+        
         <script>
+            const SSID = document.cookie.split('; ').find(row => row.startsWith('sessionID')).split('=')[1];
             var socket = io();
-            // var SSID = document.cookie.split(';').find(row => row.startsWith('sessionID=')) ? row.split('=')[1] : 'null';
+
             socket.on('connect', function() {connection_successful(socket);});
             socket.on('reconnect', function() {reconnection_successful(socket);});
             socket.on('connect_error', function() {connection_failed();});
             socket.on('connect_timeout', function() {connection_timeout();});
             socket.on('reconnect_attempt', function() {attempting_reconnection();});
             socket.on('reconnect_error', function() {reconnection_failed();});
-            socket.on('validation_success', function(data) {
-                redirect('/client/home.html');
-            });
-            socket.on('validation_failed', function(data) {
-                redirect('/client/loginRegister.html');
-            });
-            
-
+            socket.on('validation_success', function(data) {validation_success(data)});
+            socket.on('validation_failed', function() {validation_failed()});
             socket.on('redirect', function(path) {redirect(path);});
+
+            function logoutPressed() {
+                socket.emit('logout', {sessionID: SSID});
+                document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            }
             
         </script>
     </body>

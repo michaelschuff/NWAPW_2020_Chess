@@ -37,18 +37,20 @@
             }
 
 
-            socket.on('connect', function() {connectionSuccessful();});
-            socket.on('reconnect', function() {reconnectionSuccessful();});
-            socket.on('connect_error', function() {connectionFailed();});
-            socket.on('connect_timeout', function() {connectionTimeout();});
-            socket.on('reconnect_attempt', function() {attemptingReconnection();});
-            socket.on('reconnect_error', function() {reconnectionFailed();});
+            socket.on('connect', function() {connection_successful(socket);});
+            socket.on('reconnect', function() {reconnection_successful(socket);});
+            socket.on('connect_error', function() {connection_failed();});
+            socket.on('connect_timeout', function() {connection_timeout();});
+            socket.on('reconnect_attempt', function() {attempting_reconnection();});
+            socket.on('reconnect_error', function() {reconnection_failed();});
 
             socket.on('login_success', function(data) {login_success(data);});
             socket.on('login_failure', function(data) {login_failure(data);});
             socket.on('register_success', function(data) {register_success(data);});
             socket.on('register_failure', function(data) {register_failure(data);});
-            socket.on('redirect', function(path) {redirect();});
+            socket.on('validation_success', function(data) {redirect('/clients/home.html')})
+            socket.on('validation_failed', function() {});
+            socket.on('redirect', function(path) {redirect(path);});
             
         </script>
     </body>
