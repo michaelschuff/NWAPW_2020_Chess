@@ -1,54 +1,113 @@
-function isLegalMove(board, move) {
-    from = {x: move[0][0], y: move[0][1]};
-    to = {x: move[1][0], y: move[1][1]};
-
-    const color = board[from.y][from.x][0];
-    const piece = board[from.y][from.x][1];
-
-    if (kingInCheck(movepiece(board, from, to), color)) {
-        return false;
+function getLegalMoves(board, color, lastmove) {
+    var legalMoves = [];
+    for (y = 0; y < 8; y++) {
+        for (x = 0; x < 8; x++) {
+            if (board[y][x][0] == color) {
+                switch (board[y][x][1]) {
+                    case 'p':
+                        for (item of getLegalPawnMoves(board, {x: x, y: y}, lastmove)) {
+                            legalMoves.push(item);
+                        }
+                    case 'n':
+                        for (item of getLegalKnightMoves(board, {x: x, y: y})) {
+                            legalMoves.push(item);
+                        }
+                    case 'b':
+                        for (item of getLegalBishopMoves(board, {x: x, y: y})) {
+                            legalMoves.push(item);
+                        }
+                    case 'r':
+                        for (item of getLegalRookMoves(board, {x: x, y: y})) {
+                            legalMoves.push(item);
+                        }
+                    case 'q':
+                        for (item of getLegalQueenMoves(board, {x: x, y: y})) {
+                            legalMoves.push(item);
+                        }
+                    case 'k':
+                        for (item of getLegalKingMoves(board, {x: x, y: y})) {
+                            legalMoves.push(item);
+                        }
+                    case '_':
+                        break;
+                }
+            }
+        }
     }
-
-    switch (piece) {
-        case 'p':
-            return legalPawnMove(board, from, to, color);
-        case 'n':
-            return legalKnightMove(board, from, to, color);
-        case 'b':
-            return legalBishopMove(board, from, to, color);
-        case 'r':
-            return legalRookMove(board, from, to, color);
-        case 'q':
-            return legalQueenMove(board, from, to, color);
-        case 'k':
-            return legalKingMove(board, from, to, color);
-        case '_':
-            return false;
-    }
+    
 
 }
 
-function legalPawnMove(board, from, to, color) {
+function getLegalPawnMoves(board, square) {
+    color=findwb(board[piecey][piecex]);
+	if(color=="W"){
+		if(board[piecey-1][piecex]=="  "){
+			legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex,piecey-1);
+			if(board[piecey-2][piecex]=="  "&&piecey==6){
+				legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex,piecey-2);
+			}
+		}
+		if(piecex>0){
+			if(findwb(board[piecey-1][piecex-1])=="B"){
+				legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex-1,piecey-1);
+			}
+			if(notation[notation.size()-1][0]==piecex-1&&notation[notation.size()-1][1]==1&&notation[notation.size()-1][2]==piecex-1&&notation[notation.size()-1][3]==3&&piecey==3&&board[piecey][piecex-1]=="BP"){//complicated if statement that just checks if you can take a pawn using en passant
+				legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex-1,piecey-1);
+			}
+		}
+		if(piecex<7){
+			if(findwb(board[piecey-1][piecex+1])=="B"){
+				legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex+1,piecey-1);
+			}
+			if(notation[notation.size()-1][0]==piecex+1&&notation[notation.size()-1][1]==1&&notation[notation.size()-1][2]==piecex+1&&notation[notation.size()-1][3]==3&&piecey==3&&board[piecey][piecex+1]=="BP"){
+				legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex+1,piecey-1);
+			}
+		}
+	}
+	else{
+		if(board[piecey+1][piecex]=="  "){
+			legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex,piecey+1);
+			if(board[piecey+2][piecex]=="  "&&piecey==1){
+				legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex,piecey+2);
+			}
+		}
+		if(piecex>0){
+			if(findwb(board[piecey+1][piecex-1])=="W"){
+				legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex-1,piecey+1);
+			}
+			if(notation[notation.size()-1][0]==piecex-1&&notation[notation.size()-1][1]==6&&notation[notation.size()-1][2]==piecex-1&&notation[notation.size()-1][3]==4&&piecey==4&&board[piecey][piecex-1]=="WP"){
+				legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex-1,piecey+1);
+			}
+		}
+		if(piecex<7){
+			if(findwb(board[piecey+1][piecex+1])=="W"){
+				legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex+1,piecey+1);
+			}
+			if(notation[notation.size()-1][0]==piecex+1&&notation[notation.size()-1][1]==6&&notation[notation.size()-1][2]==piecex+1&&notation[notation.size()-1][3]==4&&piecey==4&&board[piecey][piecex+1]=="WP"){
+				legalmoves=legalmovesincheck(board,legalmoves,piecex,piecey,piecex+1,piecey+1);
+			}
+		}
+	}
+	return(legalmoves);
+}
+
+function getLegalKnightMoves(board, square) {
 
 }
 
-function legalKnightMove(board, from, to, color) {
+function getLegalBishopMoves(board, square) {
 
 }
 
-function legalBishopMove(board, from, to, color) {
+function getLegalRookMoves(board, square) {
 
 }
 
-function legalRookMove(board, from, to, color) {
+function getLegalQueenMoves(board, square) {
 
 }
 
-function legalQueenMove(board, from, to, color) {
-
-}
-
-function legalKingMove(board, from, to, color) {
+function getLegalKingMoves(board, square) {
 
 }
 
