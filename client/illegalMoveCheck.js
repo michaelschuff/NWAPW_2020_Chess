@@ -1,39 +1,48 @@
 function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) {
     var legalmoves = [];
+    var temp;
     for (row = 0; row < 8; row++) {
         for (col = 0; col < 8; col++) {
             if (tempboard[row][col][0] == color) {
                 switch (tempboard[row][col][1]) {
                     case 'p':
-                        const temp = getLegalPawnMoves(tempboard, {x: col, y: row}, lastmove);
+                        temp = getLegalPawnMoves(tempboard, {x: col, y: row}, lastmove);
                         for (i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
+                        break;
                     case 'n':
-                        const temp = getLegalKnightMoves(tempboard, {x: col, y: row});
+                        temp = getLegalKnightMoves(tempboard, {x: col, y: row});
                         for (i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
+                        break;
                     case 'b':
-                        const temp = getLegalBishopMoves(tempboard, {x: col, y: row});
+                        temp = getLegalBishopMoves(tempboard, {x: col, y: row});
                         for (i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
+                        break;
                     case 'r':
-                        const temp = getLegalRookMoves(tempboard, {x: col, y: row});
+                        temp = getLegalRookMoves(tempboard, {x: col, y: row});
                         for (i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
+                        break;
                     case 'q':
-                        const temp = getLegalQueenMoves(tempboard, {x: col, y: row});
+                        temp = getLegalQueenMoves(tempboard, {x: col, y: row});
                         for (i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
+                        break;
                     case 'k':
-                        const temp = getLegalKingMoves(tempboard, {x: col, y: row}, castleleft, castleright);
+                        temp = getLegalKingMoves(tempboard, {x: col, y: row}, castleleft, castleright);
                         for (i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
+                        break;
+                    default:
+                        break;
                 }
             }
         }
@@ -44,23 +53,23 @@ function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) {
 
 function getLegalPawnMoves(tempboard, piece, lastmove) {
     const color = tempboard[piece.y][piece.x][0];
-    legalmoves = [];
+    var lmoves = [];
 	if (color == 'w') {
 		if (tempboard[piece.y + 1][piece.x] == '__') {
 			if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y + 1}), 'w')) {
-                legalmoves.push({from: piece, to: {x: piece.x, y: piece.y + 1}});
+                lmoves.push({from: piece, to: {x: piece.x, y: piece.y + 1}});
             }
 			if (tempboard[piece.y + 2][piece.x] == '__' && piece.y == 1) {
                 if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y + 2}), 'w')) {
-                    legalmoves.push({from: piece, to: {x: piece.x, y: piece.y + 2}});
+                    lmoves.push({from: piece, to: {x: piece.x, y: piece.y + 2}});
                 }
             }
         }
         
 		if (piece.x > 0) {
-			if (tempboard[piece.y + 1][piece.x - 1] == 'b') {
-                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x - 1, y: piece.y + 1}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x - 1, y: piece.y + 1}});
+			if (tempboard[piece.y + 1][piece.x - 1][0] == 'b') {
+                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x - 1, y: piece.y + 1}), 'w')) {
+                    lmoves.push({from: piece, to: {x: piece.x - 1, y: piece.y + 1}});
                 }
 			}
             if (lastmove.from.x == piece.x - 1 &&
@@ -70,16 +79,16 @@ function getLegalPawnMoves(tempboard, piece, lastmove) {
                 piece.y == 4 && 
                 tempboard[piece.y][piece.x - 1] == 'bp') {
 
-				if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x - 1, y: piece.y + 1}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x - 1, y: piece.y + 1}});
+				if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x - 1, y: piece.y + 1}), 'w')) {
+                    lmoves.push({from: piece, to: {x: piece.x - 1, y: piece.y + 1}});
                 }
 			}
 		}
         
         if (piece.x < 7) {
-			if (tempboard[piece.y + 1][piece.x + 1] == 'b') {
-                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + 1, y: piece.y + 1}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x + 1, y: piece.y + 1}});
+			if (tempboard[piece.y + 1][piece.x + 1][0] == 'b') {
+                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + 1, y: piece.y + 1}), 'w')) {
+                    lmoves.push({from: piece, to: {x: piece.x + 1, y: piece.y + 1}});
                 }
 			}
             if (lastmove.from.x == piece.x + 1 &&
@@ -89,28 +98,28 @@ function getLegalPawnMoves(tempboard, piece, lastmove) {
                 piece.y == 4 && 
                 tempboard[piece.y][piece.x + 1] == 'bp') {
 
-				if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + 1, y: piece.y + 1}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x + 1, y: piece.y + 1}});
+				if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + 1, y: piece.y + 1}), 'w')) {
+                    lmoves.push({from: piece, to: {x: piece.x + 1, y: piece.y + 1}});
                 }
 			}
         }
         
 	} else {
 		if (tempboard[piece.y - 1][piece.x] == '__') {
-			if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y - 1}), 'w')) {
-                legalmoves.push({from: piece, to: {x: piece.x, y: piece.y - 1}});
+			if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y - 1}), 'b')) {
+                lmoves.push({from: piece, to: {x: piece.x, y: piece.y - 1}});
             }
 			if (tempboard[piece.y - 2][piece.x] == '__' && piece.y == 6) {
-                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y - 2}), 'w')) {
-                    legalmoves.push({from: piece, to: {x: piece.x, y: piece.y - 2}});
+                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y - 2}), 'b')) {
+                    lmoves.push({from: piece, to: {x: piece.x, y: piece.y - 2}});
                 }
             }
         }
         
 		if (piece.x > 0) {
-			if (tempboard[piece.y - 1][piece.x - 1] == 'b') {
-                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x - 1, y: piece.y - 1}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x - 1, y: piece.y - 1}});
+			if (tempboard[piece.y - 1][piece.x - 1][0] == 'w') {
+                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x - 1, y: piece.y - 1}), 'b')) {
+                    lmoves.push({from: piece, to: {x: piece.x - 1, y: piece.y - 1}});
                 }
 			}
             if (lastmove.from.x == piece.x - 1 &&
@@ -118,18 +127,18 @@ function getLegalPawnMoves(tempboard, piece, lastmove) {
                 lastmove.to.x == piece.x - 1 &&
                 lastmove.to.y == 3 &&
                 piece.y == 3 && 
-                tempboard[piece.y][piece.x - 1] == 'bp') {
+                tempboard[piece.y][piece.x - 1] == 'wp') {
 
-				if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x - 1, y: piece.y - 1}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x - 1, y: piece.y - 1}});
+				if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x - 1, y: piece.y - 1}), 'b')) {
+                    lmoves.push({from: piece, to: {x: piece.x - 1, y: piece.y - 1}});
                 }
 			}
 		}
         
         if (piece.x < 7) {
-			if (tempboard[piece.y - 1][piece.x + 1] == 'b') {
-                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + 1, y: piece.y - 1}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x + 1, y: piece.y - 1}});
+			if (tempboard[piece.y - 1][piece.x + 1][0] == 'w') {
+                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + 1, y: piece.y - 1}), 'b')) {
+                    lmoves.push({from: piece, to: {x: piece.x + 1, y: piece.y - 1}});
                 }
 			}
             if (lastmove.from.x == piece.x + 1 &&
@@ -137,20 +146,20 @@ function getLegalPawnMoves(tempboard, piece, lastmove) {
                 lastmove.to.x == piece.x + 1 &&
                 lastmove.to.y == 3 &&
                 piece.y == 3 && 
-                tempboard[piece.y][piece.x + 1] == 'bp') {
+                tempboard[piece.y][piece.x + 1] == 'wp') {
 
-				if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + 1, y: piece.y - 1}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x + 1, y: piece.y - 1}});
+				if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + 1, y: piece.y - 1}), 'b')) {
+                    lmoves.push({from: piece, to: {x: piece.x + 1, y: piece.y - 1}});
                 }
 			}
 		}
     }
     
-	return legalmoves;
+	return lmoves;
 }
 
 function getLegalKnightMoves(tempboard, piece) {
-    legalmoves = [];
+    var lmoves = [];
     const knight = [{x: 1, y: 2},
         {x: 2, y: 1},
         {x: 2, y: -1},
@@ -162,17 +171,17 @@ function getLegalKnightMoves(tempboard, piece) {
 	for (n = 0; n < 8; n++) {
 		if(onBoard(piece.x + knight[n].x, piece.y + knight[n].y)) {
 			if(tempboard[piece.y][piece.x][0] != tempboard[piece.y + knight[n].y][piece.x + knight[n].x][0]) {
-                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + knight[n].x, y: piece.y + knight[n].y}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x + knight[n].x, y: piece.y + knight[n].y}});
+                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + knight[n].x, y: piece.y + knight[n].y}), tempboard[piece.y][piece.x][0])) {
+                    lmoves.push({from: piece, to: {x: piece.x + knight[n].x, y: piece.y + knight[n].y}});
                 }
 			}
 		}
 	}
-	return legalmoves;
+	return lmoves;
 }
 
 function getLegalBishopMoves(tempboard, piece) {
-    legalmoves = [];
+    var lmoves = [];
     const bishop = [{x: 1, y: 1},
                     {x: 1, y: -1},
                     {x: -1, y: -1},
@@ -182,9 +191,12 @@ function getLegalBishopMoves(tempboard, piece) {
 		while(onBoard(piece.x + delta.x + bishop[b].x, piece.y + delta.y + bishop[b].y)) {
 			delta.x += bishop[b].x;
 			delta.y += bishop[b].y;
+            if (tempboard[piece.y + delta.y][piece.x + delta.x][0] == tempboard[piece.y][piece.x][0]){
+                break;
+            }
 			if(tempboard[piece.y][piece.x][0] != tempboard[piece.y + delta.y][piece.x + delta.x][0]) {
-                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + delta.x, y: piece.y + delta.y}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x + delta.x, y: piece.y + delta.y}});
+                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + delta.x, y: piece.y + delta.y}), tempboard[piece.y][piece.x][0])) {
+                    lmoves.push({from: piece, to: {x: piece.x + delta.x, y: piece.y + delta.y}});
                 }
 			}
 			if(tempboard[piece.y + delta.y][piece.x + delta.x] != '__'){
@@ -193,11 +205,11 @@ function getLegalBishopMoves(tempboard, piece) {
 		}
         delta = {x: 0, y: 0};
 	}
-	return legalmoves;
+	return lmoves;
 }
 
 function getLegalRookMoves(tempboard, piece) {
-    legalmoves = [];
+    var lmoves = [];
     const rook = [{x: 0, y: 1},
             {x: 1, y: 0},
             {x: 0, y: -1},
@@ -207,38 +219,45 @@ function getLegalRookMoves(tempboard, piece) {
         while(onBoard(piece.x + delta.x + rook[r].x, piece.y + delta.y + rook[r].y)) {
             delta.x += rook[r].x;
             delta.y += rook[r].y;
-            if(tempboard[piece.y][piece.x][0] != tempboard[piece.y + delta.y][piece.x + delta.x][0]) {
-                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + delta.x, y: piece.y + delta.y}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x + delta.x, y: piece.y + delta.y}});
+            if (tempboard[piece.y + delta.y][piece.x + delta.x][0] == tempboard[piece.y][piece.x][0]){
+                break;
+            }
+            if (tempboard[piece.y][piece.x][0] != tempboard[piece.y + delta.y][piece.x + delta.x][0]) {
+                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + delta.x, y: piece.y + delta.y}), tempboard[piece.y][piece.x][0])) {
+                    lmoves.push({from: piece, to: {x: piece.x + delta.x, y: piece.y + delta.y}});
                 }
             }
-            if(tempboard[piece.y + delta.y][piece.x + delta.x] != '__'){
+            
+            if (tempboard[piece.y + delta.y][piece.x + delta.x] != '__'){
                 break;
             }
         }
         delta = {x: 0, y: 0};
     }
-    return legalmoves;
+    return lmoves;
 }
 
 function getLegalQueenMoves(tempboard, piece) {
-    legalmoves = [];
+    var lmoves = [];
 
-    const temp = getLegalRookMoves(tempboard, piece);
+    var temp = getLegalRookMoves(tempboard, piece);
     for (i = 0; i < temp.length; i++) {
-        legalmoves.push(temp[i]);
+        
+        lmoves.push(temp[i]);
     }
 
-    const temp = getLegalBishopMoves(tempboard, piece);
+    temp = getLegalBishopMoves(tempboard, piece);
     for (i = 0; i < temp.length; i++) {
-        legalmoves.push(temp[i]);
+        
+        lmoves.push(temp[i]);
     }
 
-	return legalmoves;
+	return lmoves;
 }
 
 function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
-    legalmoves = [];
+    console.log('here');
+    var lmoves = [];
     const dirs = [{x: 0, y: 1},
                   {x: 1, y: 0},
                   {x: 0, y: -1},
@@ -248,55 +267,59 @@ function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
                   {x: -1, y: -1},
                   {x: -1, y: 1}];
 	for (d = 0; d < 8; d++) {
+        console.log('before d: ', d);
 		if (onBoard(piece.x + dirs[d].x, piece.y + dirs[d].y)) {
-			if (tempboard[piece.y][piece.x][0] != tempboard[piece.y + dirs[d].y][piece.x + dirs[d].x]) {
-				if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + dirs[d].x, y: piece.y + dirs[d].y}))) {
-                    legalmoves.push({from: piece, to: {x: piece.x + dirs[d].x, y: piece.y + dirs[d].y}});
+			if (tempboard[piece.y][piece.x][0] != tempboard[piece.y + dirs[d].y][piece.x + dirs[d].x][0]) {
+                var c = movepiece(tempboard, piece, {x: piece.x + dirs[d].x, y: piece.y + dirs[d].y});
+				if (!kingInCheck(c, tempboard[piece.y][piece.x][0])) {
+                    lmoves.push({from: piece, to: {x: piece.x + dirs[d].x, y: piece.y + dirs[d].y}});
                 }
 			}
-		}
-	}
+        }
+        console.log('after d: ', d);
+    }
+    var temp;
 	if (tempboard[piece.y][piece.x] == 'wk') {
 		if (leftcastle && tempboard[0][3] == '__' && tempboard[0][2] == '__' && tempboard[0][1] == '__') {
-            const temp = castling(tempboard, 'l', 'w')
-			for (i = 9; i < temp.length; i++) {
-                legalmoves.push(temp[i]);
+            temp = castling(tempboard, 'l', 'w');
+			for (i = 0; i < temp.length; i++) {
+                lmoves.push(temp[i]);
             }
 		}
 		if(rightcastle && tempboard[0][5] == '__' && tempboard[0][6] == '__') {
-			const temp = castling(tempboard, 'r', 'w')
-			for (i = 9; i < temp.length; i++) {
-                legalmoves.push(temp[i]);
+			temp = castling(tempboard, 'r', 'w');
+			for (i = 0; i < temp.length; i++) {
+                lmoves.push(temp[i]);
             }
 		}
 	} else {
 		if(leftcastle && tempboard[7][3] == '__' && tempboard[7][2] == '__' && tempboard[7][1] == '__'){
-			const temp = castling(tempboard, 'r', 'w')
-			for (i = 9; i < temp.length; i++) {
-                legalmoves.push(temp[i]);
+			temp = castling(tempboard, 'r', 'w');
+			for (i = 0; i < temp.length; i++) {
+                lmoves.push(temp[i]);
             }
 		}
 		if(rightcastle && tempboard[7][5] == '__' && tempboard[7][6] == '__'){
-            const temp = castling(tempboard, 'r', 'b')
-			for (i = 9; i < temp.length; i++) {
-                legalmoves.push(temp[i]);
+            temp = castling(tempboard, 'r', 'b');
+			for (i = 0; i < temp.length; i++) {
+                lmoves.push(temp[i]);
             }
 		}
 	}
-	return(legalmoves);
+	return lmoves;
 }
 
 function castling(tempboard, dir, color) {
     var b = [];
     for (y = 0; y < 8; y++) {
         b.push([])
-        for (x =0; x < 8; x++) {
+        for (x = 0; x < 8; x++) {
             b[y].push(tempboard[y][x])
         }
     }
-    legalmoves = [];
+    var lmoves = [];
 	const ncolor = (color == 'w') ? 0 : 7;
-	if(!kinInCheck(b, color)) {
+	if(!kingInCheck(b, color)) {
 		if (dir == 'l') {
 			b[ncolor][3] = b[ncolor][4];
 			b[ncolor][4] = '__';
@@ -304,7 +327,7 @@ function castling(tempboard, dir, color) {
 				b[ncolor][2] = b[ncolor][3];
 				b[ncolor][3] = '__';
 				if(!kingInCheck(b, color)){
-					legalmoves.push({x: 4, ncolor}, {x: 2, y: ncolor});
+					lmoves.push({x: 4, ncolor}, {x: 2, y: ncolor});
 				}
 			}
 		}
@@ -315,20 +338,20 @@ function castling(tempboard, dir, color) {
 				b[ncolor][6] = b[ncolor][5];
 				b[ncolor][5] = '__';
 				if (!kingInCheck(b, color)) {
-					legalmoves.push({x: 4, ncolor}, {x: 6, y: ncolor});
+					lmoves.push({x: 4, ncolor}, {x: 6, y: ncolor});
 				}
 			}
 		}
 	}
-	return(legalmoves);
+	return lmoves;
 }
 
 function movepiece(tempboard, from, to) {
     var b = [];
     for (y = 0; y < 8; y++) {
         b.push([])
-        for (x =0; x < 8; x++) {
-            b[y].push(tempboard[y][x])
+        for (x = 0; x < 8; x++) {
+            b[y].push(tempboard[y][x]);
         }
     }
     if ((b[from.y][from.x] == 'wk' || b[from.y][from.x] == 'bk') &&
@@ -359,8 +382,7 @@ function movepiece(tempboard, from, to) {
 
     b[to.y][to.x] = b[from.y][from.x];
     b[from.y][from.x] = '__';
-
-    return tempboard;
+    return b;
 }
 
 function kingInCheck(tempboard, color) {
@@ -408,16 +430,17 @@ function kingInCheck(tempboard, color) {
         }
 	} else {
         if (onBoard(k.x + 1, k.y - 1)) {
-            if (tempboard[k.y - 1][k.x + 1] == 'bp'){
+            if (tempboard[k.y - 1][k.x + 1] == 'wp'){
                 return true;
             }
         }
         if (onBoard(k.x - 1, k.y - 1)) {
-            if (tempboard[k.y - 1][k.x - 1] == 'bp') {
+            if (tempboard[k.y - 1][k.x - 1] == 'wp') {
                 return true;
             }
         }
-	}
+    }
+    
 	for (h = 0; h < 4; h++) {
         while (onBoard(k.x + delta.x + horz[h].x, k.y + delta.y + horz[h].y)) {
 			delta.x += horz[h].x;
@@ -425,21 +448,25 @@ function kingInCheck(tempboard, color) {
             if (tempboard[k.y + delta.y][k.x + delta.x] == oppo + 'r' ||
                 tempboard[k.y + delta.y][k.x + delta.x] == oppo + 'q') {
 				return true;
-            } else if(tempboard[k.y + delta.y][k.x + delta.x] != '__'){
+            } 
+            
+            if(tempboard[k.y + delta.y][k.x + delta.x] != '__'){
 				break;
 			}
 		}
 		delta = {x: 0, y: 0};
     }
     
-	for (d = 0; d < 4; d++){
-		while (onBoard(k.x + delta.x + diag[d].x, k.y + delta.y + diag[d].y)) {
-			delta.x += diag[d].x;
-			delta.y += diag[d].y;
+	for (di = 0; di < 4; di++){
+		while (onBoard(k.x + delta.x + diag[di].x, k.y + delta.y + diag[di].y)) {
+			delta.x += diag[di].x;
+			delta.y += diag[di].y;
             if (tempboard[k.y + delta.y][k.x + delta.x] == oppo + 'b' ||
                 tempboard[k.y + delta.y][k.x + delta.x] == oppo + 'q') {
 				return true;
-            } else if (tempboard[k.y + delta.y][k.x + delta.x] != '__') {
+            }
+            
+            if (tempboard[k.y + delta.y][k.x + delta.x] != '__') {
 				break;
 			}
 		}

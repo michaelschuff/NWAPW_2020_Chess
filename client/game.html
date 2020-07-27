@@ -28,6 +28,7 @@
             var myMove = false;
             var leftCastle = true;
             var rightCastle = true;
+            var legalMoves = [];
             var board = [
                 ['wr','wn','wb','wq','wk','wb','wn','wr'],
                 ['wp','wp','wp','wp','wp','wp','wp','wp'],
@@ -64,8 +65,7 @@
             socket.on('make_a_move', function(data) {
                 updateboard(data.fro, data.to);
                 myMove = true;
-                console.log(getLegalMoves(board, 'b', {from: data.fro, to: data.to}, leftCastle, rightCastle));
-                // socket.emit('bigdata', legalmoves);
+                legalMoves = getLegalMoves(board, color[0], {from: data.fro, to: data.to}, leftCastle, rightCastle);
             });
             
             socket.on('play_game', function(data) {
@@ -95,6 +95,7 @@
                 }
                 if (color == 'white') {
                     myMove = true;
+                    legalMoves = getLegalMoves(board, 'w', {from: {x: 0, y: 0}, to: {x: 0, y: 0}}, leftCastle, rightCastle);
                 }
             });
 
@@ -104,33 +105,43 @@
                         fromSquare = this.id;
                     } else {
                         toSquare = this.id;
-                        updateboard(fromSquare, toSquare);
-                        myMove = false;
-                        socket.emit(color + '_moved', {to: toSquare, fro: fromSquare, sessionID: SSID});
-                        if (color == 'white'){
-                            if (fromSquare == 'e1'){
-                                leftCastle = false;
-                                rightCastle = false;
-                            }
-                            if (fromSquare == 'a1'){
-                                leftCastle = false;
-                            }
-                            if (fromSquare == 'h1'){
-                                rightCastle = false;
+                        var z = {
+                            from: {x: alphabet.indexOf(fromSquare[0]), y: parseInt(fromSquare[1]) - 1},
+                            to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1}
+                        }
+
+                        for (item of legalMoves) {
+                            if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
+                                updateboard(fromSquare, toSquare);
+                                myMove = false;
+                                socket.emit(color + '_moved', {to: toSquare, fro: fromSquare, sessionID: SSID});
+                                if (color == 'white'){
+                                    if (fromSquare == 'e1'){
+                                        leftCastle = false;
+                                        rightCastle = false;
+                                    }
+                                    if (fromSquare == 'a1'){
+                                        leftCastle = false;
+                                    }
+                                    if (fromSquare == 'h1'){
+                                        rightCastle = false;
+                                    }
+                                }
+                                else {
+                                    if (fromSquare = 'e8'){
+                                        leftCastle = false;
+                                        rightCastle = false;
+                                    }
+                                    if (fromSquare == 'a8'){
+                                        leftCastle = false;
+                                    }
+                                    if (fromSquare == 'h8'){
+                                        rightCastle = false;
+                                    }
+                                }
                             }
                         }
-                        else {
-                            if (fromSquare = 'e8'){
-                                leftCastle = false;
-                                rightCastle = false;
-                            }
-                            if (fromSquare == 'a8'){
-                                leftCastle = false;
-                            }
-                            if (fromSquare == 'h8'){
-                                rightCastle = false;
-                            }
-                        }
+                        
                         fromSquare = '';
                         toSquare = '';
                     
@@ -141,10 +152,34 @@
             function updateboard(from, to) {
                 from = {x: alphabet.indexOf(from[0]), y: parseInt(from[1]) - 1};
                 to = {x: alphabet.indexOf(to[0]), y: parseInt(to[1]) - 1};
+                if ((board[from.y][from.x] == 'wk' || board[from.y][from.x] == 'bk') &&
+                        (to.x == 6) && 
+                        (from.x == 4)) {
 
-                var temp = board[from.y][from.x];
-                board[from.y][from.x] = board[to.y][to.x];
-                board[to.y][to.x] = temp;
+                    board[from.y][5] = board[from.y][from.x][0] + 'r';
+                    board[from.y][7] = '__';
+                } else if ((board[from.x][from.y] == 'wk' ||
+                        board[from.x][from.y] == 'bk') &&
+                        (to.x == 2) &&
+                        (from.x == 4)) {
+
+                    board[from.y][3] = board[from.y][from.x][0]+'r';
+                    board[from.y][0] = '__';
+                } else if ((board[from.y][from.x] == 'wp') &&
+                        (board[to.y][to.x] == '__') &&
+                        (board[to.y + 1][to.x] == 'bp')) {
+
+                    board[to.y + 1][to.x]='__';
+                }
+                else if ((board[from.y][from.x] == 'bp') &&
+                        (board[to.y][to.x] == '__') &&
+                        (board[to.y - 1][to.x] == 'wp')) {
+
+                    board[to.y - 1][to.x]='__';
+                }
+
+                board[to.y][to.x] = board[from.y][from.x];
+                board[from.y][from.x] = '__';
                 redrawBoard();
             }
 
