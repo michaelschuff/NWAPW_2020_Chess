@@ -26,6 +26,8 @@
             var socket = io();
             var color;
             var myMove = false;
+            var leftCastle = true;
+            var rightCastle = true;
             var board = [
                 ['wr','wn','wb','wq','wk','wb','wn','wr'],
                 ['wp','wp','wp','wp','wp','wp','wp','wp'],
@@ -39,8 +41,7 @@
 
 
 
-            var leftCastle = true;
-            var rightCastle = true;
+            
             socket.on('connect', function() {connection_successful(socket);});
             socket.on('reconnect', function() {reconnection_successful(socket);});
             socket.on('connect_error', function() {connection_failed();});
@@ -63,12 +64,14 @@
             socket.on('make_a_move', function(data) {
                 updateboard(data.fro, data.to);
                 myMove = true;
-                console.log(getLegalMoves(board, 'b', {from: data.fro, to: data.to}, true, true));
+                console.log(getLegalMoves(board, 'b', {from: data.fro, to: data.to}, leftCastle, rightCastle));
                 // socket.emit('bigdata', legalmoves);
             });
             
             socket.on('play_game', function(data) {
                 color = data.color;
+                leftCastle = true;
+                rightCastle = true;
                 for (y = 0; y < 8; y++) {
                     var div = document.createElement('div');
                     div.id = 'row' + y;
@@ -95,7 +98,7 @@
                 }
             });
 
-            function squareClicked(leftCastle, rightCastle) {
+            function squareClicked() {
                 if (myMove) {
                     if (fromSquare == '') {
                         fromSquare = this.id;
