@@ -25,6 +25,8 @@
             var socket = io();
             var color;
             var myMove = false;
+            var leftCastle = true;
+            var rightCastle = true;
             socket.on('connect', function() {connection_successful(socket);});
             socket.on('reconnect', function() {reconnection_successful(socket);});
             socket.on('connect_error', function() {connection_failed();});
@@ -90,7 +92,7 @@
                 // redrawBoard();
             });
 
-            function squareClicked() {
+            function squareClicked(leftCastle, rightCastle) {
                 if (myMove) {
                     if (fromSquare == '') {
                         fromSquare = this.id;
@@ -99,8 +101,33 @@
                         updateboard(fromSquare, toSquare);
                         myMove = false;
                         socket.emit(color + '_moved', {to: toSquare, fro: fromSquare, sessionID: SSID});
+                        if (color == 'white'){
+                            if (fromSquare == 'e1'){
+                                leftCastle = false;
+                                rightCastle = false;
+                            }
+                            if (fromSquare == 'a1'){
+                                leftCastle = false;
+                            }
+                            if (fromSquare == 'h1'){
+                                rightCastle = false;
+                            }
+                        }
+                        else {
+                            if (fromSquare = 'e8'){
+                                leftCastle = false;
+                                rightCastle = false;
+                            }
+                            if (fromSquare == 'a8'){
+                                leftCastle = false;
+                            }
+                            if (fromSquare == 'h8'){
+                                rightCastle = false;
+                            }
+                        }
                         fromSquare = '';
                         toSquare = '';
+                    
                     }
                 }
             }
