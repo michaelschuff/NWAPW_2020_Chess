@@ -60,8 +60,8 @@
             socket.on('make_a_move', function(data) {
                 updateboard(data.fro, data.to);
                 myMove = true;
-                var legalmoves = getLegalMoves(board, 'b', {from: data.fro, to: data.to});
-                socket.emit('bigdata', legalmoves);
+                console.log(getLegalMoves(board, 'b', {from: data.fro, to: data.to}, true, true));
+                // socket.emit('bigdata', legalmoves);
             });
             
             socket.on('play_game', function(data) {
