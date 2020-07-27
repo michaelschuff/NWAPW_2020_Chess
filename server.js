@@ -4,6 +4,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var Datastore = require('nedb');
 
+
 var port = process.env.PORT || 8080;
 
 const accounts = new Datastore('accounts.db')
@@ -173,6 +174,10 @@ io.on('connection', function(socket) {
             }
         }
     });
+
+    socket.on('bigdata', function(data) {
+        console.log(data);
+    });
 });
 
 function queueFull() {
@@ -213,7 +218,7 @@ function generateUniqueSessionID() {
 function makeid() {
     var result = '';
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for ( var i = 0; i < 20; i++ ) {
+    for (var i = 0; i < 20; i++) {
         result += chars.charAt(Math.floor(Math.random() * 62));
     }
     return result;

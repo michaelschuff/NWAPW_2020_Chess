@@ -5,6 +5,7 @@
         <link rel='stylesheet' type='text/css' href='css/game.css' />
         <script src='/socket.io/socket.io.js'></script>
         <script src='/client/socketFunctions.js'></script>
+        <script src='/client/illegalMoveCheck.js'></script>
     </head>
     <body id=body></body>
         
@@ -21,10 +22,22 @@
             
             var fromSquare = '';
             var toSquare = '';
-            var opponentid;
+            const alphabet = 'abcdefgh';
             var socket = io();
             var color;
             var myMove = false;
+            var board = [
+                ['wr','wn','wb','wq','wk','wb','wn','wr'],
+                ['wp','wp','wp','wp','wp','wp','wp','wp'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['bp','bp','bp','bp','bp','bp','bp','bp'],
+                ['br','bn','bb','bq','bk','bb','bn','br']
+            ];
+
+
             socket.on('connect', function() {connection_successful(socket);});
             socket.on('reconnect', function() {reconnection_successful(socket);});
             socket.on('connect_error', function() {connection_failed();});
@@ -40,27 +53,17 @@
                 socket.emit('logout', {sessionID: SSID});
                 document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
             }
-            var board = [
-                ['wr','wn','wb','wq','wk','wb','wn','wr'],
-                ['wp','wp','wp','wp','wp','wp','wp','wp'],
-                ['__','__','__','__','__','__','__','__'],
-                ['__','__','__','__','__','__','__','__'],
-                ['__','__','__','__','__','__','__','__'],
-                ['__','__','__','__','__','__','__','__'],
-                ['bp','bp','bp','bp','bp','bp','bp','bp'],
-                ['br','bn','bb','bq','bk','bb','bn','br']
-            ];
-            alphabet = 'abcdefgh';
 
 
             
             
             socket.on('make_a_move', function(data) {
-                console.log('got move ', data.fro, data.to);
                 updateboard(data.fro, data.to);
                 myMove = true;
+                var legalmoves = getLegalMoves(board, 'b', {from: data.fro, to: data.to});
+                socket.emit('bigdata', legalmoves);
             });
-
+            
             socket.on('play_game', function(data) {
                 color = data.color;
                 for (y = 0; y < 8; y++) {
@@ -87,7 +90,6 @@
                 if (color == 'white') {
                     myMove = true;
                 }
-                // redrawBoard();
             });
 
             function squareClicked() {
@@ -105,14 +107,13 @@
                 }
             }
 
-            function updateboard(fro, to) {
-                console.log(fro, to);
-                fro = [alphabet.indexOf(fro[0]), parseInt(fro[1]) - 1];
-                to = [alphabet.indexOf(to[0]), parseInt(to[1]) - 1];
-                console.log(fro, to);
-                var temp = board[fro[1]][fro[0]];
-                board[fro[1]][fro[0]] = board[to[1]][to[0]];
-                board[to[1]][to[0]] = temp;
+            function updateboard(from, to) {
+                from = {x: alphabet.indexOf(from[0]), y: parseInt(from[1]) - 1};
+                to = {x: alphabet.indexOf(to[0]), y: parseInt(to[1]) - 1};
+
+                var temp = board[from.y][from.x];
+                board[from.y][from.x] = board[to.y][to.x];
+                board[to.y][to.x] = temp;
                 redrawBoard();
             }
 
