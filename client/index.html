@@ -10,30 +10,10 @@
             <input id="m" autocomplete="off" /><button>Move</button>
         </form>
         <script src="/socket.io/socket.io.js"></script>
-        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script>
-            $(function () {
-                var socket = io();
-                //send message back to server when submit button pressed
-                $('form').submit(function() {
-                    socket.emit('move', $('#m').val());
-                    $('#m').val('');
-                    return false;
-                });
+            var socket = io();
 
-                //enter when receive a new board from server
-                socket.on('board update', function(newboard) {
-                    //format board
-                    var str = "+--+--+--+--+--+--+--+--+\n";
-                    for (row of newboard) {
-                        for (column of row.reverse()) {
-                            str += '|' + column;
-                        }
-                        str += '|\n+--+--+--+--+--+--+--+--+\n'
-                    }
-                    document.getElementById('header 1').innerText = str;
-                });
-            });
+            
         </script>
     </body>
 </html>
