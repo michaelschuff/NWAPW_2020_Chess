@@ -5,10 +5,13 @@
     </head>
     <body>
         <script src="/socket.io/socket.io.js"></script>
+        <script src='/client/makeImages.js'></script>
         <script>
             var socket = io();
 
-            socket.on('connection')
+            socket.on('connect', function() {// when communication is established
+                createBoard();
+            });
         </script>
     </body>
 </html>
