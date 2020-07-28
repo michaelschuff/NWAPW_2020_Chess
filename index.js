@@ -27,7 +27,6 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + '/client/index.html');
 });
 
-let players = new Set(); //TODO: make this list all of the players currently playing, replacing both clients and playing.
 let waitingUser = false;
 let room;
 io.on('connection', function(socket){
@@ -35,12 +34,12 @@ io.on('connection', function(socket){
     socket.join(waitingUser);
     waitingUser = false;
   } else {
-    waitingUser = socket.request.user.id;
+    waitingUser = socket.id;
   }
-  if (!playing) {//create a room with two clients
+  /*if (!playing) {//create a room with two clients
     clients = Object.keys(socket.adapter.rooms[room].sockets);
     console.log("user ", clients.length, " has connected");
-  }
+  }*/
   number++;
   if (clients.length == 2) {
     playing = true;

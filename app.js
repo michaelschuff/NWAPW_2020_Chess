@@ -64,9 +64,9 @@ var users = {
 
 }
 
-io.on('connection', (socket) => {
+/* io.on('connection', (socket) => {
   socket.emit({startingx: 2, startingy: 2, endingx: 3, endingy: 3});
-});
+});*/
 
 
 
