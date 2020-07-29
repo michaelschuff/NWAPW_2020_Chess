@@ -17,3 +17,13 @@
     top: 0;
     left: 0;
 } */
+
+#accountoptions {
+    position: absolute;
+    text-align: center;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    width: auto;
+    margin: 10px;
+}

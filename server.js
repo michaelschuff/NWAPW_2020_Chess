@@ -3,9 +3,11 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const Datastore = require('nedb');
+const legalmoves = require('./client/illegalMoveCheck.js');
 
 
 var port = process.env.PORT || 8080;
+
 
 const accounts = new Datastore('accounts.db')
 accounts.loadDatabase();
@@ -206,6 +208,9 @@ function queueFull() {
             ['br','bn','bb','bq','bk','bb','bn','br']],
         whitesTurn: true
     };
+
+    // console.log(legalmoves.getLegalMoves(room.board, 'w', {from: {x: 0, y: 0}, to: {x: 0, y: 0}}, true, true));
+    console.log(legalmoves.a);
     gamerooms.push(room);
 
     io.to(room.p1socketID).emit('redirect', '/client/game.html');

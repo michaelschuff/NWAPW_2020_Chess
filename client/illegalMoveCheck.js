@@ -1,3 +1,4 @@
+exports.a = 5;
 function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) {
     var legalmoves = [];
     var temp;
