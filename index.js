@@ -30,7 +30,7 @@ io.on('connection', function(socket){
   }
   //create a room with two clients
   let clients = Object.keys(socket.adapter.rooms[room].sockets);
-  var board = [
+  var board = [ //keep as var, closures are tricky
     ['WR','WN','WB','WQ','WK','WB','WN','WR'],
     ['WP','WP','WP','WP','WP','WP','WP','WP'],
     ['__','__','__','__','__','__','__','__'],
@@ -42,7 +42,7 @@ io.on('connection', function(socket){
   ];
   let flippedBoard = [[]];
   if (clients.length == 2) {
-   playing = true; //TODO: delete
+   playing = true; 
     wTurn = !wTurn;
     flippedBoard = [];//create a board that is rotated 180 degrees, so black is on the bottom. will be sent to black player
     for (i = 7; i >= 0; i--) { 
