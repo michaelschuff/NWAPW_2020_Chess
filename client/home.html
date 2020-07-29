@@ -16,7 +16,7 @@
         
         
         <script>
-            const SSID = document.cookie.split('; ').find(row => row.startsWith('sessionID')).split('=')[1];
+            const SSID = document.cookie.split(';').find(row => row.startsWith('sessionID')).split('=')[1];
             var socket = io();
 
             socket.on('connect', function() {connection_successful(socket);});

@@ -256,7 +256,6 @@ function getLegalQueenMoves(tempboard, piece) {
 }
 
 function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
-    console.log('here');
     var lmoves = [];
     const dirs = [{x: 0, y: 1},
                   {x: 1, y: 0},
@@ -267,7 +266,6 @@ function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
                   {x: -1, y: -1},
                   {x: -1, y: 1}];
 	for (d = 0; d < 8; d++) {
-        console.log('before d: ', d);
 		if (onBoard(piece.x + dirs[d].x, piece.y + dirs[d].y)) {
 			if (tempboard[piece.y][piece.x][0] != tempboard[piece.y + dirs[d].y][piece.x + dirs[d].x][0]) {
                 var c = movepiece(tempboard, piece, {x: piece.x + dirs[d].x, y: piece.y + dirs[d].y});
@@ -276,7 +274,6 @@ function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
                 }
 			}
         }
-        console.log('after d: ', d);
     }
     var temp;
 	if (tempboard[piece.y][piece.x] == 'wk') {
