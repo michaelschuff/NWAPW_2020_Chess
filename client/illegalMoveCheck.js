@@ -366,13 +366,15 @@ function movepiece(tempboard, from, to) {
         b[from.y][0] = '__';
     } else if ((b[from.y][from.x] == 'wp') &&
             (b[to.y][to.x] == '__') &&
-            (b[to.y + 1][to.x] == 'bp')) {
+            (b[to.y - 1][to.x] == 'bp') &&
+            from.x != to.x) {
 
         b[to.y + 1][to.x]='__';
     }
     else if ((b[from.y][from.x] == 'bp') &&
             (b[to.y][to.x] == '__') &&
-            (b[to.y - 1][to.x] == 'wp')) {
+            (b[to.y + 1][to.x] == 'wp') &&
+            from.x != to.x) {
 
         b[to.y-1][to.x]='__';
     }

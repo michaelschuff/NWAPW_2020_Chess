@@ -207,7 +207,7 @@
                 if ((board[from.y][from.x] == 'wk' || board[from.y][from.x] == 'bk') &&
                         (to.x == 6) && 
                         (from.x == 4)) {
-
+                    
                     board[from.y][5] = board[from.y][from.x][0] + 'r';
                     board[from.y][7] = '__';
                 } else if ((board[from.x][from.y] == 'wk' ||
@@ -219,13 +219,14 @@
                     board[from.y][0] = '__';
                 } else if ((board[from.y][from.x] == 'wp') &&
                         (board[to.y][to.x] == '__') &&
-                        (board[to.y + 1][to.x] == 'bp')) {
+                        (board[to.y - 1][to.x] == 'bp') &&
+                        from.x != to.x) {
 
                     board[to.y + 1][to.x]='__';
-                }
-                else if ((board[from.y][from.x] == 'bp') &&
+                } else if ((board[from.y][from.x] == 'bp') &&
                         (board[to.y][to.x] == '__') &&
-                        (board[to.y - 1][to.x] == 'wp')) {
+                        (board[to.y + 1][to.x] == 'wp') && 
+                        from.x != to.x) {
 
                     board[to.y - 1][to.x]='__';
                 }
