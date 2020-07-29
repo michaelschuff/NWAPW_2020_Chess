@@ -56,7 +56,6 @@ io.on('connection', function(socket){
     io.to(clients[1]).emit('board update', flippedBoard);
   }
   socket.on('move', function(move) {
-    
     if (playing) {
       alphabet = ['a','b','c','d','e','f','g','h']//convert game move (e2e4) into two arrays, each with an x,y coord
       from = [alphabet.indexOf(move[0]), parseInt(move[1])-1]
