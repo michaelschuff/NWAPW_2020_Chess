@@ -173,6 +173,11 @@ io.on('connection', function(socket) {
             }
         }
     });
+
+    socket.on('bigdata', function(data) {
+        console.log('here');
+        console.log(data);
+    });
 });
 
 function queueFull() {
