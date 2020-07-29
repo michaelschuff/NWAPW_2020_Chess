@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Chess</title>
+        <link rel="stylesheet" type="text/css" href="css/loginRegister.css" />
+        <script src='/socket.io/socket.io.js'></script>
+        <script src='/client/socketFunctions.js'></script>
+    </head>
+    
+    <body>
+        <div id=loginBox>
+            <form id=loginForm>
+                <input id='username' autocomplete='on' placeholder='username'/></br>
+                <input id='password' autocomplete='on' placeholder='password'/>
+            </form>
+            <div id=loginregisterbuttons>
+                <button id='login' onclick=loginPressed()>Login</button><button id='register' onclick=registerPressed()>Register</button>
+            </div>
+            
+        </div>
+        
+        <script>
+            usernameInput = document.getElementById('username');
+            passwordInput = document.getElementById('password');
+            
+            var socket = io();
+
+
+            function loginPressed() {
+                console.log('login clicked');
+                socket.emit('new_login', {'username': usernameInput.value, 'password': passwordInput.value});
+            }
+
+            function registerPressed() {
+                console.log('register clicked');
+                socket.emit('new_register', {'username': usernameInput.value, 'password': passwordInput.value});
+            }
+
+
+            socket.on('connect', function() {connection_successful(socket);});
+            socket.on('reconnect', function() {reconnection_successful(socket);});
+            socket.on('connect_error', function() {connection_failed();});
+            socket.on('connect_timeout', function() {connection_timeout();});
+            socket.on('reconnect_attempt', function() {attempting_reconnection();});
+            socket.on('reconnect_error', function() {reconnection_failed();});
+
+            socket.on('login_success', function(data) {login_success(data);});
+            socket.on('login_failure', function(data) {login_failure(data);});
+            socket.on('register_success', function(data) {register_success(data);});
+            socket.on('register_failure', function(data) {register_failure(data);});
+            socket.on('validation_success', function(data) {redirect('/clients/home.html')})
+            socket.on('validation_failed', function() {});
+            socket.on('redirect', function(path) {redirect(path);});
+            
+        </script>
+    </body>
+</html>

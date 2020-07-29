@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Chess</title>
+        <link rel='stylesheet' type='text/css' href='css/game.css' />
+        <script src='/socket.io/socket.io.js'></script>
+        <script src='/client/socketFunctions.js'></script>
+        <script src='/client/illegalMoveCheck.js'></script>
+
+        <input type='text' id=input>
+        <input type='submit' value='Submit' onclick=moveMade()>
+        
+        
+    </head>
+    <body id=body></body>
+        <div id=accountoptions>
+            <p id=currentuser></p>
+            <button id=logout onclick=logoutPressed()>Logout</button>
+        </div>
+        <p id='boardid' style="font-family:'Lucida Console', monospace"></p>
+
+        <!-- <div id=chessboard>
+            <img src='/client/imgs/board.png' id=board>
+        </div> -->
+        <script>
+            const SSID = document.cookie.split(';').find(row => row.startsWith('sessionID')).split('=')[1];
+            
+            var fromSquare = '';
+            var toSquare = '';
+            const alphabet = 'abcdefgh';
+            var socket = io();
+            var color;
+            var myMove = false;
+            var leftCastle = true;
+            var rightCastle = true;
+            var legalMoves = [];
+            var board = [
+                ['wr','wn','wb','wq','wk','wb','wn','wr'],
+                ['wp','wp','wp','wp','wp','wp','wp','wp'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['bp','bp','bp','bp','bp','bp','bp','bp'],
+                ['br','bn','bb','bq','bk','bb','bn','br']
+            ];
+
+
+
+            
+            socket.on('connect', function() {connection_successful(socket);});
+            socket.on('reconnect', function() {reconnection_successful(socket);});
+            socket.on('connect_error', function() {connection_failed();});
+            socket.on('connect_timeout', function() {connection_timeout();});
+            socket.on('reconnect_attempt', function() {attempting_reconnection();});
+            socket.on('reconnect_error', function() {reconnection_failed();});
+            socket.on('validation_success', function(data) {validation_success(data);});
+            socket.on('validation_failed', function() {validation_failed()});
+
+            socket.on('redirect', function(path) {redirect(path);});
+
+            function logoutPressed() {
+                socket.emit('logout', {sessionID: SSID});
+                document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            }
+
+
+            
+            
+            socket.on('make_a_move', function(data) {
+                updateboard(data.fro, data.to);
+                myMove = true;
+                legalMoves = getLegalMoves(board, color[0], {from: data.fro, to: data.to}, leftCastle, rightCastle);
+            });
+            
+            socket.on('play_game', function(data) {
+                color = data.color;
+                leftCastle = true;
+                rightCastle = true;
+                // for (y = 0; y < 8; y++) {
+                //     var div = document.createElement('div');
+                //     div.id = 'row' + y;
+                //     document.getElementById('chessboard').appendChild(div);
+                //     for (x = 0; x < 8; x++) {
+                //         var img = document.createElement('img');
+                //         img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
+                //         img.className = 'piece';
+                //         img.id = alphabet[x] + (y + 1).toString();
+                //         if (color == 'white') {
+                //             img.style.top = (7-y).toString() + '00px';
+                //             img.style.left = x.toString() + '00px';
+                //         } else {
+                //             img.style.top = y.toString() + '00px';
+                //             img.style.left = (7-x).toString() + '00px';
+                //         }
+                        
+                //         img.addEventListener('click', squareClicked, false);
+                //         document.getElementById('row' + y.toString()).appendChild(img);
+                //     }
+                // }
+                redrawBoard();
+                if (color == 'white') {
+                    myMove = true;
+                    legalMoves = getLegalMoves(board, 'w', {from: {x: 0, y: 0}, to: {x: 0, y: 0}}, leftCastle, rightCastle);
+                }
+            });
+
+            function moveMade() {
+                var move = document.getElementById('input').value;
+                document.getElementById('input').value = '';
+                if (myMove) {
+                    var z = {
+                        from: {x: alphabet.indexOf(move[0]), y: parseInt(move[1]) - 1},
+                        to: {x: alphabet.indexOf(move[2]), y: parseInt(move[3]) - 1}
+                    }
+
+                    var fromSquare = move[0] + move[1];
+                    var toSquare = move[2] + move[3];
+
+                    for (item of legalMoves) {
+                        if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
+                            updateboard(fromSquare, toSquare);
+                            myMove = false;
+                            socket.emit(color + '_moved', {to: toSquare, fro: fromSquare, sessionID: SSID});
+                            if (color == 'white'){
+                                if (fromSquare == 'e1'){
+                                    leftCastle = false;
+                                    rightCastle = false;
+                                }
+                                if (fromSquare == 'a1'){
+                                    leftCastle = false;
+                                }
+                                if (fromSquare == 'h1'){
+                                    rightCastle = false;
+                                }
+                            }
+                            else {
+                                if (fromSquare = 'e8'){
+                                    leftCastle = false;
+                                    rightCastle = false;
+                                }
+                                if (fromSquare == 'a8'){
+                                    leftCastle = false;
+                                }
+                                if (fromSquare == 'h8'){
+                                    rightCastle = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // function squareClicked() {
+            //     if (myMove) {
+            //         if (fromSquare == '') {
+            //             fromSquare = this.id;
+            //         } else {
+            //             toSquare = this.id;
+            //             var z = {
+            //                 from: {x: alphabet.indexOf(fromSquare[0]), y: parseInt(fromSquare[1]) - 1},
+            //                 to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1}
+            //             }
+
+            //             for (item of legalMoves) {
+            //                 if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
+            //                     updateboard(fromSquare, toSquare);
+            //                     myMove = false;
+            //                     socket.emit(color + '_moved', {to: toSquare, fro: fromSquare, sessionID: SSID});
+            //                     if (color == 'white'){
+            //                         if (fromSquare == 'e1'){
+            //                             leftCastle = false;
+            //                             rightCastle = false;
+            //                         }
+            //                         if (fromSquare == 'a1'){
+            //                             leftCastle = false;
+            //                         }
+            //                         if (fromSquare == 'h1'){
+            //                             rightCastle = false;
+            //                         }
+            //                     }
+            //                     else {
+            //                         if (fromSquare = 'e8'){
+            //                             leftCastle = false;
+            //                             rightCastle = false;
+            //                         }
+            //                         if (fromSquare == 'a8'){
+            //                             leftCastle = false;
+            //                         }
+            //                         if (fromSquare == 'h8'){
+            //                             rightCastle = false;
+            //                         }
+            //                     }
+            //                 }
+            //             }
+                        
+            //             fromSquare = '';
+            //             toSquare = '';
+                    
+            //         }
+            //     }
+            // }
+
+            function updateboard(from, to) {
+                from = {x: alphabet.indexOf(from[0]), y: parseInt(from[1]) - 1};
+                to = {x: alphabet.indexOf(to[0]), y: parseInt(to[1]) - 1};
+                if ((board[from.y][from.x] == 'wk' || board[from.y][from.x] == 'bk') &&
+                        (to.x == 6) && 
+                        (from.x == 4)) {
+
+                    board[from.y][5] = board[from.y][from.x][0] + 'r';
+                    board[from.y][7] = '__';
+                } else if ((board[from.x][from.y] == 'wk' ||
+                        board[from.x][from.y] == 'bk') &&
+                        (to.x == 2) &&
+                        (from.x == 4)) {
+
+                    board[from.y][3] = board[from.y][from.x][0]+'r';
+                    board[from.y][0] = '__';
+                } else if ((board[from.y][from.x] == 'wp') &&
+                        (board[to.y][to.x] == '__') &&
+                        (board[to.y + 1][to.x] == 'bp')) {
+
+                    board[to.y + 1][to.x]='__';
+                }
+                else if ((board[from.y][from.x] == 'bp') &&
+                        (board[to.y][to.x] == '__') &&
+                        (board[to.y - 1][to.x] == 'wp')) {
+
+                    board[to.y - 1][to.x]='__';
+                }
+
+                board[to.y][to.x] = board[from.y][from.x];
+                board[from.y][from.x] = '__';
+                redrawBoard();
+            }
+
+            function redrawBoard() {
+                if (color == 'white') {
+                    var str = "+--+--+--+--+--+--+--+--+\n";
+                    for (y = 0; y < 8; y++) {
+                        for (x = 0; x < 8; x++) {
+                            str += '|' + board[7-y][x];
+                        }
+                        str += '|\n+--+--+--+--+--+--+--+--+\n'
+                    }
+                    document.getElementById('boardid').innerText = str;
+                    // for (y = 0; y < 8; y++) {
+                    //     for (x = 0; x < 8; x++) {
+                    //         document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
+                    //     }
+                    // }
+                } else {
+                    var str = "+--+--+--+--+--+--+--+--+\n";
+                    for (y = 0; y < 8; y++) {
+                        for (x = 0; x < 8; x++) {
+                            str += '|' + board[y][7-x];
+                        }
+                        str += '|\n+--+--+--+--+--+--+--+--+\n'
+                    }
+                    document.getElementById('boardid').innerText = str;
+                    // for (y = 0; y < 8; y++) {
+                    //     for (x = 0; x < 8; x++) {
+                    //         document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
+                    //     }
+                    // }
+                }
+            }
+        </script>
+    </body>
+</html>
