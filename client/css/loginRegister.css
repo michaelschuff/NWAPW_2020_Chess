@@ -7,6 +7,7 @@ body {
     margin: 0;
     height: 100%;
     width: 100%;
+    background-color:#f6f6f2;
 }
 
 #loginBox {
@@ -16,6 +17,8 @@ body {
     position: absolute;
     top: 37.5%;
     left: 37.5%;
+    background-color:#BADFE7;
+    border-radius:25px;
 }
 
 #loginForm {
@@ -42,16 +45,51 @@ body {
 #loginregisterbuttons {
     position: relative;
     padding: 5px;
+    background-color:#BADFE7;
 }
 
 #login {
     position: relative;
     box-sizing: border-box;
     display:inline-block;
+    background-color:#388087;
+    color:#f8f8ff;
 }
 
 #register {
     position: relative;
     float: right;
     box-sizing: border-box;
+    background-color:#388087;
+    color:#f8f8ff;
 }
+
+.dot {
+    height: 25px;
+    width: 25px;
+    background-color: #388087;
+    border-radius: 50%;
+    display: inline-block;
+  }
+  #button1{
+    position:absolute;
+    top: 20px;
+  }
+
+  #button2{
+      height:50px;
+      width: 50px;
+      position:absolute;
+      top: 30px;
+      left: 40px;
+  }
+  #button3{
+    position:absolute;
+    left: 20px;
+    top: 10px;
+  }
+  #button4{
+    position:absolute;
+    top: 40px;
+  }
+  
