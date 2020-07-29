@@ -7,10 +7,8 @@
         <script src='/client/socketFunctions.js'></script>
         <script src='/client/illegalMoveCheck.js'></script>
 
-        <form>
-            <input type='text' id=input>
-            <input type='submit' value='Submit' onclick=moveMade()>
-        </form>
+        <input type='text' id=input>
+        <input type='submit' value='Submit' onclick=moveMade()>
         
         
     </head>
@@ -19,7 +17,7 @@
             <p id=currentuser></p>
             <button id=logout onclick=logoutPressed()>Logout</button>
         </div>
-        <p id='boardid'></p>
+        <p id='boardid' style="font-family:'Lucida Console', monospace"></p>
 
         <!-- <div id=chessboard>
             <img src='/client/imgs/board.png' id=board>
@@ -108,19 +106,16 @@
             });
 
             function moveMade() {
+                var move = document.getElementById('input').value;
+                document.getElementById('input').value = '';
                 if (myMove) {
-                    console.log('here');
-                    var move = document.getElementById('input').innerText;
-                    document.getElementById('input').innerText = '';
                     var z = {
                         from: {x: alphabet.indexOf(move[0]), y: parseInt(move[1]) - 1},
-                        to: {x: alphabet.indexOf(move[0]), y: parseInt(move[1]) - 1}
+                        to: {x: alphabet.indexOf(move[2]), y: parseInt(move[3]) - 1}
                     }
 
                     var fromSquare = move[0] + move[1];
                     var toSquare = move[2] + move[3];
-                    console.log('from: ', fromSquare);
-                    console.log('to: ', toSquare);
 
                     for (item of legalMoves) {
                         if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
@@ -243,13 +238,12 @@
             function redrawBoard() {
                 if (color == 'white') {
                     var str = "+--+--+--+--+--+--+--+--+\n";
-                    for (row of board) {
-                        for (column of row.reverse()) {
-                            str += '|' + column;
+                    for (y = 0; y < 8; y++) {
+                        for (x = 0; x < 8; x++) {
+                            str += '|' + board[7-y][x];
                         }
                         str += '|\n+--+--+--+--+--+--+--+--+\n'
                     }
-                    console.log(str);
                     document.getElementById('boardid').innerText = str;
                     // for (y = 0; y < 8; y++) {
                     //     for (x = 0; x < 8; x++) {
@@ -258,13 +252,12 @@
                     // }
                 } else {
                     var str = "+--+--+--+--+--+--+--+--+\n";
-                    for (row of board.reverse()) {
-                        for (column of row.reverse()) {
-                            str += '|' + column;
+                    for (y = 0; y < 8; y++) {
+                        for (x = 0; x < 8; x++) {
+                            str += '|' + board[y][7-x];
                         }
                         str += '|\n+--+--+--+--+--+--+--+--+\n'
                     }
-                    console.log(str);
                     document.getElementById('boardid').innerText = str;
                     // for (y = 0; y < 8; y++) {
                     //     for (x = 0; x < 8; x++) {
