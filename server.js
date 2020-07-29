@@ -52,29 +52,23 @@ io.on('connection', function(socket) {
         a = true;
         for (item of gamerooms) {
             if (item.p1sessionID == data.sessionID) {
-                if (!item.p1ready) {
-                    item.p1socketID = socket.id;
-                    item.p1ready = true;
-                    if (item.p1ready && item.p2ready) {
-                        io.to(item.p1socketID).emit('play_game', {color: 'white'});
-                        io.to(item.p2socketID).emit('play_game', {color: 'black'});
-                    }
-                    break;
-                } else {
-
+                item.p1socketID = socket.id;
+                item.p1ready = true;
+                if (item.p1ready && item.p2ready) {
+                    io.to(item.p1socketID).emit('play_game', {color: 'white'});
+                    io.to(item.p2socketID).emit('play_game', {color: 'black'});
                 }
+                break;
             }
             
             if (item.p2sessionID == data.sessionID) {
-                if (!item.p2ready) {
-                    item.p2socketID = socket.id;
-                    item.p2ready = true;
-                    if (item.p1ready && item.p2ready) {
-                        io.to(item.p1socketID).emit('play_game', {color: 'white'});
-                        io.to(item.p2socketID).emit('play_game', {color: 'black'});
-                    }
-                    break;
+                item.p2socketID = socket.id;
+                item.p2ready = true;
+                if (item.p1ready && item.p2ready) {
+                    io.to(item.p1socketID).emit('play_game', {color: 'white'});
+                    io.to(item.p2socketID).emit('play_game', {color: 'black'});
                 }
+                break;
             }
         }
 
@@ -209,8 +203,7 @@ function queueFull() {
         whitesTurn: true
     };
 
-    // console.log(legalmoves.getLegalMoves(room.board, 'w', {from: {x: 0, y: 0}, to: {x: 0, y: 0}}, true, true));
-    console.log(legalmoves.a);
+    console.log(legalmoves.getLegalMoves(room.board, 'w', {from: {x: 0, y: 0}, to: {x: 0, y: 0}}, true, true));
     gamerooms.push(room);
 
     io.to(room.p1socketID).emit('redirect', '/client/game.html');
