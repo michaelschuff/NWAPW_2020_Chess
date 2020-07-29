@@ -12,7 +12,7 @@
         
     </head>
     <body id=body></body>
-        
+        <p id=game></p>
         <div id=accountoptions>
             <p id=currentuser></p>
             <button id=logout onclick=logoutPressed()>Logout</button>
@@ -230,22 +230,38 @@
 
                 board[to.y][to.x] = board[from.y][from.x];
                 board[from.y][from.x] = '__';
-                // redrawBoard();
+                redrawBoard();
             }
 
             function redrawBoard() {
                 if (color == 'white') {
-                    for (y = 0; y < 8; y++) {
-                        for (x = 0; x < 8; x++) {
-                            document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
+                    var str = "+--+--+--+--+--+--+--+--+\n";
+                    for (row of newboard) {
+                        for (column of row.reverse()) {
+                            str += '|' + column;
                         }
+                        str += '|\n+--+--+--+--+--+--+--+--+\n'
                     }
+                    document.getElementById('game').innerText = str;
+                    // for (y = 0; y < 8; y++) {
+                    //     for (x = 0; x < 8; x++) {
+                    //         document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
+                    //     }
+                    // }
                 } else {
-                    for (y = 0; y < 8; y++) {
-                        for (x = 0; x < 8; x++) {
-                            document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
+                    var str = "+--+--+--+--+--+--+--+--+\n";
+                    for (row of newboard.reverse()) {
+                        for (column of row.reverse()) {
+                            str += '|' + column;
                         }
+                        str += '|\n+--+--+--+--+--+--+--+--+\n'
                     }
+                    document.getElementById('game').innerText = str;
+                    // for (y = 0; y < 8; y++) {
+                    //     for (x = 0; x < 8; x++) {
+                    //         document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
+                    //     }
+                    // }
                 }
             }
         </script>
