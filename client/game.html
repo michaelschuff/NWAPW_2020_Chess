@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Chess</title>
+        <link rel='stylesheet' type='text/css' href='css/game.css' />
+        <script src='/socket.io/socket.io.js'></script>
+        <script src='/client/socketFunctions.js'></script>
+    </head>
+    <body id=body></body>
+        
+        <div id=accountoptions>
+            <p id=currentuser></p>
+            <button id=logout onclick=logoutPressed()>Logout</button>
+        </div>
+
+        <div id=chessboard>
+            <img src='/client/imgs/board.png' id=board>
+        </div>
+        <script>
+            const SSID = document.cookie.split(';').find(row => row.startsWith('sessionID')).split('=')[1];
+            
+            var fromSquare = '';
+            var toSquare = '';
+            var opponentid;
+            var socket = io();
+            var color;
+            var myMove = false;
+            var leftCastle = true;
+            var rightCastle = true;
+            socket.on('connect', function() {connection_successful(socket);});
+            socket.on('reconnect', function() {reconnection_successful(socket);});
+            socket.on('connect_error', function() {connection_failed();});
+            socket.on('connect_timeout', function() {connection_timeout();});
+            socket.on('reconnect_attempt', function() {attempting_reconnection();});
+            socket.on('reconnect_error', function() {reconnection_failed();});
+            socket.on('validation_success', function(data) {validation_success(data);});
+            socket.on('validation_failed', function() {validation_failed()});
+
+            socket.on('redirect', function(path) {redirect(path);});
+
+            function logoutPressed() {
+                socket.emit('logout', {sessionID: SSID});
+                document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+            }
+            var board = [
+                ['wr','wn','wb','wq','wk','wb','wn','wr'],
+                ['wp','wp','wp','wp','wp','wp','wp','wp'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['bp','bp','bp','bp','bp','bp','bp','bp'],
+                ['br','bn','bb','bq','bk','bb','bn','br']
+            ];
+            alphabet = 'abcdefgh';
+
+
+            
+            
+            socket.on('make_a_move', function(data) {
+                console.log('got move ', data.fro, data.to);
+                updateboard(data.fro, data.to);
+                myMove = true;
+            });
+
+            socket.on('play_game', function(data) {
+                color = data.color;
+                for (y = 0; y < 8; y++) {
+                    var div = document.createElement('div');
+                    div.id = 'row' + y;
+                    document.getElementById('chessboard').appendChild(div);
+                    for (x = 0; x < 8; x++) {
+                        var img = document.createElement('img');
+                        img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
+                        img.className = 'piece';
+                        img.id = alphabet[x] + (y + 1).toString();
+                        if (color == 'white') {
+                            img.style.top = (7-y).toString() + '00px';
+                            img.style.left = x.toString() + '00px';
+                        } else {
+                            img.style.top = y.toString() + '00px';
+                            img.style.left = (7-x).toString() + '00px';
+                        }
+                        
+                        img.addEventListener('click', squareClicked, false);
+                        document.getElementById('row' + y.toString()).appendChild(img);
+                    }
+                }
+                if (color == 'white') {
+                    myMove = true;
+                }
+                // redrawBoard();
+            });
+
+            function squareClicked(leftCastle, rightCastle) {
+                if (myMove) {
+                    if (fromSquare == '') {
+                        fromSquare = this.id;
+                    } else {
+                        toSquare = this.id;
+                        updateboard(fromSquare, toSquare);
+                        myMove = false;
+                        socket.emit(color + '_moved', {to: toSquare, fro: fromSquare, sessionID: SSID});
+                        if (color == 'white'){
+                            if (fromSquare == 'e1'){
+                                leftCastle = false;
+                                rightCastle = false;
+                            }
+                            if (fromSquare == 'a1'){
+                                leftCastle = false;
+                            }
+                            if (fromSquare == 'h1'){
+                                rightCastle = false;
+                            }
+                        }
+                        else {
+                            if (fromSquare = 'e8'){
+                                leftCastle = false;
+                                rightCastle = false;
+                            }
+                            if (fromSquare == 'a8'){
+                                leftCastle = false;
+                            }
+                            if (fromSquare == 'h8'){
+                                rightCastle = false;
+                            }
+                        }
+                        fromSquare = '';
+                        toSquare = '';
+                    
+                    }
+                }
+            }
+
+            function updateboard(fro, to) {
+                console.log(fro, to);
+                fro = [alphabet.indexOf(fro[0]), parseInt(fro[1]) - 1];
+                to = [alphabet.indexOf(to[0]), parseInt(to[1]) - 1];
+                console.log(fro, to);
+                var temp = board[fro[1]][fro[0]];
+                board[fro[1]][fro[0]] = board[to[1]][to[0]];
+                board[to[1]][to[0]] = temp;
+                redrawBoard();
+            }
+
+            function redrawBoard() {
+                if (color == 'white') {
+                    for (y = 0; y < 8; y++) {
+                        for (x = 0; x < 8; x++) {
+                            document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
+                        }
+                    }
+                } else {
+                    for (y = 0; y < 8; y++) {
+                        for (x = 0; x < 8; x++) {
+                            document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
+                        }
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>
