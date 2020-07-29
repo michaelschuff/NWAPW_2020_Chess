@@ -8,12 +8,13 @@
     </head>
     
     <body>
+        <div id="shape">
         <p> waiting in queue... </p>
         <div id=accountoptions>
             <p id=currentuser></p>
             <button id=logout onclick=logoutPressed()>Logout</button>
         </div>
-        
+        </div>
         
         <script>
             const SSID = document.cookie.split('; ').find(row => row.startsWith('sessionID')).split('=')[1];

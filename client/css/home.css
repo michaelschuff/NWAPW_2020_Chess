@@ -7,6 +7,7 @@ body {
     margin: 0;
     height: 100%;
     width: 100%;
+    background-color:#badfe7;
 }
 
 #accountoptions {
@@ -33,8 +34,11 @@ body {
     align-self: center;
     font-size: 10px;
     margin: 0;
+    background-color:#f6f6f2;
+    color:black;
 }
 
 #playbutton {
-    
+    background-color:#f6f6f2;
+    color:black;
 }
