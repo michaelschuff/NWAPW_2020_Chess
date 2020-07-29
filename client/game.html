@@ -7,16 +7,19 @@
         <script src='/client/socketFunctions.js'></script>
         <script src='/client/illegalMoveCheck.js'></script>
 
-        <input type='text' id=input> </input>
-        <input type='submit' value='Submit' onclick=moveMade()>
+        <form>
+            <input type='text' id=input>
+            <input type='submit' value='Submit' onclick=moveMade()>
+        </form>
+        
         
     </head>
     <body id=body></body>
-        <p id=game>hello</p>
         <div id=accountoptions>
             <p id=currentuser></p>
             <button id=logout onclick=logoutPressed()>Logout</button>
         </div>
+        <p id='boardid'></p>
 
         <!-- <div id=chessboard>
             <img src='/client/imgs/board.png' id=board>
@@ -97,6 +100,7 @@
                 //         document.getElementById('row' + y.toString()).appendChild(img);
                 //     }
                 // }
+                redrawBoard();
                 if (color == 'white') {
                     myMove = true;
                     legalMoves = getLegalMoves(board, 'w', {from: {x: 0, y: 0}, to: {x: 0, y: 0}}, leftCastle, rightCastle);
@@ -105,6 +109,7 @@
 
             function moveMade() {
                 if (myMove) {
+                    console.log('here');
                     var move = document.getElementById('input').innerText;
                     document.getElementById('input').innerText = '';
                     var z = {
@@ -114,6 +119,8 @@
 
                     var fromSquare = move[0] + move[1];
                     var toSquare = move[2] + move[3];
+                    console.log('from: ', fromSquare);
+                    console.log('to: ', toSquare);
 
                     for (item of legalMoves) {
                         if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
@@ -236,13 +243,14 @@
             function redrawBoard() {
                 if (color == 'white') {
                     var str = "+--+--+--+--+--+--+--+--+\n";
-                    for (row of newboard) {
+                    for (row of board) {
                         for (column of row.reverse()) {
                             str += '|' + column;
                         }
                         str += '|\n+--+--+--+--+--+--+--+--+\n'
                     }
-                    document.getElementById('game').innerText = str;
+                    console.log(str);
+                    document.getElementById('boardid').innerText = str;
                     // for (y = 0; y < 8; y++) {
                     //     for (x = 0; x < 8; x++) {
                     //         document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
@@ -250,13 +258,14 @@
                     // }
                 } else {
                     var str = "+--+--+--+--+--+--+--+--+\n";
-                    for (row of newboard.reverse()) {
+                    for (row of board.reverse()) {
                         for (column of row.reverse()) {
                             str += '|' + column;
                         }
                         str += '|\n+--+--+--+--+--+--+--+--+\n'
                     }
-                    document.getElementById('game').innerText = str;
+                    console.log(str);
+                    document.getElementById('boardid').innerText = str;
                     // for (y = 0; y < 8; y++) {
                     //     for (x = 0; x < 8; x++) {
                     //         document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
