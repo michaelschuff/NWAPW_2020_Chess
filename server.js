@@ -1,8 +1,8 @@
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var Datastore = require('nedb');
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const Datastore = require('nedb');
 
 
 var port = process.env.PORT || 8080;
@@ -50,23 +50,29 @@ io.on('connection', function(socket) {
         a = true;
         for (item of gamerooms) {
             if (item.p1sessionID == data.sessionID) {
-                item.p1socketID = socket.id;
-                item.p1ready = true;
-                if (item.p1ready && item.p2ready) {
-                    io.to(item.p1socketID).emit('play_game', {color: 'white'});
-                    io.to(item.p2socketID).emit('play_game', {color: 'black'});
+                if (!item.p1ready) {
+                    item.p1socketID = socket.id;
+                    item.p1ready = true;
+                    if (item.p1ready && item.p2ready) {
+                        io.to(item.p1socketID).emit('play_game', {color: 'white'});
+                        io.to(item.p2socketID).emit('play_game', {color: 'black'});
+                    }
+                    break;
+                } else {
+
                 }
-                break;
             }
             
             if (item.p2sessionID == data.sessionID) {
-                item.p2socketID = socket.id;
-                item.p2ready = true;
-                if (item.p1ready && item.p2ready) {
-                    io.to(item.p1socketID).emit('play_game', {color: 'white'});
-                    io.to(item.p2socketID).emit('play_game', {color: 'black'});
+                if (!item.p2ready) {
+                    item.p2socketID = socket.id;
+                    item.p2ready = true;
+                    if (item.p1ready && item.p2ready) {
+                        io.to(item.p1socketID).emit('play_game', {color: 'white'});
+                        io.to(item.p2socketID).emit('play_game', {color: 'black'});
+                    }
+                    break;
                 }
-                break;
             }
         }
 
@@ -187,7 +193,18 @@ function queueFull() {
         p2sessionID: queue[1].sessionID,
         p2socketID: queue[1].socketID,
         p2ready: false,
-        roomID: queue[0].sessionID + '-' + queue[1].sessionID
+        roomID: queue[0].sessionID + '-' + queue[1].sessionID,
+
+        board: [
+            ['wr','wn','wb','wq','wk','wb','wn','wr'],
+            ['wp','wp','wp','wp','wp','wp','wp','wp'],
+            ['__','__','__','__','__','__','__','__'],
+            ['__','__','__','__','__','__','__','__'],
+            ['__','__','__','__','__','__','__','__'],
+            ['__','__','__','__','__','__','__','__'],
+            ['bp','bp','bp','bp','bp','bp','bp','bp'],
+            ['br','bn','bb','bq','bk','bb','bn','br']],
+        whitesTurn: true
     };
     gamerooms.push(room);
 

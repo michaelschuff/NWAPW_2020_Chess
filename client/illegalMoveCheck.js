@@ -1,43 +1,43 @@
 function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) {
     var legalmoves = [];
     var temp;
-    for (row = 0; row < 8; row++) {
-        for (col = 0; col < 8; col++) {
+    for (var row = 0; row < 8; row++) {
+        for (var col = 0; col < 8; col++) {
             if (tempboard[row][col][0] == color) {
                 switch (tempboard[row][col][1]) {
                     case 'p':
                         temp = getLegalPawnMoves(tempboard, {x: col, y: row}, lastmove);
-                        for (i = 0; i < temp.length; i++) {
+                        for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'n':
                         temp = getLegalKnightMoves(tempboard, {x: col, y: row});
-                        for (i = 0; i < temp.length; i++) {
+                        for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'b':
                         temp = getLegalBishopMoves(tempboard, {x: col, y: row});
-                        for (i = 0; i < temp.length; i++) {
+                        for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'r':
                         temp = getLegalRookMoves(tempboard, {x: col, y: row});
-                        for (i = 0; i < temp.length; i++) {
+                        for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'q':
                         temp = getLegalQueenMoves(tempboard, {x: col, y: row});
-                        for (i = 0; i < temp.length; i++) {
+                        for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'k':
                         temp = getLegalKingMoves(tempboard, {x: col, y: row}, castleleft, castleright);
-                        for (i = 0; i < temp.length; i++) {
+                        for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
@@ -168,7 +168,7 @@ function getLegalKnightMoves(tempboard, piece) {
         {x: -2, y: -1},
         {x: -2, y: 1},
         {x: -1, y: 2}];
-	for (n = 0; n < 8; n++) {
+	for (var n = 0; n < 8; n++) {
 		if(onBoard(piece.x + knight[n].x, piece.y + knight[n].y)) {
 			if(tempboard[piece.y][piece.x][0] != tempboard[piece.y + knight[n].y][piece.x + knight[n].x][0]) {
                 if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x + knight[n].x, y: piece.y + knight[n].y}), tempboard[piece.y][piece.x][0])) {
@@ -187,7 +187,7 @@ function getLegalBishopMoves(tempboard, piece) {
                     {x: -1, y: -1},
                     {x: -1, y: 1}];
 	var delta = {x: 0, y: 0};
-	for (b = 0; b < 4; b++) {
+	for (var b = 0; b < 4; b++) {
 		while(onBoard(piece.x + delta.x + bishop[b].x, piece.y + delta.y + bishop[b].y)) {
 			delta.x += bishop[b].x;
 			delta.y += bishop[b].y;
@@ -215,7 +215,7 @@ function getLegalRookMoves(tempboard, piece) {
             {x: 0, y: -1},
             {x: -1,y: 0}];
     var delta = {x: 0, y: 0};
-    for (r = 0; r < 4; r++) {
+    for (var r = 0; r < 4; r++) {
         while(onBoard(piece.x + delta.x + rook[r].x, piece.y + delta.y + rook[r].y)) {
             delta.x += rook[r].x;
             delta.y += rook[r].y;
@@ -241,13 +241,13 @@ function getLegalQueenMoves(tempboard, piece) {
     var lmoves = [];
 
     var temp = getLegalRookMoves(tempboard, piece);
-    for (i = 0; i < temp.length; i++) {
+    for (var i = 0; i < temp.length; i++) {
         
         lmoves.push(temp[i]);
     }
 
     temp = getLegalBishopMoves(tempboard, piece);
-    for (i = 0; i < temp.length; i++) {
+    for (var i = 0; i < temp.length; i++) {
         
         lmoves.push(temp[i]);
     }
@@ -265,7 +265,7 @@ function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
                   {x: 1, y: -1},
                   {x: -1, y: -1},
                   {x: -1, y: 1}];
-	for (d = 0; d < 8; d++) {
+	for (var d = 0; d < 8; d++) {
 		if (onBoard(piece.x + dirs[d].x, piece.y + dirs[d].y)) {
 			if (tempboard[piece.y][piece.x][0] != tempboard[piece.y + dirs[d].y][piece.x + dirs[d].x][0]) {
                 var c = movepiece(tempboard, piece, {x: piece.x + dirs[d].x, y: piece.y + dirs[d].y});
@@ -279,26 +279,26 @@ function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
 	if (tempboard[piece.y][piece.x] == 'wk') {
 		if (leftcastle && tempboard[0][3] == '__' && tempboard[0][2] == '__' && tempboard[0][1] == '__') {
             temp = castling(tempboard, 'l', 'w');
-			for (i = 0; i < temp.length; i++) {
+			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
 		}
 		if(rightcastle && tempboard[0][5] == '__' && tempboard[0][6] == '__') {
 			temp = castling(tempboard, 'r', 'w');
-			for (i = 0; i < temp.length; i++) {
+			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
 		}
 	} else {
 		if(leftcastle && tempboard[7][3] == '__' && tempboard[7][2] == '__' && tempboard[7][1] == '__'){
 			temp = castling(tempboard, 'r', 'w');
-			for (i = 0; i < temp.length; i++) {
+			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
 		}
 		if(rightcastle && tempboard[7][5] == '__' && tempboard[7][6] == '__'){
             temp = castling(tempboard, 'r', 'b');
-			for (i = 0; i < temp.length; i++) {
+			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
 		}
@@ -308,9 +308,9 @@ function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
 
 function castling(tempboard, dir, color) {
     var b = [];
-    for (y = 0; y < 8; y++) {
+    for (var y = 0; y < 8; y++) {
         b.push([])
-        for (x = 0; x < 8; x++) {
+        for (var x = 0; x < 8; x++) {
             b[y].push(tempboard[y][x])
         }
     }
@@ -345,9 +345,9 @@ function castling(tempboard, dir, color) {
 
 function movepiece(tempboard, from, to) {
     var b = [];
-    for (y = 0; y < 8; y++) {
+    for (var y = 0; y < 8; y++) {
         b.push([])
-        for (x = 0; x < 8; x++) {
+        for (var x = 0; x < 8; x++) {
             b[y].push(tempboard[y][x]);
         }
     }
@@ -406,8 +406,8 @@ function kingInCheck(tempboard, color) {
 	const oppo = (color == 'w') ? 'b' : 'w';
     
 
-    for(y = 0; y < 8; y++){
-		for(x = 0; x < 8; x++){
+    for(var y = 0; y < 8; y++){
+		for(var x = 0; x < 8; x++){
 			if(tempboard[y][x] == color + 'k'){
 				k.x = x;
 				k.y = y;
@@ -440,7 +440,7 @@ function kingInCheck(tempboard, color) {
         }
     }
     
-	for (h = 0; h < 4; h++) {
+	for (var h = 0; h < 4; h++) {
         while (onBoard(k.x + delta.x + horz[h].x, k.y + delta.y + horz[h].y)) {
 			delta.x += horz[h].x;
 			delta.y += horz[h].y;
@@ -456,7 +456,7 @@ function kingInCheck(tempboard, color) {
 		delta = {x: 0, y: 0};
     }
     
-	for (di = 0; di < 4; di++){
+	for (var di = 0; di < 4; di++){
 		while (onBoard(k.x + delta.x + diag[di].x, k.y + delta.y + diag[di].y)) {
 			delta.x += diag[di].x;
 			delta.y += diag[di].y;
@@ -472,7 +472,7 @@ function kingInCheck(tempboard, color) {
 		delta = {x: 0, y: 0};
     }
     
-	for (k = 0; k < 8; k++){
+	for (var k = 0; k < 8; k++){
 		if (onBoard(k.x + knight[k].x, k.y + knight[k].y)) {
 			if(tempboard[k.y + knight[k].y][k.x + knight[k].x] == oppo + 'n'){
 				return true;
@@ -480,7 +480,7 @@ function kingInCheck(tempboard, color) {
 		}
     }
     
-	for (alld = 0; alld < 4; alld++){
+	for (var alld = 0; alld < 4; alld++){
 		if (onBoard(k.x + horz[alld].x, k.y + horz[alld].y)) {
 			if(tempboard[k.y + horz[alld].y][k.x + horz[alld].x] == oppo + 'k'){
 				return true;

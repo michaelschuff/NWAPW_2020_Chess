@@ -23,6 +23,7 @@
             <img src='/client/imgs/board.png' id=board>
         </div> -->
         <script>
+
             const SSID = document.cookie.split(';').find(row => row.startsWith('sessionID')).split('=')[1];
             
             var fromSquare = '';
@@ -46,8 +47,6 @@
             ];
 
 
-
-            
             socket.on('connect', function() {connection_successful(socket);});
             socket.on('reconnect', function() {reconnection_successful(socket);});
             socket.on('connect_error', function() {connection_failed();});
@@ -58,6 +57,9 @@
             socket.on('validation_failed', function() {validation_failed()});
 
             socket.on('redirect', function(path) {redirect(path);});
+
+            
+            
 
             function logoutPressed() {
                 socket.emit('logout', {sessionID: SSID});
@@ -77,11 +79,11 @@
                 color = data.color;
                 leftCastle = true;
                 rightCastle = true;
-                // for (y = 0; y < 8; y++) {
+                // for (var y = 0; y < 8; y++) {
                 //     var div = document.createElement('div');
                 //     div.id = 'row' + y;
                 //     document.getElementById('chessboard').appendChild(div);
-                //     for (x = 0; x < 8; x++) {
+                //     for (var x = 0; x < 8; x++) {
                 //         var img = document.createElement('img');
                 //         img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
                 //         img.className = 'piece';
@@ -103,6 +105,7 @@
                     myMove = true;
                     legalMoves = getLegalMoves(board, 'w', {from: {x: 0, y: 0}, to: {x: 0, y: 0}}, leftCastle, rightCastle);
                 }
+
             });
 
             function moveMade() {
@@ -239,29 +242,29 @@
             function redrawBoard() {
                 if (color == 'white') {
                     var str = "+--+--+--+--+--+--+--+--+\n";
-                    for (y = 0; y < 8; y++) {
-                        for (x = 0; x < 8; x++) {
+                    for (var y = 0; y < 8; y++) {
+                        for (var x = 0; x < 8; x++) {
                             str += '|' + board[7-y][x];
                         }
                         str += '|\n+--+--+--+--+--+--+--+--+\n'
                     }
                     document.getElementById('boardid').innerText = str;
-                    // for (y = 0; y < 8; y++) {
-                    //     for (x = 0; x < 8; x++) {
+                    // for (var y = 0; y < 8; y++) {
+                    //     for (var x = 0; x < 8; x++) {
                     //         document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
                     //     }
                     // }
                 } else {
                     var str = "+--+--+--+--+--+--+--+--+\n";
-                    for (y = 0; y < 8; y++) {
-                        for (x = 0; x < 8; x++) {
+                    for (var y = 0; y < 8; y++) {
+                        for (var x = 0; x < 8; x++) {
                             str += '|' + board[y][7-x];
                         }
                         str += '|\n+--+--+--+--+--+--+--+--+\n'
                     }
                     document.getElementById('boardid').innerText = str;
-                    // for (y = 0; y < 8; y++) {
-                    //     for (x = 0; x < 8; x++) {
+                    // for (var y = 0; y < 8; y++) {
+                    //     for (var x = 0; x < 8; x++) {
                     //         document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
                     //     }
                     // }
