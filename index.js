@@ -5,19 +5,8 @@ var io = require('socket.io')(http);
 var port = process.env.PORT || 8080;
 const { v1: uuidv1 } = require('uuid');
 
-
 //vars
-var board = [
-  ['WR','WN','WB','WQ','WK','WB','WN','WR'],
-  ['WP','WP','WP','WP','WP','WP','WP','WP'],
-  ['__','__','__','__','__','__','__','__'],
-  ['__','__','__','__','__','__','__','__'],
-  ['__','__','__','__','__','__','__','__'],
-  ['__','__','__','__','__','__','__','__'],
-  ['BP','BP','BP','BP','BP','BP','BP','BP'],
-  ['BR','BN','BB','BQ','BK','BB','BN','BR'],
-];
-let flippedBoard = [[]];
+
 
 let wTurn = true;
 var clients;
@@ -28,21 +17,32 @@ app.get('/', function(req, res){
 });
 
 let waitingUser = false;
-let room;
 io.on('connection', function(socket){
+  let room;
   if(waitingUser){ //if somebody is waiting to be paired...
     socket.join(waitingUser);
+    room = waitingUser;
     waitingUser = false;
   } else {
     waitingUser = socket.id;
+    socket.join(socket.id);
+    return;
   }
-  /*if (!playing) {//create a room with two clients
-    clients = Object.keys(socket.adapter.rooms[room].sockets);
-    console.log("user ", clients.length, " has connected");
-  }*/
-  number++;
+  //create a room with two clients
+  let clients = Object.keys(socket.adapter.rooms[room].sockets);
+  var board = [
+    ['WR','WN','WB','WQ','WK','WB','WN','WR'],
+    ['WP','WP','WP','WP','WP','WP','WP','WP'],
+    ['__','__','__','__','__','__','__','__'],
+    ['__','__','__','__','__','__','__','__'],
+    ['__','__','__','__','__','__','__','__'],
+    ['__','__','__','__','__','__','__','__'],
+    ['BP','BP','BP','BP','BP','BP','BP','BP'],
+    ['BR','BN','BB','BQ','BK','BB','BN','BR'],
+  ];
+  let flippedBoard = [[]];
   if (clients.length == 2) {
-    playing = true;
+   playing = true; //TODO: delete
     wTurn = !wTurn;
     flippedBoard = [];//create a board that is rotated 180 degrees, so black is on the bottom. will be sent to black player
     for (i = 7; i >= 0; i--) { 
@@ -57,6 +57,7 @@ io.on('connection', function(socket){
     io.to(clients[1]).emit('board update', flippedBoard);
   }
   socket.on('move', function(move) {
+    
     if (playing) {
       alphabet = ['a','b','c','d','e','f','g','h']//convert game move (e2e4) into two arrays, each with an x,y coord
       from = [alphabet.indexOf(move[0]), parseInt(move[1])-1]
