@@ -79,7 +79,40 @@ socket.on('play_game', function(data) {
     }
 });
 
-
+function promoPieceClicked() {
+    var z = {
+        from: {x: alphabet.indexOf(fromSquare[0]), y: parseInt(fromSquare[1]) - 1},
+        to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1},
+        piece: this.id
+    }
+    board = legalmoves.movepiece(board, z.from, z.to, z.piece);
+    redrawBoard();
+    myMove = false;
+    socket.emit(color + '_moved', {move: z, sessionID: SSID});
+    if (color == 'white') {
+        if (fromSquare == 'e1') {
+            leftCastle = false;
+            rightCastle = false;
+        }
+        if (fromSquare == 'a1') {
+            leftCastle = false;
+        }
+        if (fromSquare == 'h1') {
+            rightCastle = false;
+        }
+    } else {
+        if (fromSquare = 'e8') {
+            leftCastle = false;
+            rightCastle = false;
+        }
+        if (fromSquare == 'a8') {
+            leftCastle = false;
+        }
+        if (fromSquare == 'h8') {
+            rightCastle = false;
+        }
+    }
+}
 
 function squareClicked() {
     if (myMove) {
@@ -92,41 +125,49 @@ function squareClicked() {
                 to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1}
             }
 
+            
+
             for (item of lMoves) {
                 if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
-                    board = legalmoves.movepiece(board, z.from, z.to);
-                    redrawBoard();
-                    myMove = false;
-                    socket.emit(color + '_moved', {move: z, sessionID: SSID});
-                    if (color == 'white'){
-                        if (fromSquare == 'e1'){
-                            leftCastle = false;
-                            rightCastle = false;
+                    if (board[z.from.y][z.from.x][1] == 'p' && (z.to.y == 7 || z.to.y == 0)) {
+                        //promotion
+                    } else {
+                        board = legalmoves.movepiece(board, z.from, z.to);
+                        redrawBoard();
+                        myMove = false;
+                        socket.emit(color + '_moved', {move: z, sessionID: SSID});
+                        if (color == 'white') {
+                            if (fromSquare == 'e1') {
+                                leftCastle = false;
+                                rightCastle = false;
+                            }
+                            if (fromSquare == 'a1') {
+                                leftCastle = false;
+                            }
+                            if (fromSquare == 'h1') {
+                                rightCastle = false;
+                            }
+                        } else {
+                            if (fromSquare = 'e8') {
+                                leftCastle = false;
+                                rightCastle = false;
+                            }
+                            if (fromSquare == 'a8') {
+                                leftCastle = false;
+                            }
+                            if (fromSquare == 'h8') {
+                                rightCastle = false;
+                            }
                         }
-                        if (fromSquare == 'a1'){
-                            leftCastle = false;
-                        }
-                        if (fromSquare == 'h1'){
-                            rightCastle = false;
-                        }
+
+                        fromSquare = '';
+                        toSquare = '';
                     }
-                    else {
-                        if (fromSquare = 'e8'){
-                            leftCastle = false;
-                            rightCastle = false;
-                        }
-                        if (fromSquare == 'a8'){
-                            leftCastle = false;
-                        }
-                        if (fromSquare == 'h8'){
-                            rightCastle = false;
-                        }
-                    }
+                    
                 }
             }
             
-            fromSquare = '';
-            toSquare = '';
+            
         
         }
     }

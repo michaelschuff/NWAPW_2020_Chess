@@ -388,6 +388,10 @@ function movepiece(tempboard, from, to, promoPiece = '') {
 
     b[to.y][to.x] = b[from.y][from.x];
     b[from.y][from.x] = '__';
+
+    if (b[to.y][to.x][1] == 'p' && (to.y == 7 || to.y == 0)) {
+        b[to.y][to.x][1] == promoPiece;
+    }
     return b;
 }
 
