@@ -18,12 +18,14 @@ function logoutPressed() {
 }
     
 function moveMade() {
+    var promoPiece='';
     var move = document.getElementById('input').value;
     document.getElementById('input').value = '';
     if (myMove) {
-        // if (move.length != 4) {
-        //     move = m
-        // }
+        if (move.length != 4) {
+            promoPiece = move[5];
+            move = move.slice(0, 3);
+        }
         
         var z = {
             from: {x: alphabet.indexOf(move[0]), y: parseInt(move[1]) - 1},
@@ -92,6 +94,7 @@ socket.on('play_game', function(data) {
     board = data.board;
     rightCastle = data.rightCastle;
     leftCastle = data.leftCastle;
+    redrawBoard();
 
     if (myMove) {
         lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
@@ -118,7 +121,6 @@ socket.on('play_game', function(data) {
     //         document.getElementById('row' + y.toString()).appendChild(img);
     //     }
     // }
-    redrawBoard();
 });
 
 

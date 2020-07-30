@@ -344,7 +344,7 @@ function castling(tempboard, dir, color) {
 	return lmoves;
 }
 
-function movepiece(tempboard, from, to) {
+function movepiece(tempboard, from, to, promoPiece = '') {
     var b = [];
     for (var y = 0; y < 8; y++) {
         b.push([])
@@ -378,6 +378,12 @@ function movepiece(tempboard, from, to) {
             from.x != to.x) {
 
         b[to.y + 1][to.x]='__';
+    }
+
+    if (promoPiece != '') {
+        for (var x = 0; x < 8; x++) {
+
+        }
     }
 
     b[to.y][to.x] = b[from.y][from.x];
