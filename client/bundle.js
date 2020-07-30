@@ -10,65 +10,24 @@ var myMove = false;
 var leftCastle = true;
 var rightCastle = true;
 var lMoves = [];
-var board;
+var board = [
+    ['wr','wn','wb','wq','wk','wb','wn','wr'],
+    ['wp','wp','wp','wp','wp','wp','wp','wp'],
+    ['__','__','__','__','__','__','__','__'],
+    ['__','__','__','__','__','__','__','__'],
+    ['__','__','__','__','__','__','__','__'],
+    ['__','__','__','__','__','__','__','__'],
+    ['bp','bp','bp','bp','bp','bp','bp','bp'],
+    ['br','bn','bb','bq','bk','bb','bn','br']];
 
 
 function logoutPressed() {
     socket.emit('logout', {sessionID: SSID});
     document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 }
-    
-function moveMade() {
-    var move = document.getElementById('input').value;
-    document.getElementById('input').value = '';
-    if (myMove) {
-        // if (move.length != 4) {
-        //     move = m
-        // }
-        
-        var z = {
-            from: {x: alphabet.indexOf(move[0]), y: parseInt(move[1]) - 1},
-            to: {x: alphabet.indexOf(move[2]), y: parseInt(move[3]) - 1}
-        }
 
-        var fromSquare = move[0] + move[1];
-
-        for (item of lMoves) {
-            if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
-                board = legalmoves.movepiece(board, z.from, z.to);
-                redrawBoard();
-                myMove = false;
-                socket.emit(color + '_moved', {move: z, sessionID: SSID});
-                if (color == 'white'){
-                    if (fromSquare == 'e1'){
-                        leftCastle = false;
-                        rightCastle = false;
-                    }
-                    if (fromSquare == 'a1'){
-                        leftCastle = false;
-                    }
-                    if (fromSquare == 'h1'){
-                        rightCastle = false;
-                    }
-                } else {
-                    if (fromSquare = 'e8'){
-                        leftCastle = false;
-                        rightCastle = false;
-                    }
-                    if (fromSquare == 'a8'){
-                        leftCastle = false;
-                    }
-                    if (fromSquare == 'h8'){
-                        rightCastle = false;
-                    }
-                }
-            }
-        }
-    }   
-}
 socket.on('connect', function() {
     connection_successful(socket);
-    document.getElementById('submit').addEventListener('click', moveMade, true);
     document.getElementById('logout').addEventListener('click', logoutPressed, true);
 });
 socket.on('reconnect', function() {reconnection_successful(socket);});
@@ -98,111 +57,95 @@ socket.on('play_game', function(data) {
         lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
     }
 
-    // for (var y = 0; y < 8; y++) {
-    //     var div = document.createElement('div');
-    //     div.id = 'row' + y;
-    //     document.getElementById('chessboard').appendChild(div);
-    //     for (var x = 0; x < 8; x++) {
-    //         var img = document.createElement('img');
-    //         img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
-    //         img.className = 'piece';
-    //         img.id = alphabet[x] + (y + 1).toString();
-    //         if (color == 'white') {
-    //             img.style.top = (7-y).toString() + '00px';
-    //             img.style.left = x.toString() + '00px';
-    //         } else {
-    //             img.style.top = y.toString() + '00px';
-    //             img.style.left = (7-x).toString() + '00px';
-    //         }
+    for (var y = 0; y < 8; y++) {
+        var div = document.createElement('div');
+        div.id = 'row' + y;
+        document.getElementById('chessboard').appendChild(div);
+        for (var x = 0; x < 8; x++) {
+            var img = document.createElement('img');
+            img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
+            img.className = 'piece';
+            img.id = alphabet[x] + (y + 1).toString();
+            if (color == 'white') {
+                img.style.top = (7-y).toString() + '00px';
+                img.style.left = x.toString() + '00px';
+            } else {
+                img.style.top = y.toString() + '00px';
+                img.style.left = (7-x).toString() + '00px';
+            }
             
-    //         img.addEventListener('click', squareClicked, false);
-    //         document.getElementById('row' + y.toString()).appendChild(img);
-    //     }
-    // }
-    redrawBoard();
+            img.addEventListener('click', squareClicked, false);
+            document.getElementById('row' + y.toString()).appendChild(img);
+        }
+    }
 });
 
 
 
-// function squareClicked() {
-//     if (myMove) {
-//         if (fromSquare == '') {
-//             fromSquare = this.id;
-//         } else {
-//             toSquare = this.id;
-//             var z = {
-//                 from: {x: alphabet.indexOf(fromSquare[0]), y: parseInt(fromSquare[1]) - 1},
-//                 to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1}
-//             }
+function squareClicked() {
+    if (myMove) {
+        if (fromSquare == '') {
+            fromSquare = this.id;
+        } else {
+            toSquare = this.id;
+            var z = {
+                from: {x: alphabet.indexOf(fromSquare[0]), y: parseInt(fromSquare[1]) - 1},
+                to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1}
+            }
 
-//             for (item of legalMoves) {
-//                 if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
-//                     updateboard(fromSquare, toSquare);
-//                     myMove = false;
-//                     socket.emit(color + '_moved', {to: toSquare, from: fromSquare, sessionID: SSID});
-//                     if (color == 'white'){
-//                         if (fromSquare == 'e1'){
-//                             leftCastle = false;
-//                             rightCastle = false;
-//                         }
-//                         if (fromSquare == 'a1'){
-//                             leftCastle = false;
-//                         }
-//                         if (fromSquare == 'h1'){
-//                             rightCastle = false;
-//                         }
-//                     }
-//                     else {
-//                         if (fromSquare = 'e8'){
-//                             leftCastle = false;
-//                             rightCastle = false;
-//                         }
-//                         if (fromSquare == 'a8'){
-//                             leftCastle = false;
-//                         }
-//                         if (fromSquare == 'h8'){
-//                             rightCastle = false;
-//                         }
-//                     }
-//                 }
-//             }
+            for (item of lMoves) {
+                if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
+                    board = legalmoves.movepiece(board, z.from, z.to);
+                    redrawBoard();
+                    myMove = false;
+                    socket.emit(color + '_moved', {move: z, sessionID: SSID});
+                    if (color == 'white'){
+                        if (fromSquare == 'e1'){
+                            leftCastle = false;
+                            rightCastle = false;
+                        }
+                        if (fromSquare == 'a1'){
+                            leftCastle = false;
+                        }
+                        if (fromSquare == 'h1'){
+                            rightCastle = false;
+                        }
+                    }
+                    else {
+                        if (fromSquare = 'e8'){
+                            leftCastle = false;
+                            rightCastle = false;
+                        }
+                        if (fromSquare == 'a8'){
+                            leftCastle = false;
+                        }
+                        if (fromSquare == 'h8'){
+                            rightCastle = false;
+                        }
+                    }
+                }
+            }
             
-//             fromSquare = '';
-//             toSquare = '';
+            fromSquare = '';
+            toSquare = '';
         
-//         }
-//     }
-// }
+        }
+    }
+}
 
 function redrawBoard() {
     if (color == 'white') {
-        var str = "+--+--+--+--+--+--+--+--+\n";
         for (var y = 0; y < 8; y++) {
             for (var x = 0; x < 8; x++) {
-                str += '|' + board[7-y][x];
+                document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
             }
-            str += '|\n+--+--+--+--+--+--+--+--+\n'
         }
-        document.getElementById('boardid').innerText = str;
-        // for (var y = 0; y < 8; y++) {
-        //     for (var x = 0; x < 8; x++) {
-        //         document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
-        //     }
-        // }
     } else {
-        var str = "+--+--+--+--+--+--+--+--+\n";
         for (var y = 0; y < 8; y++) {
             for (var x = 0; x < 8; x++) {
-                str += '|' + board[y][7-x];
+                document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
             }
-            str += '|\n+--+--+--+--+--+--+--+--+\n'
         }
-        document.getElementById('boardid').innerText = str;
-        // for (var y = 0; y < 8; y++) {
-        //     for (var x = 0; x < 8; x++) {
-        //         document.getElementById(alphabet[x] + (y + 1).toString()).src = '/client/imgs/' + board[y][x] + '.png';
-        //     }
-        // }
     }
 }
 },{"./illegalMoveCheck.js":2}],2:[function(require,module,exports){
@@ -552,7 +495,7 @@ function castling(tempboard, dir, color) {
 	return lmoves;
 }
 
-function movepiece(tempboard, from, to) {
+function movepiece(tempboard, from, to, promoPiece = '') {
     var b = [];
     for (var y = 0; y < 8; y++) {
         b.push([])
@@ -586,6 +529,12 @@ function movepiece(tempboard, from, to) {
             from.x != to.x) {
 
         b[to.y + 1][to.x]='__';
+    }
+
+    if (promoPiece != '') {
+        for (var x = 0; x < 8; x++) {
+
+        }
     }
 
     b[to.y][to.x] = b[from.y][from.x];
