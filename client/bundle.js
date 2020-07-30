@@ -10,15 +10,7 @@ var myMove = false;
 var leftCastle = true;
 var rightCastle = true;
 var lMoves = [];
-var board = [
-    ['wr','wn','wb','wq','wk','wb','wn','wr'],
-    ['wp','wp','wp','wp','wp','wp','wp','wp'],
-    ['__','__','__','__','__','__','__','__'],
-    ['__','__','__','__','__','__','__','__'],
-    ['__','__','__','__','__','__','__','__'],
-    ['__','__','__','__','__','__','__','__'],
-    ['bp','bp','bp','bp','bp','bp','bp','bp'],
-    ['br','bn','bb','bq','bk','bb','bn','br']];
+var board;
 
 
 function logoutPressed() {
@@ -30,6 +22,10 @@ function moveMade() {
     var move = document.getElementById('input').value;
     document.getElementById('input').value = '';
     if (myMove) {
+        // if (move.length != 4) {
+        //     move = m
+        // }
+        
         var z = {
             from: {x: alphabet.indexOf(move[0]), y: parseInt(move[1]) - 1},
             to: {x: alphabet.indexOf(move[2]), y: parseInt(move[3]) - 1}
@@ -68,7 +64,7 @@ function moveMade() {
                 }
             }
         }
-    }
+    }   
 }
 socket.on('connect', function() {
     connection_successful(socket);
@@ -91,7 +87,7 @@ socket.on('make_a_move', function(data) {
     lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
 });
 
-socket.on('rejoin_game', function(data) {
+socket.on('play_game', function(data) {
     myMove = data.yourMove;
     color = data.color;
     board = data.board;
@@ -101,13 +97,7 @@ socket.on('rejoin_game', function(data) {
     if (myMove) {
         lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
     }
-    redrawBoard();
-});
 
-socket.on('play_game', function(data) {
-    color = data.color;
-    leftCastle = true;
-    rightCastle = true;
     // for (var y = 0; y < 8; y++) {
     //     var div = document.createElement('div');
     //     div.id = 'row' + y;
@@ -130,10 +120,6 @@ socket.on('play_game', function(data) {
     //     }
     // }
     redrawBoard();
-    if (color == 'white') {
-        myMove = true;
-        lMoves = legalmoves.getLegalMoves(board, 'w', {from: {x: 0, y: 0}, to: {x: 0, y: 0}}, leftCastle, rightCastle);
-    }
 });
 
 
@@ -592,14 +578,14 @@ function movepiece(tempboard, from, to) {
             (b[to.y - 1][to.x] == 'bp') &&
             from.x != to.x) {
 
-        b[to.y + 1][to.x]='__';
+        b[to.y - 1][to.x]='__';
     }
     else if ((b[from.y][from.x] == 'bp') &&
             (b[to.y][to.x] == '__') &&
             (b[to.y + 1][to.x] == 'wp') &&
             from.x != to.x) {
 
-        b[to.y-1][to.x]='__';
+        b[to.y + 1][to.x]='__';
     }
 
     b[to.y][to.x] = b[from.y][from.x];

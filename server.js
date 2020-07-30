@@ -57,8 +57,26 @@ io.on('connection', function(socket) {
                     item.p1ready = true;
                     if (item.p1ready && item.p2ready) {
                         item.playing = true;
-                        io.to(item.p1socketID).emit('play_game', {color: 'white'});
-                        io.to(item.p2socketID).emit('play_game', {color: 'black'});
+
+                        const wdata = {
+                            yourMove: item.whitesTurn,
+                            board: item.board,
+                            rightCastle: true,
+                            leftCastle: true,
+                            color: 'white',
+                            lastMove: item.lastMove,
+                        }
+
+                        const bdata = {
+                            yourMove: !item.whitesTurn,
+                            board: item.board,
+                            rightCastle: true,
+                            leftCastle: true,
+                            color: 'black',
+                            lastMove: item.lastMove,
+                        }
+                        io.to(item.p1socketID).emit('play_game', wdata);
+                        io.to(item.p2socketID).emit('play_game', bdata);
                     }
                     break;
                 } else {
@@ -73,7 +91,7 @@ io.on('connection', function(socket) {
                             color: 'white',
                             lastMove: item.lastMove,
                         }
-                        io.to(item.p1socketID).emit('rejoin_game', data);
+                        io.to(item.p1socketID).emit('play_game', data);
                     }
                     
                 }
@@ -86,8 +104,25 @@ io.on('connection', function(socket) {
                     item.p2ready = true;
                     if (item.p1ready && item.p2ready) {
                         item.playing = true;
-                        io.to(item.p1socketID).emit('play_game', {color: 'white'});
-                        io.to(item.p2socketID).emit('play_game', {color: 'black'});
+                        const wdata = {
+                            yourMove: item.whitesTurn,
+                            board: item.board,
+                            rightCastle: true,
+                            leftCastle: true,
+                            color: 'white',
+                            lastMove: item.lastMove,
+                        }
+
+                        const bdata = {
+                            yourMove: !item.whitesTurn,
+                            board: item.board,
+                            rightCastle: true,
+                            leftCastle: true,
+                            color: 'black',
+                            lastMove: item.lastMove,
+                        }
+                        io.to(item.p1socketID).emit('play_game', wdata);
+                        io.to(item.p2socketID).emit('play_game', bdata);
                     }
                     break;
                 } else {
@@ -102,7 +137,7 @@ io.on('connection', function(socket) {
                             color: 'black',
                             lastMove: item.lastMove,
                         }
-                        io.to(item.p2socketID).emit('rejoin_game', data);
+                        io.to(item.p2socketID).emit('play_game', data);
                     }
                 }
                 
@@ -262,8 +297,8 @@ function queueFull() {
         board: [['wr','wn','wb','wq','wk','wb','wn','wr'],
                 ['wp','wp','wp','wp','wp','wp','wp','wp'],
                 ['__','__','__','__','__','__','__','__'],
-                ['__','__','__','__','__','__','__','__'],
-                ['__','__','__','__','__','__','__','__'],
+                ['bp','__','bp','__','bp','__','bp','__'],
+                ['__','wp','__','wp','__','wp','__','wp'],
                 ['__','__','__','__','__','__','__','__'],
                 ['bp','bp','bp','bp','bp','bp','bp','bp'],
                 ['br','bn','bb','bq','bk','bb','bn','br']],
