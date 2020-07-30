@@ -21,8 +21,8 @@ var board = [
 
 
 function logoutPressed() {
-        socket.emit('logout', {sessionID: SSID});
-        document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    socket.emit('logout', {sessionID: SSID});
+    document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 }
     
 function moveMade() {
@@ -42,7 +42,7 @@ function moveMade() {
                 if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
                     updateboard(fromSquare, toSquare);
                     myMove = false;
-                    socket.emit(color + '_moved', {to: toSquare, fro: fromSquare, sessionID: SSID});
+                    socket.emit(color + '_moved', {move: z, sessionID: SSID});
                     if (color == 'white'){
                         if (fromSquare == 'e1'){
                             leftCastle = false;
@@ -85,6 +85,17 @@ socket.on('make_a_move', function(data) {
     updateboard(data.fro, data.to);
     myMove = true;
     lMoves = legalmoves.getLegalMoves(board, color[0], {from: data.fro, to: data.to}, leftCastle, rightCastle);
+});
+
+socket.on('rejoin_game', function(data) {
+    myMove = data.yourMove;
+    color = data.color;
+    board = data.board;
+    rightCastle = data.rightCastle;
+    leftCastle = data.leftCastle;
+    if (myMove) {
+        lMoves = legalmoves.getLegalMoves(board, color[0], {from: data.fro, to: data.to}, leftCastle, rightCastle);
+    }
 });
 
 socket.on('play_game', function(data) {

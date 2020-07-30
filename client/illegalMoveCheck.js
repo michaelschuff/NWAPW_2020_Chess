@@ -506,4 +506,5 @@ function onBoard(x, y) {
 
 module.exports = {
     getLegalMoves: getLegalMoves,
+    movepiece: movepiece,
 };
