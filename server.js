@@ -232,6 +232,9 @@ io.on('connection', function(socket) {
     socket.on('white_moved', function(data) {
         for (item of gamerooms) {
             if (item.p1sessionID == data.sessionID) {
+                if (data.move.piece != undefined) {
+                    item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to, data.move.piece);
+                }
                 item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to);
                 item.whitesTurn = false;
                 if (data.move.from == {x: 4, y: 0}){
@@ -255,6 +258,9 @@ io.on('connection', function(socket) {
     socket.on('black_moved', function(data) {
         for (item of gamerooms) {
             if (item.p2sessionID == data.sessionID) {
+                if (data.move.piece != undefined) {
+                    item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to, data.move.piece);
+                }
                 item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to);
                 item.whitesTurn = true;
 

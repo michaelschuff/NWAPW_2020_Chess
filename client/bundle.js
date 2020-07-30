@@ -10,6 +10,7 @@ var myMove = false;
 var leftCastle = true;
 var rightCastle = true;
 var lMoves = [];
+var outlinedID = '';
 var board = [
     ['wr','wn','wb','wq','wk','wb','wn','wr'],
     ['wp','wp','wp','wp','wp','wp','wp','wp'],
@@ -28,6 +29,7 @@ function logoutPressed() {
 
 socket.on('connect', function() {
     connection_successful(socket);
+    window.addEventListener('resize', resized, true);
     document.getElementById('logout').addEventListener('click', logoutPressed, true);
 });
 socket.on('reconnect', function() {reconnection_successful(socket);});
@@ -78,62 +80,132 @@ socket.on('play_game', function(data) {
             document.getElementById('row' + y.toString()).appendChild(img);
         }
     }
+    resized();
 });
 
-
+function promoPieceClicked() {
+    var z = {
+        from: {x: alphabet.indexOf(fromSquare[0]), y: parseInt(fromSquare[1]) - 1},
+        to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1},
+        piece: this.id
+    }
+    board = legalmoves.movepiece(board, z.from, z.to, z.piece);
+    redrawBoard();
+    myMove = false;
+    socket.emit(color + '_moved', {move: z, sessionID: SSID});
+    if (color == 'white') {
+        if (fromSquare == 'e1') {
+            leftCastle = false;
+            rightCastle = false;
+        }
+        if (fromSquare == 'a1') {
+            leftCastle = false;
+        }
+        if (fromSquare == 'h1') {
+            rightCastle = false;
+        }
+    } else {
+        if (fromSquare = 'e8') {
+            leftCastle = false;
+            rightCastle = false;
+        }
+        if (fromSquare == 'a8') {
+            leftCastle = false;
+        }
+        if (fromSquare == 'h8') {
+            rightCastle = false;
+        }
+    }
+    fromSquare = '';
+    toSquare = ''
+}
 
 function squareClicked() {
+    var promo = false;
     if (myMove) {
         if (fromSquare == '') {
             fromSquare = this.id;
+            outlinedID = this.id;
+            addBorder(this.id);
         } else {
             toSquare = this.id;
             var z = {
                 from: {x: alphabet.indexOf(fromSquare[0]), y: parseInt(fromSquare[1]) - 1},
                 to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1}
             }
-
-            for (item of lMoves) {
-                if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
-                    board = legalmoves.movepiece(board, z.from, z.to);
-                    redrawBoard();
-                    myMove = false;
-                    socket.emit(color + '_moved', {move: z, sessionID: SSID});
-                    if (color == 'white'){
-                        if (fromSquare == 'e1'){
-                            leftCastle = false;
-                            rightCastle = false;
+            if (board[z.to.y][z.to.x][0] == color[0]) {
+                removeBorder(outlinedID);
+                fromSquare = toSquare;
+                addBorder(fromSquare);
+                outlinedID = fromSquare;
+                toSquare = '';
+            } else {
+                for (item of lMoves) {
+                    if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
+                        if (board[z.from.y][z.from.x][1] == 'p' && (z.to.y == 7 || z.to.y == 0)) {
+                            promo = true;
+                        } else {
+                            board = legalmoves.movepiece(board, z.from, z.to);
+                            redrawBoard();
+                            myMove = false;
+                            socket.emit(color + '_moved', {move: z, sessionID: SSID});
+                            if (color == 'white') {
+                                if (fromSquare == 'e1') {
+                                    leftCastle = false;
+                                    rightCastle = false;
+                                }
+                                if (fromSquare == 'a1') {
+                                    leftCastle = false;
+                                }
+                                if (fromSquare == 'h1') {
+                                    rightCastle = false;
+                                }
+                            } else {
+                                if (fromSquare = 'e8') {
+                                    leftCastle = false;
+                                    rightCastle = false;
+                                }
+                                if (fromSquare == 'a8') {
+                                    leftCastle = false;
+                                }
+                                if (fromSquare == 'h8') {
+                                    rightCastle = false;
+                                }
+                            }
                         }
-                        if (fromSquare == 'a1'){
-                            leftCastle = false;
-                        }
-                        if (fromSquare == 'h1'){
-                            rightCastle = false;
-                        }
-                    }
-                    else {
-                        if (fromSquare = 'e8'){
-                            leftCastle = false;
-                            rightCastle = false;
-                        }
-                        if (fromSquare == 'a8'){
-                            leftCastle = false;
-                        }
-                        if (fromSquare == 'h8'){
-                            rightCastle = false;
-                        }
+                        
                     }
                 }
+                
+                if (!promo) {
+                    removeBorder(outlinedID);
+                    outlinedID = '';
+                    fromSquare = '';
+                    toSquare = '';
+                }
             }
+
             
-            fromSquare = '';
-            toSquare = '';
+
+            
         
         }
     }
 }
 
 function redrawBoard() {
+    for (var y = 0; y < 8; y++) {
+        for (var x = 0; x < 8; x++) {
+            if (board[y][x] == color[0] + 'k') {
+                if (legalmoves.kingInCheck(board, color[0])) {
+                
+                }
+                document.getElementById(alphabet[x] + (y + 1).toString()).style['background-color'] = rgba(184, 57, 57, 5);
+            }
+            
+            
+        }
+    }
     if (color == 'white') {
         for (var y = 0; y < 8; y++) {
             for (var x = 0; x < 8; x++) {
@@ -147,6 +219,50 @@ function redrawBoard() {
             }
         }
     }
+}
+
+function enablePromoPieces() {
+
+}
+
+function resized() {
+    const alphabet = 'abcdefgh';
+    var promoDiv = document.getElementById('PromoDiv');
+    var htmlBoard = document.getElementById('board');
+    var squareSize = 0.75 * Math.min(window.window.innerWidth, window.window.innerHeight) / 8.0;
+    htmlBoard.height = 8 * squareSize;
+    htmlBoard.width = 8 * squareSize;
+    htmlBoard.style.left = ((window.window.innerWidth - htmlBoard.width) / 2.0) + 'px';
+    htmlBoard.style.top = ((window.window.innerHeight - htmlBoard.height) / 2.0) + 'px';
+    promoDiv.width = squareSize;
+    promoDiv.height = 4 * squareSize;
+    var pieces = document.getElementsByClassName('piece');
+    
+    for (var i = 0; i < pieces.length; i++) {
+        pieces[i].width = squareSize;
+        pieces[i].height = squareSize;
+        if (color == 'white') {
+            pieces[i].style.left = ((7 - alphabet.indexOf(pieces[i].id[0])) * squareSize + (window.window.innerWidth - htmlBoard.width) / 2.0).toString() + 'px';
+            pieces[i].style.top = ((8 - parseInt(pieces[i].id[1])) * squareSize + (window.window.innerHeight - htmlBoard.height) / 2.0).toString() + 'px';
+        } else {
+            pieces[i].style.left = ((7 - alphabet.indexOf(pieces[i].id[0])) * squareSize + (window.window.innerWidth - htmlBoard.width) / 2.0).toString() + 'px';
+            pieces[i].style.top = ((parseInt(pieces[i].id[1]) - 1) * squareSize + (window.window.innerHeight - htmlBoard.height) / 2.0).toString() + 'px';
+        }
+        
+    }
+}
+
+function addBorder(id) {
+    obj = document.getElementById(id);
+    obj.style['outline-style'] = 'solid';
+    obj.style['outline-width'] = '3px';
+    obj.style['outline-color'] = 'black';
+    obj.style['outline-offset'] = '-2px';
+    obj.style['outline-radius'] = '2px';
+}
+
+function removeBorder(id) {
+    document.getElementById(id).style['outline-width'] = '0px';
 }
 },{"./illegalMoveCheck.js":2}],2:[function(require,module,exports){
 function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) {
@@ -539,6 +655,10 @@ function movepiece(tempboard, from, to, promoPiece = '') {
 
     b[to.y][to.x] = b[from.y][from.x];
     b[from.y][from.x] = '__';
+
+    if (b[to.y][to.x][1] == 'p' && (to.y == 7 || to.y == 0)) {
+        b[to.y][to.x][1] == promoPiece;
+    }
     return b;
 }
 
@@ -664,5 +784,6 @@ function onBoard(x, y) {
 module.exports = {
     getLegalMoves: getLegalMoves,
     movepiece: movepiece,
+    kingInCheck: kingInCheck,
 };
 },{}]},{},[1]);
