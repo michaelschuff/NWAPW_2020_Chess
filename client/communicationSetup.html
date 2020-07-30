@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Chess</title>
+        <script src='/socket.io/socket.io.js'></script>
+        <script src='/client/socketFunctions.js'></script>
+    </head>
+    
+    <body>
+        Connecting to server...
+        <script>
+            var socket = io();
+            socket.on('connect', function() {connection_successful(socket);});
+            socket.on('reconnect', function() {reconnection_successful(socket);});
+            socket.on('connect_error', function() {connection_failed();});
+            socket.on('connect_timeout', function() {connection_timeout();});
+            socket.on('reconnect_attempt', function() {attempting_reconnection();});
+            socket.on('reconnect_error', function() {reconnection_failed();});
+            socket.on('validation_success', function(data) {
+                redirect('/client/home.html');
+            });
+            socket.on('validation_failed', function(data) {
+                redirect('/client/loginRegister.html');
+            });
+            
+
+            socket.on('redirect', function(path) {redirect(path);});
+            
+        </script>
+    </body>
+</html>
