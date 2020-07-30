@@ -26,52 +26,54 @@ function logoutPressed() {
 }
     
 function moveMade() {
-        console.log('here');
-        var move = document.getElementById('input').value;
-        document.getElementById('input').value = '';
-        if (myMove) {
-            var z = {
-                from: {x: alphabet.indexOf(move[0]), y: parseInt(move[1]) - 1},
-                to: {x: alphabet.indexOf(move[2]), y: parseInt(move[3]) - 1}
-            }
-    
-            var fromSquare = move[0] + move[1];
-            var toSquare = move[2] + move[3];
-    
-            for (item of lMoves) {
-                if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
-                    updateboard(fromSquare, toSquare);
-                    myMove = false;
-                    socket.emit(color + '_moved', {move: z, sessionID: SSID});
-                    if (color == 'white'){
-                        if (fromSquare == 'e1'){
-                            leftCastle = false;
-                            rightCastle = false;
-                        }
-                        if (fromSquare == 'a1'){
-                            leftCastle = false;
-                        }
-                        if (fromSquare == 'h1'){
-                            rightCastle = false;
-                        }
+    var move = document.getElementById('input').value;
+    document.getElementById('input').value = '';
+    if (myMove) {
+        var z = {
+            from: {x: alphabet.indexOf(move[0]), y: parseInt(move[1]) - 1},
+            to: {x: alphabet.indexOf(move[2]), y: parseInt(move[3]) - 1}
+        }
+
+        var fromSquare = move[0] + move[1];
+
+        for (item of lMoves) {
+            if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
+                board = legalmoves.movepiece(board, z.from, z.to);
+                redrawBoard();
+                myMove = false;
+                socket.emit(color + '_moved', {move: z, sessionID: SSID});
+                if (color == 'white'){
+                    if (fromSquare == 'e1'){
+                        leftCastle = false;
+                        rightCastle = false;
                     }
-                    else {
-                        if (fromSquare = 'e8'){
-                            leftCastle = false;
-                            rightCastle = false;
-                        }
-                        if (fromSquare == 'a8'){
-                            leftCastle = false;
-                        }
-                        if (fromSquare == 'h8'){
-                            rightCastle = false;
-                        }
+                    if (fromSquare == 'a1'){
+                        leftCastle = false;
+                    }
+                    if (fromSquare == 'h1'){
+                        rightCastle = false;
+                    }
+                } else {
+                    if (fromSquare = 'e8'){
+                        leftCastle = false;
+                        rightCastle = false;
+                    }
+                    if (fromSquare == 'a8'){
+                        leftCastle = false;
+                    }
+                    if (fromSquare == 'h8'){
+                        rightCastle = false;
                     }
                 }
             }
         }
+    }
 }
-socket.on('connect', function() {connection_successful(socket);});
+socket.on('connect', function() {
+    connection_successful(socket);
+    document.getElementById('submit').addEventListener('click', moveMade, true);
+    document.getElementById('logout').addEventListener('click', logoutPressed, true);
+});
 socket.on('reconnect', function() {reconnection_successful(socket);});
 socket.on('connect_error', function() {connection_failed();});
 socket.on('connect_timeout', function() {connection_timeout();});
@@ -82,9 +84,10 @@ socket.on('validation_failed', function() {validation_failed()});
 socket.on('redirect', function(path) {redirect(path);});
 
 socket.on('make_a_move', function(data) {
-    updateboard(data.fro, data.to);
+    board = legalmoves.movepiece(board, data.lastMove.from, data.lastMove.to);
+    redrawBoard();
     myMove = true;
-    lMoves = legalmoves.getLegalMoves(board, color[0], {from: data.fro, to: data.to}, leftCastle, rightCastle);
+    lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
 });
 
 socket.on('rejoin_game', function(data) {
@@ -93,17 +96,17 @@ socket.on('rejoin_game', function(data) {
     board = data.board;
     rightCastle = data.rightCastle;
     leftCastle = data.leftCastle;
+
     if (myMove) {
-        lMoves = legalmoves.getLegalMoves(board, color[0], {from: data.fro, to: data.to}, leftCastle, rightCastle);
+        lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
     }
+    redrawBoard();
 });
 
 socket.on('play_game', function(data) {
     color = data.color;
     leftCastle = true;
     rightCastle = true;
-    document.getElementById('submit').addEventListener('click', moveMade, true);
-    document.getElementById('logout').addEventListener('click', logoutPressed, true);
     // for (var y = 0; y < 8; y++) {
     //     var div = document.createElement('div');
     //     div.id = 'row' + y;
@@ -149,7 +152,7 @@ socket.on('play_game', function(data) {
 //                 if (item.from.x == z.from.x && item.from.y == z.from.y && item.to.x == z.to.x && item.to.y == z.to.y) {
 //                     updateboard(fromSquare, toSquare);
 //                     myMove = false;
-//                     socket.emit(color + '_moved', {to: toSquare, fro: fromSquare, sessionID: SSID});
+//                     socket.emit(color + '_moved', {to: toSquare, from: fromSquare, sessionID: SSID});
 //                     if (color == 'white'){
 //                         if (fromSquare == 'e1'){
 //                             leftCastle = false;
@@ -183,41 +186,6 @@ socket.on('play_game', function(data) {
 //         }
 //     }
 // }
-
-function updateboard(from, to) {
-    from = {x: alphabet.indexOf(from[0]), y: parseInt(from[1]) - 1};
-    to = {x: alphabet.indexOf(to[0]), y: parseInt(to[1]) - 1};
-    if ((board[from.y][from.x] == 'wk' || board[from.y][from.x] == 'bk') &&
-            (to.x == 6) && 
-            (from.x == 4)) {
-        
-        board[from.y][5] = board[from.y][from.x][0] + 'r';
-        board[from.y][7] = '__';
-    } else if ((board[from.x][from.y] == 'wk' ||
-            board[from.x][from.y] == 'bk') &&
-            (to.x == 2) &&
-            (from.x == 4)) {
-
-        board[from.y][3] = board[from.y][from.x][0]+'r';
-        board[from.y][0] = '__';
-    } else if ((board[from.y][from.x] == 'wp') &&
-            (board[to.y][to.x] == '__') &&
-            (board[to.y - 1][to.x] == 'bp') &&
-            from.x != to.x) {
-
-        board[to.y + 1][to.x]='__';
-    } else if ((board[from.y][from.x] == 'bp') &&
-            (board[to.y][to.x] == '__') &&
-            (board[to.y + 1][to.x] == 'wp') && 
-            from.x != to.x) {
-
-        board[to.y - 1][to.x]='__';
-    }
-
-    board[to.y][to.x] = board[from.y][from.x];
-    board[from.y][from.x] = '__';
-    redrawBoard();
-}
 
 function redrawBoard() {
     if (color == 'white') {

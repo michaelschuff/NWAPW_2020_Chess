@@ -63,7 +63,7 @@ io.on('connection', function(socket) {
                     break;
                 } else {
                     if (socket.handshake.headers.referer != 'http://localhost:8080/client/game.html') {
-                        io.to(item.p1socketID.emit('redirect', '/client/game.html'));
+                        io.to(item.p1socketID).emit('redirect', '/client/game.html');
                     } else {
                         const data = {
                             yourMove: item.whitesTurn,
@@ -73,7 +73,7 @@ io.on('connection', function(socket) {
                             color: 'white',
                             lastMove: item.lastMove,
                         }
-                        io.to(item.p1socketID.emit('rejoin_game', data));
+                        io.to(item.p1socketID).emit('rejoin_game', data);
                     }
                     
                 }
@@ -91,7 +91,19 @@ io.on('connection', function(socket) {
                     }
                     break;
                 } else {
-                    
+                    if (socket.handshake.headers.referer != 'http://localhost:8080/client/game.html') {
+                        io.to(item.p2socketID).emit('redirect', '/client/game.html');
+                    } else {
+                        const data = {
+                            yourMove: !item.whitesTurn,
+                            board: item.board,
+                            rightCastle: item.p2RCastle,
+                            leftCastle: item.p2LCastle,
+                            color: 'black',
+                            lastMove: item.lastMove,
+                        }
+                        io.to(item.p2socketID).emit('rejoin_game', data);
+                    }
                 }
                 
             }
@@ -185,9 +197,22 @@ io.on('connection', function(socket) {
     socket.on('white_moved', function(data) {
         for (item of gamerooms) {
             if (item.p1sessionID == data.sessionID) {
-                item.board = movepiece(item.board, data.move.from, data.move.to);
+                item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to);
+                item.whitesTurn = false;
+                if (data.move.from == {x: 4, y: 0}){
+                    item.p1LCastle = false;
+                    item.p1RCastle = false;
+                }
+                if (data.move.from == {x: 0, y: 0}){
+                    item.p1LCastle = false;
+                }
+                if (data.move.from == {x: 7, y: 0}){
+                    item.p1RCastle = false;
+                }
+
+
                 item.lastMove = data.move;
-                io.to(item.p2socketID).emit('make_a_move', {fro: data.move.from, to: data.move.to})
+                io.to(item.p2socketID).emit('make_a_move', {lastMove: data.move})
             }
         }
     });
@@ -195,9 +220,23 @@ io.on('connection', function(socket) {
     socket.on('black_moved', function(data) {
         for (item of gamerooms) {
             if (item.p2sessionID == data.sessionID) {
-                item.board = movepiece(item.board, data.move.from, data.move.to);
+                item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to);
+                item.whitesTurn = true;
+
+                if (data.move.from == {x: 4, y: 7}){
+                    item.p2LCastle = false;
+                    item.p2RCastle = false;
+                }
+                if (data.move.from == {x: 0, y: 7}){
+                    item.p2LCastle = false;
+                }
+                if (data.move.from == {x: 7, y: 7}){
+                    item.p2RCastle = false;
+                }
+
+
                 item.lastMove = data.move;
-                io.to(item.p1socketID).emit('make_a_move', {fro: data.move.from, to: data.move.to})
+                io.to(item.p1socketID).emit('make_a_move', {lastMove: data.move})
             }
         }
     });
@@ -232,8 +271,6 @@ function queueFull() {
         playing: false,
         lastMove: {from: {x: 0, y: 0}, to: {x: 0, y: 0}},
     };
-
-    console.log(legalmoves.getLegalMoves(room.board, 'w', {from: {x: 0, y: 0}, to: {x: 0, y: 0}}, true, true));
     gamerooms.push(room);
 
     io.to(room.p1socketID).emit('redirect', '/client/game.html');
