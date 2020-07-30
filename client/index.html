@@ -21,18 +21,8 @@
                     return false;
                 });
 
-                //enter when receive a new board from server
-                socket.on('board update', function(newboard) {
-                    //format board
-                    var str = "+--+--+--+--+--+--+--+--+\n";
-                    for (row of newboard) {
-                        for (column of row.reverse()) {
-                            str += '|' + column;
-                        }
-                        str += '|\n+--+--+--+--+--+--+--+--+\n'
-                    }
-                    document.getElementById('header 1').innerText = str;
-                });
+            socket.on('connect', function() {// when communication is established
+                createBoard();
             });
         </script>
     </body>
