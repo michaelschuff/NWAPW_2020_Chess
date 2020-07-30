@@ -1,4 +1,4 @@
-/* .piece {
+.piece {
     position: absolute;
     width: 100px;
     height: 100px;
@@ -16,7 +16,7 @@
     height: 800px;
     top: 0;
     left: 0;
-} */
+}
 
 #accountoptions {
     position: absolute;
