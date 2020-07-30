@@ -76,7 +76,7 @@ socket.on('play_game', function(data) {
                 img.style.left = (7-x).toString() + '00px';
             }
             
-            img.addEventListener('click', squareClicked, false);
+            img.addEventListener('click', squareReleased, false);
             document.getElementById('row' + y.toString()).appendChild(img);
         }
     }
@@ -119,8 +119,7 @@ function promoPieceClicked() {
     fromSquare = '';
     toSquare = ''
 }
-
-function squareClicked() {
+function squareReleased() {
     var promo = false;
     if (myMove) {
         if (fromSquare == '') {
@@ -194,18 +193,6 @@ function squareClicked() {
 }
 
 function redrawBoard() {
-    for (var y = 0; y < 8; y++) {
-        for (var x = 0; x < 8; x++) {
-            if (board[y][x] == color[0] + 'k') {
-                if (legalmoves.kingInCheck(board, color[0])) {
-                
-                }
-                document.getElementById(alphabet[x] + (y + 1).toString()).style['background-color'] = rgba(184, 57, 57, 5);
-            }
-            
-            
-        }
-    }
     if (color == 'white') {
         for (var y = 0; y < 8; y++) {
             for (var x = 0; x < 8; x++) {
