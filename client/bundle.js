@@ -31,6 +31,7 @@ socket.on('connect', function() {
     connection_successful(socket);
     window.addEventListener('resize', resized, true);
     document.getElementById('logout').addEventListener('click', logoutPressed, true);
+    document.getElementById('board').setAttribute('draggable', false);
 });
 socket.on('reconnect', function() {reconnection_successful(socket);});
 socket.on('connect_error', function() {connection_failed();});
@@ -69,6 +70,8 @@ socket.on('play_game', function(data) {
             img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
             img.className = 'piece';
             img.id = alphabet[x] + (y + 1).toString();
+            img.setAttribute('draggable', false);
+            
             
             img.addEventListener('click', squareReleased, false);
             document.getElementById('playingArea').appendChild(img);
@@ -81,11 +84,10 @@ socket.on('play_game', function(data) {
         img.src = '/client/imgs/' + color[0] + possiblePromoPieces[i] + '.png';
         img.className = 'promo';
         img.id = possiblePromoPieces[i];
-        // img.style.display = 'none';
+        img.setAttribute('draggable', false);
         
         img.addEventListener('click', promoPieceClicked, false);
         document.getElementById('PromoDiv').appendChild(img);
-        
     }
 
 
@@ -120,8 +122,12 @@ function squareReleased() {
     if (myMove) {
         if (fromSquare == '') {
             fromSquare = this.id;
-            outlinedID = this.id;
-            addBorder(this.id);
+            if (board[parseInt(fromSquare[1]) - 1][alphabet.indexOf(fromSquare[0])][0] == color[0]) {
+                outlinedID = this.id;
+                addBorder(this.id);
+            } else {
+                fromSquare = '';
+            }
         } else {
             toSquare = this.id;
             var z = {
@@ -134,6 +140,11 @@ function squareReleased() {
                 fromSquare = toSquare;
                 addBorder(fromSquare);
                 outlinedID = fromSquare;
+                toSquare = '';
+            } else if (fromSquare == toSquare) {
+                removeBorder(outlinedID);
+                outlinedID = '';
+                fromSquare = '';
                 toSquare = '';
             } else {
                 for (item of lMoves) {
@@ -168,7 +179,7 @@ function squareReleased() {
                                     rightCastle = false;
                                 }
                             } else {
-                                if (fromSquare = 'e8') {
+                                if (fromSquare == 'e8') {
                                     leftCastle = false;
                                     rightCastle = false;
                                 }
@@ -236,7 +247,7 @@ function resized() {
         pieces[i].style.width = squareSize.toString() + 'px';
         pieces[i].style.height = squareSize.toString() + 'px';
         if (color == 'white') {
-            pieces[i].style.left = ((7 - alphabet.indexOf(pieces[i].id[0])) * squareSize).toString() + 'px';
+            pieces[i].style.left = (alphabet.indexOf(pieces[i].id[0]) * squareSize).toString() + 'px';
             pieces[i].style.top = ((8 - parseInt(pieces[i].id[1])) * squareSize).toString() + 'px';
         } else {
             pieces[i].style.left = ((7 - alphabet.indexOf(pieces[i].id[0])) * squareSize).toString() + 'px';
@@ -574,7 +585,7 @@ function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
 		}
 	} else { //castling is different for white king vs black king
 		if(leftcastle && tempboard[7][3] == '__' && tempboard[7][2] == '__' && tempboard[7][1] == '__'){ //checks if squares between king and rook are empty
-			temp = castling(tempboard, 'r', 'w');
+			temp = castling(tempboard, 'l', 'b');
 			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
@@ -607,7 +618,7 @@ function castling(tempboard, dir, color) {
 				b[ncolor][2] = b[ncolor][3];
 				b[ncolor][3] = '__';
 				if(!kingInCheck(b, color)){ //checks if king is in check after moving 2 squares
-					lmoves.push({x: 4, ncolor}, {x: 2, y: ncolor});
+					lmoves.push({from: {x: 4, y: ncolor}, to: {x: 2, y: ncolor}});
 				}
 			}
 		}
@@ -618,7 +629,7 @@ function castling(tempboard, dir, color) {
 				b[ncolor][6] = b[ncolor][5];
 				b[ncolor][5] = '__';
 				if (!kingInCheck(b, color)) { //checks if king is in check after moving 2 squares
-					lmoves.push({x: 4, ncolor}, {x: 6, y: ncolor});
+					lmoves.push({from: {x: 4, y: ncolor}, to: {x: 6, y: ncolor}});
 				}
 			}
 		}
@@ -640,14 +651,14 @@ function movepiece(tempboard, from, to, promoPiece = '') {
             (to.x == 6) && 
             (from.x == 4)) { //if king is castling to the right
 
-        b[from.y][5] = b[from.y][from.x][0] + 'r';
+        b[from.y][5] = color + 'r';
         b[from.y][7] = '__';
-    } else if ((b[from.x][from.y] == 'wk' ||
-            b[from.x][from.y] == 'bk') &&
+    } else if ((b[from.y][from.x] == 'wk' ||
+            b[from.y][from.x] == 'bk') &&
             (to.x == 2) &&
             (from.x == 4)) { //if king is castling to the left
 
-        b[from.y][3] = b[from.y][from.x][0]+'r';
+        b[from.y][3] = color + 'r';
         b[from.y][0] = '__';
     } else if ((b[from.y][from.x] == 'wp') &&
             (b[to.y][to.x] == '__') &&

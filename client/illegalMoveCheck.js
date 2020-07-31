@@ -298,7 +298,7 @@ function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
 		}
 	} else { //castling is different for white king vs black king
 		if(leftcastle && tempboard[7][3] == '__' && tempboard[7][2] == '__' && tempboard[7][1] == '__'){ //checks if squares between king and rook are empty
-			temp = castling(tempboard, 'r', 'w');
+			temp = castling(tempboard, 'l', 'b');
 			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
@@ -331,7 +331,7 @@ function castling(tempboard, dir, color) {
 				b[ncolor][2] = b[ncolor][3];
 				b[ncolor][3] = '__';
 				if(!kingInCheck(b, color)){ //checks if king is in check after moving 2 squares
-					lmoves.push({x: 4, ncolor}, {x: 2, y: ncolor});
+					lmoves.push({from: {x: 4, y: ncolor}, to: {x: 2, y: ncolor}});
 				}
 			}
 		}
@@ -342,7 +342,7 @@ function castling(tempboard, dir, color) {
 				b[ncolor][6] = b[ncolor][5];
 				b[ncolor][5] = '__';
 				if (!kingInCheck(b, color)) { //checks if king is in check after moving 2 squares
-					lmoves.push({x: 4, ncolor}, {x: 6, y: ncolor});
+					lmoves.push({from: {x: 4, y: ncolor}, to: {x: 6, y: ncolor}});
 				}
 			}
 		}
@@ -364,14 +364,14 @@ function movepiece(tempboard, from, to, promoPiece = '') {
             (to.x == 6) && 
             (from.x == 4)) { //if king is castling to the right
 
-        b[from.y][5] = b[from.y][from.x][0] + 'r';
+        b[from.y][5] = color + 'r';
         b[from.y][7] = '__';
-    } else if ((b[from.x][from.y] == 'wk' ||
-            b[from.x][from.y] == 'bk') &&
+    } else if ((b[from.y][from.x] == 'wk' ||
+            b[from.y][from.x] == 'bk') &&
             (to.x == 2) &&
             (from.x == 4)) { //if king is castling to the left
 
-        b[from.y][3] = b[from.y][from.x][0]+'r';
+        b[from.y][3] = color + 'r';
         b[from.y][0] = '__';
     } else if ((b[from.y][from.x] == 'wp') &&
             (b[to.y][to.x] == '__') &&

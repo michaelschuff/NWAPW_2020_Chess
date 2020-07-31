@@ -30,6 +30,7 @@ socket.on('connect', function() {
     connection_successful(socket);
     window.addEventListener('resize', resized, true);
     document.getElementById('logout').addEventListener('click', logoutPressed, true);
+    document.getElementById('board').setAttribute('draggable', false);
 });
 socket.on('reconnect', function() {reconnection_successful(socket);});
 socket.on('connect_error', function() {connection_failed();});
@@ -68,6 +69,8 @@ socket.on('play_game', function(data) {
             img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
             img.className = 'piece';
             img.id = alphabet[x] + (y + 1).toString();
+            img.setAttribute('draggable', false);
+            
             
             img.addEventListener('click', squareReleased, false);
             document.getElementById('playingArea').appendChild(img);
@@ -80,11 +83,10 @@ socket.on('play_game', function(data) {
         img.src = '/client/imgs/' + color[0] + possiblePromoPieces[i] + '.png';
         img.className = 'promo';
         img.id = possiblePromoPieces[i];
-        // img.style.display = 'none';
+        img.setAttribute('draggable', false);
         
         img.addEventListener('click', promoPieceClicked, false);
         document.getElementById('PromoDiv').appendChild(img);
-        
     }
 
 
@@ -119,8 +121,12 @@ function squareReleased() {
     if (myMove) {
         if (fromSquare == '') {
             fromSquare = this.id;
-            outlinedID = this.id;
-            addBorder(this.id);
+            if (board[parseInt(fromSquare[1]) - 1][alphabet.indexOf(fromSquare[0])][0] == color[0]) {
+                outlinedID = this.id;
+                addBorder(this.id);
+            } else {
+                fromSquare = '';
+            }
         } else {
             toSquare = this.id;
             var z = {
@@ -133,6 +139,11 @@ function squareReleased() {
                 fromSquare = toSquare;
                 addBorder(fromSquare);
                 outlinedID = fromSquare;
+                toSquare = '';
+            } else if (fromSquare == toSquare) {
+                removeBorder(outlinedID);
+                outlinedID = '';
+                fromSquare = '';
                 toSquare = '';
             } else {
                 for (item of lMoves) {
@@ -167,7 +178,7 @@ function squareReleased() {
                                     rightCastle = false;
                                 }
                             } else {
-                                if (fromSquare = 'e8') {
+                                if (fromSquare == 'e8') {
                                     leftCastle = false;
                                     rightCastle = false;
                                 }
@@ -235,7 +246,7 @@ function resized() {
         pieces[i].style.width = squareSize.toString() + 'px';
         pieces[i].style.height = squareSize.toString() + 'px';
         if (color == 'white') {
-            pieces[i].style.left = ((7 - alphabet.indexOf(pieces[i].id[0])) * squareSize).toString() + 'px';
+            pieces[i].style.left = (alphabet.indexOf(pieces[i].id[0]) * squareSize).toString() + 'px';
             pieces[i].style.top = ((8 - parseInt(pieces[i].id[1])) * squareSize).toString() + 'px';
         } else {
             pieces[i].style.left = ((7 - alphabet.indexOf(pieces[i].id[0])) * squareSize).toString() + 'px';

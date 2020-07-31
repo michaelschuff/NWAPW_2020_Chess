@@ -80,7 +80,8 @@ io.on('connection', function(socket) {
                     }
                     break;
                 } else {
-                    if (socket.handshake.headers.referer != 'http://localhost:8080/client/game.html') {
+                    // if (socket.handshake.headers.referer != 'http://localhost:8080/client/game.html') {
+                    if (socket.handshake.headers.referer.substring(socket.handshake.headers.referer.length - 9) != 'game.html') {
                         io.to(item.p1socketID).emit('redirect', '/client/game.html');
                     } else {
                         const data = {
@@ -126,7 +127,8 @@ io.on('connection', function(socket) {
                     }
                     break;
                 } else {
-                    if (socket.handshake.headers.referer != 'http://localhost:8080/client/game.html') {
+                    // if (socket.handshake.headers.referer != 'http://localhost:8080/client/game.html') {
+                    if (socket.handshake.headers.referer.substring(socket.handshake.headers.referer.length - 9) != 'game.html') {
                         io.to(item.p2socketID).emit('redirect', '/client/game.html');
                     } else {
                         const data = {
@@ -234,15 +236,14 @@ io.on('connection', function(socket) {
             if (item.p1sessionID == data.sessionID) {
                 item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to, data.move.piece);
                 item.whitesTurn = false;
-                console.log(data.move.piece, item.board);
-                if (data.move.from == {x: 4, y: 0}){
+                if (data.move.from.x == 4 && data.move.from.y == 0) {
                     item.p1LCastle = false;
                     item.p1RCastle = false;
                 }
-                if (data.move.from == {x: 0, y: 0}){
+                if (data.move.from.x == 0 && data.move.from.y == 0) {
                     item.p1LCastle = false;
                 }
-                if (data.move.from == {x: 7, y: 0}){
+                if (data.move.from.x == 7 && data.move.from.y == 0) {
                     item.p1RCastle = false;
                 }
 
@@ -258,15 +259,14 @@ io.on('connection', function(socket) {
             if (item.p2sessionID == data.sessionID) {
                 item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to, data.move.piece);
                 item.whitesTurn = true;
-
-                if (data.move.from == {x: 4, y: 7}){
+                if (data.move.from.x == 4 && data.move.from.y == 7) {
                     item.p2LCastle = false;
                     item.p2RCastle = false;
                 }
-                if (data.move.from == {x: 0, y: 7}){
+                if (data.move.from.x == 0 && data.move.from.y == 7) {
                     item.p2LCastle = false;
                 }
-                if (data.move.from == {x: 7, y: 7}){
+                if (data.move.from.x == 7 && data.move.from.y == 7) {
                     item.p2RCastle = false;
                 }
 
