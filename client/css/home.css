@@ -7,6 +7,7 @@ body {
     margin: 0;
     height: 100%;
     width: 100%;
+    background-color:#badfe7;
 }
 
 #accountoptions {
@@ -33,8 +34,26 @@ body {
     align-self: center;
     font-size: 10px;
     margin: 0;
+    background-color:#f6f6f2;
+    color:black;
 }
 
 #playbutton {
-    
+    background-color:#f6f6f2;
+    color:black;
+}
+
+#lines div{
+    width: 20px;
+    height:100vh;
+    background-color:#388087;
+    top:100px;
+    display:inline-block;
+    transform: rotate(45deg);
+    margin:10px;
+}
+#lines{
+    position:absolute;
+    top:-110px;
+
 }
