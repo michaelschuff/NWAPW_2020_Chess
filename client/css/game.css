@@ -10,6 +10,15 @@
     position: relative;
 }
 
+body{
+    background-color:#6fb3b8;
+}
+#boardid{
+    background-color:#f6f6f2;
+    border-radius: 50%;
+    padding: 10px;
+}
+
 #accountoptions {
     position: absolute;
     text-align: center;
@@ -38,5 +47,4 @@
 
 #PromoDiv {
     position: relative;
-
 }

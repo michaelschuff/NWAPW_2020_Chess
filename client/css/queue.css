@@ -1,0 +1,15 @@
+body{
+    background-color:#c2edce;
+    padding:0;
+}
+#logout{
+    background-color:#388087;
+    color:#f6f6f2;
+}
+#shape{
+    min-width: 100vw;
+    min-height:100vw;
+    background-color:#badfe7;
+    border-top-left-radius: 50%;
+    display:inline-block;
+}
