@@ -59,6 +59,10 @@ socket.on('play_game', function(data) {
         lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
     }
 
+    for (item of document.getElementsByClassName('promo')) {
+        item.src = '/client/imgs/' + color[0] + item.id + '.png';
+    }
+    
     for (var y = 0; y < 8; y++) {
         var div = document.createElement('div');
         div.id = 'row' + y;
@@ -119,6 +123,7 @@ function promoPieceClicked() {
     fromSquare = '';
     toSquare = ''
 }
+
 function squareReleased() {
     var promo = false;
     if (myMove) {
@@ -224,6 +229,7 @@ function resized() {
     promoDiv.width = squareSize;
     promoDiv.height = 4 * squareSize;
     var pieces = document.getElementsByClassName('piece');
+    var promoPieces = document.getElementsByClassName('promo');
     
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].width = squareSize;
@@ -236,6 +242,28 @@ function resized() {
             pieces[i].style.top = ((parseInt(pieces[i].id[1]) - 1) * squareSize + (window.window.innerHeight - htmlBoard.height) / 2.0).toString() + 'px';
         }
         
+    }
+
+    for (var i = 0; i < promoPieces.length; i++) {
+        promoPieces[i].width = squareSize;
+        promoPieces[i].height = squareSize;
+        promoPieces[i].style.left = (8 * squareSize + ((window.window.innerWidth - htmlBoard.width) / 2.0)).toString() + 'px';
+        var offset = 0;
+        switch(promoPieces[i].id) {
+            case 'q':
+                offset = 0;
+                break;
+            case 'r':
+                offset = 1;
+                break;
+            case 'b':
+                offset = 2;
+                break;
+            case 'n':
+                offset = 3;
+                break;
+        }   
+        promoPieces[i].style.top = (offset * squareSize + (window.window.innerWidth - htmlBoard.width) / 2.0).toString() + 'px';
     }
 }
 
