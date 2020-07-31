@@ -16,9 +16,30 @@ body {
     height: 100%;
 }
 
+#board {
+    position: relative;
+}
+
+#game {
+    position: relative;
+}
+
+#playingArea {
+    position: relative;
+}
+
+#PromoDiv {
+    position: absolute;
+}
+
 .piece {
     position: absolute;
 }
+
+.promo {
+    position: relative;
+}
+
 
 #accountoptions {
     position: absolute;

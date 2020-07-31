@@ -60,11 +60,14 @@ function getLegalPawnMoves(tempboard, piece, lastmove) {
 			if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y + 1}), 'w')) { //checks if king is in check after pawn is moved
                 lmoves.push({from: piece, to: {x: piece.x, y: piece.y + 1}});
             }
-			if (tempboard[piece.y + 2][piece.x] == '__' && piece.y == 1) {
-                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y + 2}), 'w')) {
-                    lmoves.push({from: piece, to: {x: piece.x, y: piece.y + 2}});
+            if (piece.y == 1) {
+                if (tempboard[piece.y + 2][piece.x] == '__') {
+                    if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y + 2}), 'w')) {
+                        lmoves.push({from: piece, to: {x: piece.x, y: piece.y + 2}});
+                    }
                 }
             }
+			
         }
         
 		if (piece.x > 0) {
@@ -110,11 +113,14 @@ function getLegalPawnMoves(tempboard, piece, lastmove) {
 			if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y - 1}), 'b')) { //checks if king is in check after pawn is moved
                 lmoves.push({from: piece, to: {x: piece.x, y: piece.y - 1}});
             }
-			if (tempboard[piece.y - 2][piece.x] == '__' && piece.y == 6) {
-                if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y - 2}), 'b')) {
-                    lmoves.push({from: piece, to: {x: piece.x, y: piece.y - 2}});
+            if (piece.y == 6) {
+                if (tempboard[piece.y - 2][piece.x] == '__') {
+                    if (!kingInCheck(movepiece(tempboard, piece, {x: piece.x, y: piece.y - 2}), 'b')) {
+                        lmoves.push({from: piece, to: {x: piece.x, y: piece.y - 2}});
+                    }
                 }
             }
+			
         }
         
 		if (piece.x > 0) {
@@ -345,6 +351,7 @@ function castling(tempboard, dir, color) {
 }
 
 function movepiece(tempboard, from, to, promoPiece = '') {
+    var color = tempboard[from.y][from.x][0];
     var b = [];
     for (var y = 0; y < 8; y++) {
         b.push([])
@@ -352,6 +359,7 @@ function movepiece(tempboard, from, to, promoPiece = '') {
             b[y].push(tempboard[y][x]); //creates a temporary board
         }
     }
+
     if ((b[from.y][from.x] == 'wk' || b[from.y][from.x] == 'bk') &&
             (to.x == 6) && 
             (from.x == 4)) { //if king is castling to the right
@@ -380,18 +388,12 @@ function movepiece(tempboard, from, to, promoPiece = '') {
         b[to.y + 1][to.x]='__';
     }
 
-    if (promoPiece != '') {
-        for (var x = 0; x < 8; x++) {
-
-        }
-    }
-
     b[to.y][to.x] = b[from.y][from.x];
     b[from.y][from.x] = '__';
-
-    if (b[to.y][to.x][1] == 'p' && (to.y == 7 || to.y == 0)) {
-        b[to.y][to.x][1] == promoPiece;
+    if (promoPiece != '') {
+        b[to.y][to.x] = color + promoPiece;
     }
+
     return b;
 }
 
