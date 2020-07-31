@@ -66,7 +66,7 @@ socket.on('play_game', function(data) {
     for (var y = 0; y < 8; y++) {
         var div = document.createElement('div');
         div.id = 'row' + y;
-        document.getElementById('chessboard').appendChild(div);
+        document.getElementById('playingArea').appendChild(div);
         for (var x = 0; x < 8; x++) {
             var img = document.createElement('img');
             img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
@@ -219,15 +219,23 @@ function enablePromoPieces() {
 
 function resized() {
     const alphabet = 'abcdefgh';
-    var promoDiv = document.getElementById('PromoDiv');
-    var htmlBoard = document.getElementById('board');
     var squareSize = 0.75 * Math.min(window.window.innerWidth, window.window.innerHeight) / 8.0;
+    
+    var game = document.getElementById('game');
+    game.style.position = 'absolute';
+    game.width = 9 * squareSize;
+    game.height = 8 * squareSize;
+    game.style.left = (((window.window.innerWidth - htmlBoard.width) / 2.0) - 4.5 * squareSize) + 'px';
+    game.style.top = (((window.window.innerHeight - htmlBoard.height) / 2.0) - 4.5 * squareSize) + 'px';
+    
+    var htmlBoard = document.getElementById('playingArea');
     htmlBoard.height = 8 * squareSize;
     htmlBoard.width = 8 * squareSize;
-    htmlBoard.style.left = ((window.window.innerWidth - htmlBoard.width) / 2.0) + 'px';
-    htmlBoard.style.top = ((window.window.innerHeight - htmlBoard.height) / 2.0) + 'px';
+
+    var promoDiv = document.getElementById('PromoDiv');
     promoDiv.width = squareSize;
     promoDiv.height = 4 * squareSize;
+
     var pieces = document.getElementsByClassName('piece');
     var promoPieces = document.getElementsByClassName('promo');
     
@@ -243,27 +251,29 @@ function resized() {
         }
         
     }
+    // promoDiv.style.left = (8 * squareSize + ((window.window.innerWidth - htmlBoard.width) / 2.0)).toString() + 'px';
+    // promoDiv.style.top = ((window.window.innerHeight - htmlBoard.height) / 2.0).toString() + 'px';
 
     for (var i = 0; i < promoPieces.length; i++) {
         promoPieces[i].width = squareSize;
         promoPieces[i].height = squareSize;
-        promoPieces[i].style.left = (8 * squareSize + ((window.window.innerWidth - htmlBoard.width) / 2.0)).toString() + 'px';
-        var offset = 0;
-        switch(promoPieces[i].id) {
-            case 'q':
-                offset = 0;
-                break;
-            case 'r':
-                offset = 1;
-                break;
-            case 'b':
-                offset = 2;
-                break;
-            case 'n':
-                offset = 3;
-                break;
-        }   
-        promoPieces[i].style.top = (offset * squareSize + (window.window.innerWidth - htmlBoard.width) / 2.0).toString() + 'px';
+        // promoPieces[i].style.left = (8 * squareSize + ((window.window.innerWidth - htmlBoard.width) / 2.0)).toString() + 'px';
+        // var offset = 0;
+        // switch(promoPieces[i].id) {
+        //     case 'q':
+        //         offset = 0;
+        //         break;
+        //     case 'r':
+        //         offset = 1;
+        //         break;
+        //     case 'b':
+        //         offset = 2;
+        //         break;
+        //     case 'n':
+        //         offset = 3;
+        //         break;
+        // }   
+        // promoPieces[i].style.top = (offset * squareSize + (window.window.innerHeight - htmlBoard.height) / 2.0).toString() + 'px';
     }
 }
 

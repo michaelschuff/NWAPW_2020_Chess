@@ -1,22 +1,23 @@
+html {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background-color:#6fb3b8;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+#shapeAroundBoard {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
 .piece {
     position: absolute;
-}
-
-#chessboard {
-    position: relative;
-}
-
-#board {
-    position: relative;
-}
-
-body{
-    background-color:#6fb3b8;
-}
-#boardid{
-    background-color:#f6f6f2;
-    border-radius: 50%;
-    padding: 10px;
 }
 
 #accountoptions {
@@ -43,8 +44,4 @@ body{
     align-self: center;
     font-size: 10px;
     margin: 0;
-}
-
-#PromoDiv {
-    position: relative;
 }
