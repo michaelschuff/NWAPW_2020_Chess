@@ -249,7 +249,20 @@ io.on('connection', function(socket) {
 
 
                 item.lastMove = data.move;
-                io.to(item.p2socketID).emit('make_a_move', {lastMove: data.move})
+
+                var lMoves = legalmoves.getLegalMoves(item.board, 'b', item.lastMove, item.p1LCastle, item.p1RCastle);
+                if (lMoves.length == 0) {
+                    gamerooms.splice(item, 1);
+                    if (legalmoves.kingInCheck(item.board, 'b')) {
+                        io.to(item.p1socketID).emit('gameover', {textResult: 'You won!', numResult: '1-0'});
+                        io.to(item.p2socketID).emit('gameover', {textResult: 'You lost.', numResult: '0-1'});
+                    } else {
+                        io.to(item.p1socketID).emit('gameover', {textResult: 'Stalemate.', numResult: '0.5-0.5'});
+                        io.to(item.p2socketID).emit('gameover', {textResult: 'Stalemate.', numResult: '0.5-0.5'});
+                    }
+                } else {
+                    io.to(item.p2socketID).emit('make_a_move', {lastMove: data.move});
+                }
             }
         }
     });
@@ -272,7 +285,20 @@ io.on('connection', function(socket) {
 
 
                 item.lastMove = data.move;
-                io.to(item.p1socketID).emit('make_a_move', {lastMove: data.move})
+
+                var lMoves = legalmoves.getLegalMoves(item.board, 'w', item.lastMove, item.p1LCastle, item.p1RCastle);
+                if (lMoves.length == 0) {
+                    gamerooms.splice(item, 1);
+                    if (legalmoves.kingInCheck(item.board, 'w')) {
+                        io.to(item.p1socketID).emit('gameover', {textResult: 'You lost.', numResult: '0-1'});
+                        io.to(item.p2socketID).emit('gameover', {textResult: 'You win!', numResult: '1-0'});
+                    } else {
+                        io.to(item.p1socketID).emit('gameover', {textResult: 'Stalemate.', numResult: '0.5-0.5'});
+                        io.to(item.p2socketID).emit('gameover', {textResult: 'Stalemate.', numResult: '0.5-0.5'});
+                    }
+                } else {
+                    io.to(item.p1socketID).emit('make_a_move', {lastMove: data.move});
+                }
             }
         }
     });

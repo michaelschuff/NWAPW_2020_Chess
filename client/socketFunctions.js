@@ -59,6 +59,6 @@ function redirect(path) {
 }
 
 function logoutPressed() {
-    socket.emit('logout', {sessionID: SSID});
     document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    socket.emit('logout', {sessionID: SSID});
 }

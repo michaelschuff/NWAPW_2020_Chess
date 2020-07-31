@@ -32,6 +32,8 @@ socket.on('connect', function() {
     window.addEventListener('resize', resized, true);
     document.getElementById('logout').addEventListener('click', logoutPressed, true);
     document.getElementById('board').setAttribute('draggable', false);
+    document.getElementById('home').addEventListener('click', function() {redirect('/client/home.html');}, true);
+    document.getElementById('newgame').addEventListener('click', function() {socket.emit('wish_to_play', {sessionID: SSID});}, true);
 });
 socket.on('reconnect', function() {reconnection_successful(socket);});
 socket.on('connect_error', function() {connection_failed();});
@@ -56,9 +58,7 @@ socket.on('play_game', function(data) {
     rightCastle = data.rightCastle;
     leftCastle = data.leftCastle;
 
-    if (myMove) {
-        lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
-    }
+    
 
     for (item of document.getElementsByClassName('promo')) {
         item.src = '/client/imgs/' + color[0] + item.id + '.png';
@@ -93,7 +93,15 @@ socket.on('play_game', function(data) {
 
     document.getElementById('PromoDiv').style.display = 'none';
     resized();
+    if (myMove) {
+        lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
+    }
 });
+
+socket.on('gameover', function(data) {
+    document.getElementById('result').innerText = data.textResult;
+    document.getElementById('gameover').style.display = 'inline-block';
+})
 
 function promoPieceClicked() {
     document.getElementById('PromoDiv').style.display = 'none';

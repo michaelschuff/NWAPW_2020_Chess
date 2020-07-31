@@ -40,6 +40,49 @@ body {
     position: relative;
 }
 
+#result {
+    padding: 5px;
+}
+
+#gameover {
+    position: relative;
+    padding: 10px;
+    margin: auto;
+    top: 37.5%;
+    left: 37.5%;
+    background-color:#BADFE7;
+    border-radius:25px;
+}
+
+#homeNewGameButtons {
+    position: relative;
+    padding: 5px;
+    background-color:#BADFE7;
+}
+
+#result {
+    position: relative;
+    text-align: center;
+}
+
+#home {
+    position: relative;
+    box-sizing: border-box;
+    display:inline-block;
+    background-color:#388087;
+    color:#f8f8ff;
+}
+
+#newgame {
+    position: relative;
+    float: right;
+    box-sizing: border-box;
+    background-color:#388087;
+    color:#f8f8ff;
+}
+
+
+
 
 #accountoptions {
     position: absolute;
