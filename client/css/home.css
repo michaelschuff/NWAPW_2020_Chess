@@ -42,3 +42,18 @@ body {
     background-color:#f6f6f2;
     color:black;
 }
+
+#lines div{
+    width: 20px;
+    height:100vh;
+    background-color:#388087;
+    top:100px;
+    display:inline-block;
+    transform: rotate(45deg);
+    margin:10px;
+}
+#lines{
+    position:absolute;
+    top:-110px;
+
+}

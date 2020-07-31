@@ -13,7 +13,11 @@
             <button id=logout onclick=logoutPressed()>Logout</button>
         </div>
         <button id='playbutton' onclick=playPressed()>Play</button>
-        
+        <div id="lines">
+            <div id="line1"></div>
+            <div id="line2"></div>
+            <div id="line3"></div>
+        </div>
         
         <script>
             const SSID = document.cookie.split(';').find(row => row.startsWith('sessionID')).split('=')[1];
