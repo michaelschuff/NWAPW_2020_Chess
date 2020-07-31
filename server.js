@@ -1,11 +1,13 @@
-var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var Datastore = require('nedb');
+const express = require('express');
+const app = express();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
+const Datastore = require('nedb');
+const legalmoves = require('./client/illegalMoveCheck.js');
 
 
 var port = process.env.PORT || 8080;
+
 
 const accounts = new Datastore('accounts.db')
 accounts.loadDatabase();
@@ -51,22 +53,94 @@ io.on('connection', function(socket) {
         for (item of gamerooms) {
             if (item.p1sessionID == data.sessionID) {
                 item.p1socketID = socket.id;
-                item.p1ready = true;
-                if (item.p1ready && item.p2ready) {
-                    io.to(item.p1socketID).emit('play_game', {color: 'white'});
-                    io.to(item.p2socketID).emit('play_game', {color: 'black'});
+                if (!item.playing) {
+                    item.p1ready = true;
+                    if (item.p1ready && item.p2ready) {
+                        item.playing = true;
+
+                        const wdata = {
+                            yourMove: item.whitesTurn,
+                            board: item.board,
+                            rightCastle: true,
+                            leftCastle: true,
+                            color: 'white',
+                            lastMove: item.lastMove,
+                        }
+
+                        const bdata = {
+                            yourMove: !item.whitesTurn,
+                            board: item.board,
+                            rightCastle: true,
+                            leftCastle: true,
+                            color: 'black',
+                            lastMove: item.lastMove,
+                        }
+                        io.to(item.p1socketID).emit('play_game', wdata);
+                        io.to(item.p2socketID).emit('play_game', bdata);
+                    }
+                    break;
+                } else {
+                    if (socket.handshake.headers.referer != 'http://localhost:8080/client/game.html') {
+                        io.to(item.p1socketID).emit('redirect', '/client/game.html');
+                    } else {
+                        const data = {
+                            yourMove: item.whitesTurn,
+                            board: item.board,
+                            rightCastle: item.p1RCastle,
+                            leftCastle: item.p1LCastle,
+                            color: 'white',
+                            lastMove: item.lastMove,
+                        }
+                        io.to(item.p1socketID).emit('play_game', data);
+                    }
+                    
                 }
-                break;
             }
+                
             
             if (item.p2sessionID == data.sessionID) {
                 item.p2socketID = socket.id;
-                item.p2ready = true;
-                if (item.p1ready && item.p2ready) {
-                    io.to(item.p1socketID).emit('play_game', {color: 'white'});
-                    io.to(item.p2socketID).emit('play_game', {color: 'black'});
+                if (!item.playing) {
+                    item.p2ready = true;
+                    if (item.p1ready && item.p2ready) {
+                        item.playing = true;
+                        const wdata = {
+                            yourMove: item.whitesTurn,
+                            board: item.board,
+                            rightCastle: true,
+                            leftCastle: true,
+                            color: 'white',
+                            lastMove: item.lastMove,
+                        }
+
+                        const bdata = {
+                            yourMove: !item.whitesTurn,
+                            board: item.board,
+                            rightCastle: true,
+                            leftCastle: true,
+                            color: 'black',
+                            lastMove: item.lastMove,
+                        }
+                        io.to(item.p1socketID).emit('play_game', wdata);
+                        io.to(item.p2socketID).emit('play_game', bdata);
+                    }
+                    break;
+                } else {
+                    if (socket.handshake.headers.referer != 'http://localhost:8080/client/game.html') {
+                        io.to(item.p2socketID).emit('redirect', '/client/game.html');
+                    } else {
+                        const data = {
+                            yourMove: !item.whitesTurn,
+                            board: item.board,
+                            rightCastle: item.p2RCastle,
+                            leftCastle: item.p2LCastle,
+                            color: 'black',
+                            lastMove: item.lastMove,
+                        }
+                        io.to(item.p2socketID).emit('play_game', data);
+                    }
                 }
-                break;
+                
             }
         }
 
@@ -137,13 +211,10 @@ io.on('connection', function(socket) {
     });
 
     socket.on('thisIsMySessionID', function(data) {
-        console.log('\nreceived session id: ' + data.sessionID);
         if (data.sessionID.length != 20) {
             io.to(socket.id).emit('redirect', '/client/loginRegister.html');
-            console.log('null session id, redirecting to login/register');
         } else {
             io.to(socket.id).emit('redirect', '/client/home.html');
-            console.log('valid session id, redirecting to home');
         }
     });
 
@@ -151,7 +222,6 @@ io.on('connection', function(socket) {
         for (item of sessions){
             if (item.sessionID == data.sessionID) {
                 queue.push(item);
-                // sessions.splice(item, 1);
                 break;
             }
         }
@@ -162,7 +232,25 @@ io.on('connection', function(socket) {
     socket.on('white_moved', function(data) {
         for (item of gamerooms) {
             if (item.p1sessionID == data.sessionID) {
-                io.to(item.p2socketID).emit('make_a_move', {to: data.to, fro: data.fro})
+                if (data.move.piece != undefined) {
+                    item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to, data.move.piece);
+                }
+                item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to);
+                item.whitesTurn = false;
+                if (data.move.from == {x: 4, y: 0}){
+                    item.p1LCastle = false;
+                    item.p1RCastle = false;
+                }
+                if (data.move.from == {x: 0, y: 0}){
+                    item.p1LCastle = false;
+                }
+                if (data.move.from == {x: 7, y: 0}){
+                    item.p1RCastle = false;
+                }
+
+
+                item.lastMove = data.move;
+                io.to(item.p2socketID).emit('make_a_move', {lastMove: data.move})
             }
         }
     });
@@ -170,7 +258,26 @@ io.on('connection', function(socket) {
     socket.on('black_moved', function(data) {
         for (item of gamerooms) {
             if (item.p2sessionID == data.sessionID) {
-                io.to(item.p1socketID).emit('make_a_move', {to: data.to, fro: data.fro})
+                if (data.move.piece != undefined) {
+                    item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to, data.move.piece);
+                }
+                item.board = legalmoves.movepiece(item.board, data.move.from, data.move.to);
+                item.whitesTurn = true;
+
+                if (data.move.from == {x: 4, y: 7}){
+                    item.p2LCastle = false;
+                    item.p2RCastle = false;
+                }
+                if (data.move.from == {x: 0, y: 7}){
+                    item.p2LCastle = false;
+                }
+                if (data.move.from == {x: 7, y: 7}){
+                    item.p2RCastle = false;
+                }
+
+
+                item.lastMove = data.move;
+                io.to(item.p1socketID).emit('make_a_move', {lastMove: data.move})
             }
         }
     });
@@ -182,12 +289,28 @@ function queueFull() {
         p1sessionID: queue[0].sessionID,
         p1socketID: queue[0].socketID,
         p1ready: false,
+        p1LCastle: true,
+        p1RCastle: true,
 
         p2username: queue[1].username,
         p2sessionID: queue[1].sessionID,
         p2socketID: queue[1].socketID,
         p2ready: false,
-        roomID: queue[0].sessionID + '-' + queue[1].sessionID
+        p2LCastle: true,
+        p2RCastle: true,
+
+        // roomID: queue[0].sessionID + '-' + queue[1].sessionID,
+        board: [['wr','wn','wb','wq','wk','wb','wn','wr'],
+                ['wp','wp','wp','wp','wp','wp','wp','wp'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['__','__','__','__','__','__','__','__'],
+                ['bp','bp','bp','bp','bp','bp','bp','bp'],
+                ['br','bn','bb','bq','bk','bb','bn','br']],
+        whitesTurn: true,
+        playing: false,
+        lastMove: {from: {x: 0, y: 0}, to: {x: 0, y: 0}},
     };
     gamerooms.push(room);
 
@@ -196,8 +319,6 @@ function queueFull() {
 
     queue.splice(queue[0], 1);
     queue.splice(queue[0], 1);
-    
-
 }
 
 function generateUniqueSessionID() {

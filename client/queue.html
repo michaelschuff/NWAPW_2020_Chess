@@ -29,11 +29,6 @@
             socket.on('validation_success', function(data) {validation_success(data)});
             socket.on('validation_failed', function() {validation_failed()});
             socket.on('redirect', function(path) {redirect(path);});
-
-            function logoutPressed() {
-                socket.emit('logout', {sessionID: SSID});
-                document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-            }
             
         </script>
     </body>
