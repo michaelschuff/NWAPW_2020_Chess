@@ -160,9 +160,12 @@ io.on('connection', function(socket) {
 
     socket.on('new_login', function(data) {
         console.log('\nClient attempting to login...');
-        accounts.find({username: data.username, password: data.password}, function(err, docs) {
+        accounts.find({username: data.username}, function(err, docs) {
             if (docs == []) {
-                io.to(socket.id).emit('login_failure','No account with that username and password combination');
+                io.to(socket.id).emit('login_failure', 'No account with that username');
+                console.log('login failed');
+            } else if (docs[0].password != data.password) {
+                io.to(socket.id).emit('login_failure','Incorrect password');
                 console.log('login failed');
             } else {
                 var SSID;
@@ -205,6 +208,25 @@ io.on('connection', function(socket) {
         for (item of sessions) {
             if (item.sessionID == data.sessionID) {
                 sessions.splice(item, 1);
+                break;
+            }
+        }
+
+        for (item of gamerooms) {
+            if (item.p1sessionID == data.sessionID) {
+                io.to(item.p2sessionID).emit('gameover', {textResult: 'Your opponent disconnected', numResult: '0-1'});
+                gamerooms.slice(item, 1);
+                break;
+            } else if (item.p2sessionID == data.sessionID) {
+                io.to(item.p1sessionID).emit('gameover', {textResult: 'Your opponent disconnected', numResult: '1-0'});
+                gamerooms.slice(item, 1);
+                break;
+            }
+        }
+
+        for (item of queue) {
+            if (item.sessionID == data.sessionID) {
+                queue.splice(item, 1);
                 break;
             }
         }
