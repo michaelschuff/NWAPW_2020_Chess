@@ -39,21 +39,29 @@ body {
 }
 
 #playbutton {
+    position: relative;
+    top: 50%;
+    left: 50%;
     background-color:#f6f6f2;
     color:black;
 }
 
-/* #lines div {
+.line {
+    position: relative;
     width: 20px;
-    height:100vh;
+    height: 100%;
+    top: 0;
+    left: 0px;
     background-color:#388087;
-    top:100px;
-    display:inline-block;
-    transform: rotate(45deg);
-    margin:10px;
+    display: inline-block;
 }
-#lines{
-    position:absolute;
-    top:-110px;
 
-} */
+#lines {
+    position: absolute;
+    top: -116px;
+    left: -70px;
+    width: 70px;
+    height: 400px;
+    transform-origin: bottom right;
+    transform: rotate(45deg);
+}

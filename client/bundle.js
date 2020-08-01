@@ -11,6 +11,7 @@ var leftCastle = true;
 var rightCastle = true;
 var lMoves = [];
 var outlinedID = '';
+var isGameover = false;
 var board = [
     ['wr','wn','wb','wq','wk','wb','wn','wr'],
     ['wp','wp','wp','wp','wp','wp','wp','wp'],
@@ -23,8 +24,8 @@ var board = [
 
 
 function logoutPressed() {
-    socket.emit('logout', {sessionID: SSID});
     document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    socket.emit('logout', {sessionID: SSID});
 }
 
 socket.on('connect', function() {
@@ -99,8 +100,9 @@ socket.on('play_game', function(data) {
 });
 
 socket.on('gameover', function(data) {
+    isGameover = true;
     document.getElementById('result').innerText = data.textResult;
-    document.getElementById('gameover').style.display = 'inline-block';
+    document.getElementById('gameover').style.display = 'block';
 })
 
 function promoPieceClicked() {
@@ -237,7 +239,7 @@ function resized() {
     var game = document.getElementById('game');
     game.style.width = (9.0 * squareSize).toString() + 'px';
     game.style.height = (8.0 * squareSize).toString() + 'px';
-    game.style.left = (window.window.innerWidth / 2.0 - 4.5 * squareSize).toString() + 'px';
+    game.style.left = (window.window.innerWidth / 2.0 - 4.0 * squareSize).toString() + 'px';
     game.style.top = (window.window.innerHeight / 2.0 - 4.0 * squareSize).toString() + 'px';
     
     var playingArea = document.getElementById('playingArea');
@@ -264,8 +266,6 @@ function resized() {
         
     }
 
-
-
     var promoDiv = document.getElementById('PromoDiv');
     promoDiv.style.width = squareSize.toString() + 'px';
     promoDiv.style.height = (4.0 * squareSize).toString() + 'px';
@@ -278,6 +278,17 @@ function resized() {
         promoPieces[i].style.width = squareSize.toString() + 'px';
         promoPieces[i].style.height = squareSize.toString() + 'px';
     }
+
+
+    var gameover = document.getElementById('gameover');
+    gameover.style.width = (3.0 * squareSize).toString() + 'px';
+    gameover.style.height = (3.0 * squareSize).toString() + 'px';
+    gameover.style.left = (2.5 * squareSize).toString() + 'px';
+    gameover.style.top = (2.5 * squareSize).toString() + 'px';
+    if (!isGameover) {
+        gameover.style.display = 'none';
+    }
+    
 }
 
 function addBorder(id) {

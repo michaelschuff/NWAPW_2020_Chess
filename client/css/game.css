@@ -41,44 +41,43 @@ body {
 }
 
 #result {
-    padding: 5px;
+    margin: 0;
 }
 
 #gameover {
-    position: relative;
-    padding: 10px;
-    margin: auto;
-    top: 37.5%;
-    left: 37.5%;
-    background-color:#BADFE7;
-    border-radius:25px;
+    position: absolute;
+    background-color:#badfe7d7;
+    border-radius: 15px;
 }
 
 #homeNewGameButtons {
     position: relative;
-    padding: 5px;
-    background-color:#BADFE7;
+    height: 70%;
+    margin: 0;
 }
 
 #result {
     position: relative;
     text-align: center;
+    line-height: 400%;
+    height: 30%;
 }
 
 #home {
     position: relative;
     box-sizing: border-box;
-    display:inline-block;
     background-color:#388087;
     color:#f8f8ff;
+    margin: 5px;
 }
 
 #newgame {
     position: relative;
-    float: right;
+    float: left;
     box-sizing: border-box;
     background-color:#388087;
     color:#f8f8ff;
+    margin: 5px;
 }
 
 

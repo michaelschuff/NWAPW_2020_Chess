@@ -17,7 +17,7 @@ body {
     top: 37.5%;
     left: 37.5%;
     background-color:#BADFE7;
-    border-radius:25px;
+    border-radius: 15px;
 }
 
 #loginForm {
@@ -62,31 +62,35 @@ body {
 }
 
 .dot {
+    position: absolute;
     height: 25px;
     width: 25px;
+    top: 50px;
+    left: 50px;
     background-color: #388087;
     border-radius: 50%;
     display: inline-block;
-  }
-  #button1{
-    position:absolute;
-    top: 20px;
-  }
+}
 
-  #button2{
-      height:50px;
-      width: 50px;
-      position:absolute;
-      top: 30px;
-      left: 40px;
-  }
-  #button3{
-    position:absolute;
-    left: 20px;
-    top: 10px;
-  }
-  #button4{
-    position:absolute;
-    top: 40px;
-  }
+#dot1 {
+    height: 50px;
+    width: 50px;
+    top: 50px;
+    left: 50px;
+}
+
+#dot2 {
+    top: 19px;
+    left: 60px;
+}
+
+#dot3 {
+    top: 63px;
+    left: 10px;
+}
+
+#dot4{
+    top: 29px;
+    left: 16px;
+}
   
