@@ -1,3 +1,15 @@
+/*
+    This file gets bundled into the same file with illegalMoveCheck. This is necessary to allow us to call
+    functions from this file on the server or on the client. To bundle together use the module 'browserify'.
+
+    1. navigate to /client
+    2. run the command 'browserify game.js > bundle.js'
+    3. navigate back and start server
+*/
+
+
+
+// vars
 var legalmoves = require('./illegalMoveCheck.js');
 const SSID = document.cookie.split(';').find(row => row.startsWith('sessionID')).split('=')[1];
 var fromSquare = '';
@@ -23,18 +35,21 @@ var board = [
 
 
 function logoutPressed() {
+    //clear the sessionID cookie
     document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     socket.emit('logout', {sessionID: SSID});
 }
 
 socket.on('connect', function() {
     connection_successful(socket);
+    //event listeners
     window.addEventListener('resize', resized, true);
     document.getElementById('logout').addEventListener('click', logoutPressed, true);
     document.getElementById('board').setAttribute('draggable', false);
     document.getElementById('home').addEventListener('click', function() {redirect('/client/home.html');}, true);
     document.getElementById('newgame').addEventListener('click', function() {socket.emit('wish_to_play', {sessionID: SSID});}, true);
 });
+//based on connection status call corresponding functions from socketFunctions.js
 socket.on('reconnect', function() {reconnection_successful(socket);});
 socket.on('connect_error', function() {connection_failed();});
 socket.on('connect_timeout', function() {connection_timeout();});
@@ -44,32 +59,34 @@ socket.on('validation_success', function(data) {validation_success(data);});
 socket.on('validation_failed', function() {validation_failed()});
 socket.on('redirect', function(path) {redirect(path);});
 
-socket.on('make_a_move', function(data) {
+socket.on('make_a_move', function(data) {//update the board with opponents move and let the client make a move
     board = legalmoves.movepiece(board, data.lastMove.from, data.lastMove.to, data.lastMove.piece);
     redrawBoard();
     myMove = true;
     lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
 });
 
-socket.on('play_game', function(data) {
+socket.on('play_game', function(data) {//called whenever client connects to /client/game.html
     myMove = data.yourMove;
     color = data.color;
     board = data.board;
     rightCastle = data.rightCastle;
-    leftCastle = data.leftCastle;
+    leftCastle = data.leftCastle;//get game info from server
 
     
 
-    for (item of document.getElementsByClassName('promo')) {
-        item.src = '/client/imgs/' + color[0] + item.id + '.png';
-    }
+    // for (item of document.getElementsByClassName('promo')) {//set source images of promotion pieces
+    //     item.src = '/client/imgs/' + color[0] + item.id + '.png';
+    // }
     
-    for (var y = 0; y < 8; y++) {
+    for (var y = 0; y < 8; y++) {//create all piece images 
         for (var x = 0; x < 8; x++) {
             var img = document.createElement('img');
             img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
             img.className = 'piece';
             img.id = alphabet[x] + (y + 1).toString();
+            //dont let user drag the images and save them to their desktop
+            //this isnt for security reasons, just aesthetic and function
             img.setAttribute('draggable', false);
             
             
@@ -78,12 +95,14 @@ socket.on('play_game', function(data) {
         }
     }
 
-    var possiblePromoPieces = 'qrbn';
-    for (var i = 0; i < 4; i++) {
+    var possiblePromoPieces = 'qrbn';// Q ueen R ook B ishop K night
+    for (var i = 0; i < 4; i++) {//setup promotion piece choice images
         var img = document.createElement('img');
         img.src = '/client/imgs/' + color[0] + possiblePromoPieces[i] + '.png';
         img.className = 'promo';
         img.id = possiblePromoPieces[i];
+        //dont let user drag the images and save them to their desktop
+        //this isnt for security reasons, just aesthetic and function
         img.setAttribute('draggable', false);
         
         img.addEventListener('click', promoPieceClicked, false);
@@ -91,13 +110,18 @@ socket.on('play_game', function(data) {
     }
 
 
-    document.getElementById('PromoDiv').style.display = 'none';
-    resized();
+    document.getElementById('PromoDiv').style.display = 'none';//hide promotion piece choices until needed
+    resized();//call function to set size of all pieces/board etc
     if (myMove) {
         lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
     }
 });
 
+
+/*
+    called when server determines the game has ended.
+    set the result text and display the gameover popup
+*/
 socket.on('gameover', function(data) {
     isGameover = true;
     document.getElementById('result').innerText = data.textResult;
@@ -106,21 +130,21 @@ socket.on('gameover', function(data) {
 
 function promoPieceClicked() {
     document.getElementById('PromoDiv').style.display = 'none';
-    var z = {
+    var z = {//convert piece notation (ex: e2e4 or f7f6) into index notation (ex: e2e4 -> 4143)
         from: {x: alphabet.indexOf(fromSquare[0]), y: parseInt(fromSquare[1]) - 1},
         to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1},
-        piece: this.id
+        piece: this.id//id of piece, used when promoting
     }
 
-    for (var x = 0; x < 8; x++) {
+    for (var x = 0; x < 8; x++) {//check back ranks, if there is a pawn there it needs to be promoted
         if (board[color == 'white' ? 7 : 0][x] == color[0] + 'p') {
             board[color == 'white' ? 7 : 0][x] = color[0] + z.piece;
         }
     }
-    redrawBoard();
+    redrawBoard();//update visuals
     myMove = false;
-    socket.emit(color + '_moved', {move: z, sessionID: SSID});
-    removeBorder(outlinedID);
+    socket.emit(color + '_moved', {move: z, sessionID: SSID});//send move to server
+    removeBorder(outlinedID);//r
     outlinedID = '';
     fromSquare = '';
     toSquare = '';

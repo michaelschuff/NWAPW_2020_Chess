@@ -34,9 +34,16 @@ io.on('connection', function(socket) {
         // console.log('\nA client has disconnected');
     });
 
+
+    /*
+        Whenever a new page connects to the server, check its session ID. If it was previously playing a game
+        redirect it to game.html. Otherwise log them in.
+    */
     socket.on('validation', function(data) {
+
+        // check if they were just redirected from another page
         var a = true;
-        for (item of sessions) {
+        for (item of sessions) { 
             if (item.sessionID == data.sessionID) {
                 item.socketID = socket.id;
                 io.to(socket.id).emit('validation_success', {username: item.username});
@@ -49,11 +56,12 @@ io.on('connection', function(socket) {
             io.to(socket.id).emit('validation_failed');
         }
 
+        // check if they should be playing a game, and if so, give them the signal to start
         a = true;
         for (item of gamerooms) {
             if (item.p1sessionID == data.sessionID) {
                 item.p1socketID = socket.id;
-                if (!item.playing) {
+                if (!item.playing) {// if they weren't playing a game before
                     item.p1ready = true;
                     if (item.p1ready && item.p2ready) {
                         item.playing = true;
@@ -79,8 +87,7 @@ io.on('connection', function(socket) {
                         io.to(item.p2socketID).emit('play_game', bdata);
                     }
                     break;
-                } else {
-                    // if (socket.handshake.headers.referer != 'http://localhost:8080/client/game.html') {
+                } else { //if they disconnected while playing a game
                     if (socket.handshake.headers.referer.substring(socket.handshake.headers.referer.length - 9) != 'game.html') {
                         io.to(item.p1socketID).emit('redirect', '/client/game.html');
                     } else {
@@ -99,9 +106,9 @@ io.on('connection', function(socket) {
             }
                 
             
-            if (item.p2sessionID == data.sessionID) {
+            if (item.p2sessionID == data.sessionID) { //same checks for if they are player 2
                 item.p2socketID = socket.id;
-                if (!item.playing) {
+                if (!item.playing) {// if they weren't playing a game before
                     item.p2ready = true;
                     if (item.p1ready && item.p2ready) {
                         item.playing = true;
@@ -126,8 +133,7 @@ io.on('connection', function(socket) {
                         io.to(item.p2socketID).emit('play_game', bdata);
                     }
                     break;
-                } else {
-                    // if (socket.handshake.headers.referer != 'http://localhost:8080/client/game.html') {
+                } else { //if they disconnected while playing a game
                     if (socket.handshake.headers.referer.substring(socket.handshake.headers.referer.length - 9) != 'game.html') {
                         io.to(item.p2socketID).emit('redirect', '/client/game.html');
                     } else {
@@ -146,28 +152,26 @@ io.on('connection', function(socket) {
             }
         }
 
-        for (item of queue) {
+        for (item of queue) {//if they disconnected while waiting in queue for a game
             if (item.sessionID == data.sessionID) {
                 item.socketID = socket.id;
                 break;
             }
         }
         
-        if (queue.length >= 2) {
+        if (queue.length >= 2) {//if a new match can be made
             queueFull();
         }
     });
 
     socket.on('new_login', function(data) {
-        console.log('\nClient attempting to login...');
         accounts.find({username: data.username}, function(err, docs) {
             if (docs == []) {
                 io.to(socket.id).emit('login_failure', 'No account with that username');
-                console.log('login failed');
             } else if (docs[0].password != data.password) {
                 io.to(socket.id).emit('login_failure','Incorrect password');
-                console.log('login failed');
             } else {
+                //check if they need a new session ID, and issue one if they do
                 var SSID;
                 var needSSID = true;
                 for (item of sessions) {
@@ -182,37 +186,32 @@ io.on('connection', function(socket) {
                     sessions.push({username: data.username, sessionID: SSID, socketID: socket.id})
                 }
                 io.to(socket.id).emit('login_success', {username: data.username, sessionID: SSID});
-                console.log('login success');
             }
         });
     });
 
     socket.on('new_register', function(data) {
-        console.log('\nClient attempting to register...');
         accounts.find({username: data.username}, function(err, docs) {
             if (docs.length == 0) { // username is availiable
                 accounts.insert({username: data.username, password: data.password});
                 var SSID = generateUniqueSessionID();
                 sessions.push({username: data.username, sessionID: SSID, socketID: socket.id})
                 io.to(socket.id).emit('register_success', {username: data.username, sessionID: SSID});
-                console.log('register success');
             } else { //username already exists
                 io.to(socket.id).emit('register_failure', 'Username already in use!');
-                console.log('register failed');
             }
         });
-        console.log();
     });
 
     socket.on('logout', function(data) {
-        for (item of sessions) {
+        for (item of sessions) {//remove them from current sessions
             if (item.sessionID == data.sessionID) {
                 sessions.splice(item, 1);
                 break;
             }
         }
 
-        for (item of gamerooms) {
+        for (item of gamerooms) {//remove them from all games, and end the games
             if (item.p1sessionID == data.sessionID) {
                 io.to(item.p2sessionID).emit('gameover', {textResult: 'Your opponent disconnected', numResult: '0-1'});
                 gamerooms.slice(item, 1);
@@ -224,7 +223,7 @@ io.on('connection', function(socket) {
             }
         }
 
-        for (item of queue) {
+        for (item of queue) {//remove them from queue
             if (item.sessionID == data.sessionID) {
                 queue.splice(item, 1);
                 break;
@@ -234,7 +233,8 @@ io.on('connection', function(socket) {
         io.to(socket.id).emit('redirect', '/client/loginRegister.html');
     });
 
-    socket.on('thisIsMySessionID', function(data) {
+
+    socket.on('thisIsMySessionID', function(data) {//runs when client is attempting to connect
         if (data.sessionID.length != 20) {
             io.to(socket.id).emit('redirect', '/client/loginRegister.html');
         } else {
@@ -243,7 +243,7 @@ io.on('connection', function(socket) {
     });
 
     socket.on('wish_to_play', function(data) {
-        for (item of sessions){
+        for (item of sessions) {
             if (item.sessionID == data.sessionID) {
                 queue.push(item);
                 break;
@@ -253,6 +253,9 @@ io.on('connection', function(socket) {
         io.to(socket.id).emit('redirect', '/client/queue.html');
     });
 
+    /*
+        called after white makes a move. Update any server info about the game, and check if the game should end.
+    */
     socket.on('white_moved', function(data) {
         for (item of gamerooms) {
             if (item.p1sessionID == data.sessionID) {
@@ -323,6 +326,10 @@ io.on('connection', function(socket) {
     });
 });
 
+/*
+Is called when length of queue > 2.
+When it is, setup a new game, add the players to a gameroom and remove them from the queue
+*/
 function queueFull() {
     var room = {
         p1username: queue[0].username,
@@ -361,6 +368,8 @@ function queueFull() {
     queue.splice(queue[0], 1);
 }
 
+
+//geneeratea random string of 20 characters until one is made that has not been taken
 function generateUniqueSessionID() {
     while (true) {
         var temp = makeid();
