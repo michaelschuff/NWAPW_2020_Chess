@@ -70,6 +70,7 @@ body {
     color:black;
     margin: 5px;
     border-radius:25px;
+    font-family: 'Nova Round', cursive;
 
 }
 
@@ -81,6 +82,7 @@ body {
     color:black;
     margin: 5px;
     border-radius:25px;
+    font-family: 'Nova Round', cursive;
 
 }
 
@@ -113,4 +115,6 @@ body {
     margin: 0;
     background-color:#c2edce;
     border-radius:25px;
+    font-family: 'Nova Round', cursive;
+
 }

@@ -29,6 +29,7 @@ body {
     position: relative;
     width: 100%;
     box-sizing: border-box;
+    font-family: 'Nova Round', cursive;
 
 }
 
@@ -37,6 +38,8 @@ body {
     position: relative;
     width: 100%;
     box-sizing: border-box;
+    font-family: 'Nova Round', cursive;
+
 }
 
 #loginregisterbuttons {
@@ -51,6 +54,8 @@ body {
     display:inline-block;
     background-color:#388087;
     color:#f8f8ff;
+    font-family: 'Nova Round', cursive;
+
 }
 
 #register {
@@ -59,6 +64,8 @@ body {
     box-sizing: border-box;
     background-color:#388087;
     color:#f8f8ff;
+    font-family: 'Nova Round', cursive;
+
 }
 
 .dot {
