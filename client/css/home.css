@@ -36,6 +36,7 @@ body {
     margin: 0;
     background-color:#f6f6f2;
     color:black;
+    font-family: 'Nova Round', cursive;
 }
 
 #playbutton {
@@ -44,6 +45,7 @@ body {
     left: 50%;
     background-color:#f6f6f2;
     color:black;
+    font-family: 'Nova Round', cursive;
 }
 
 .line {

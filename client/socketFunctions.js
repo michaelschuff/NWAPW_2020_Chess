@@ -8,6 +8,7 @@ function connection_successful(socket) {
     var row = document.cookie.split(';').find(row => row.startsWith('sessionID='));ie
     const SSID = row ? row.split('=')[1] : 'null';
     socket.emit('validation', {sessionID: SSID});
+    socket.emit('Opponent', username);
 }
 
 //same as connection successful

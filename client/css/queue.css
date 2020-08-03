@@ -13,6 +13,7 @@ body {
 #logout{
     background-color:#388087;
     color:#f6f6f2;
+    font-family: 'Nova Round', cursive;
 }
 
 #shape {
@@ -27,4 +28,5 @@ body {
 
 #waiting {
     margin: 0;
+    font-family: 'Nova Round', cursive;
 }

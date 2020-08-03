@@ -66,23 +66,33 @@ body {
 #home {
     position: relative;
     box-sizing: border-box;
-    background-color:#388087;
-    color:#f8f8ff;
+    background-color:#c2edce;
+    color:black;
     margin: 5px;
+    border-radius:25px;
+    font-family: 'Nova Round', cursive;
+
 }
 
 #newgame {
     position: relative;
     float: left;
     box-sizing: border-box;
-    background-color:#388087;
-    color:#f8f8ff;
+    background-color:#c2edce;
+    color:black;
     margin: 5px;
+    border-radius:25px;
+    font-family: 'Nova Round', cursive;
+
 }
 
 
-
-
+#opponent {
+    position: relative;
+    text-align: center;
+    float: left;
+    font-size: 20px;
+}
 #accountoptions {
     position: absolute;
     text-align: center;
@@ -107,4 +117,8 @@ body {
     align-self: center;
     font-size: 10px;
     margin: 0;
+    background-color:#c2edce;
+    border-radius:25px;
+    font-family: 'Nova Round', cursive;
+
 }

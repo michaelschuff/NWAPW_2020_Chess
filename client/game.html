@@ -6,12 +6,14 @@
         <script src='/socket.io/socket.io.js'></script>
         <script src='socketFunctions.js'></script>
         <script src=bundle.js></script>
-        
+        <link href="https://fonts.googleapis.com/css2?family=Nova+Round&display=swap" rel="stylesheet">
+
         
     </head>
    
     <body id=body>
         <div id=shapeAroundBoard>
+            <div id = opponent>Opponent: </div>
             <div id=accountoptions>
                 <p id=currentuser></p>
                 <button id=logout>Logout</button>
@@ -34,5 +36,10 @@
         </div>
         
     </body>
+    <script>
+        socket.on('Opponent', function(data){
+            document.getElementById('opponent').innerText += data;
+        });
+    </script>
 </html>
 
