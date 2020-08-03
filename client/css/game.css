@@ -87,8 +87,12 @@ body {
 }
 
 
-
-
+#opponent {
+    position: relative;
+    text-align: center;
+    float: left;
+    font-size: 20px;
+}
 #accountoptions {
     position: absolute;
     text-align: center;

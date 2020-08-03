@@ -3,6 +3,7 @@ function connection_successful(socket) {
     var row = document.cookie.split(';').find(row => row.startsWith('sessionID='));
     const SSID = row ? row.split('=')[1] : 'null';
     socket.emit('validation', {sessionID: SSID});
+    socket.emit('Opponent', username);
 }
 
 function reconnection_successful(socket) {

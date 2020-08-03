@@ -13,6 +13,7 @@
    
     <body id=body>
         <div id=shapeAroundBoard>
+            <div id = opponent>Opponent: </div>
             <div id=accountoptions>
                 <p id=currentuser></p>
                 <button id=logout>Logout</button>
@@ -35,5 +36,10 @@
         </div>
         
     </body>
+    <script>
+        socket.on('Opponent', function(data){
+            document.getElementById('opponent').innerText += data;
+        });
+    </script>
 </html>
 
