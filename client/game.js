@@ -39,7 +39,7 @@ var board = [
 
 function logoutPressed() {
     //clear the sessionID cookie
-    document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
     socket.emit('logout', {sessionID: SSID});
 }
 
@@ -197,10 +197,6 @@ function squareReleased() {
                             addBorder(outlinedID);
 
                             document.getElementById('PromoDiv').style.display = 'inline-block';
-                            // var p = document.getElementsByClassName('promo');
-                            // for (item of p) {
-                            //     item.style.display = 'inline-block';
-                            // }
                         } else {
                             board = legalmoves.movepiece(board, z.from, z.to);
                             redrawBoard();

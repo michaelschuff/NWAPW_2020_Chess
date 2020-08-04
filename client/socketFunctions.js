@@ -68,6 +68,6 @@ function redirect(path) {
     delete the session ID cookie if logout is pressed
 */
 function logoutPressed() {
-    document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
     socket.emit('logout', {sessionID: SSID});
 }
