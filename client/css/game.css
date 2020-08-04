@@ -70,7 +70,6 @@ body {
     color:black;
     margin: 5px;
     border-radius:25px;
-    font-family: 'Nova Round', cursive;
 
 }
 
@@ -82,17 +81,12 @@ body {
     color:black;
     margin: 5px;
     border-radius:25px;
-    font-family: 'Nova Round', cursive;
 
 }
 
 
-#opponent {
-    position: relative;
-    text-align: center;
-    float: left;
-    font-size: 20px;
-}
+
+
 #accountoptions {
     position: absolute;
     text-align: center;
@@ -119,6 +113,4 @@ body {
     margin: 0;
     background-color:#c2edce;
     border-radius:25px;
-    font-family: 'Nova Round', cursive;
-
 }

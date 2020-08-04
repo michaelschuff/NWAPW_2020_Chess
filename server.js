@@ -73,6 +73,8 @@ io.on('connection', function(socket) {
                             leftCastle: true,
                             color: 'white',
                             lastMove: item.lastMove,
+                            opponent: item.p2username,
+                            user: item.p1username,
                         }
 
                         const bdata = {
@@ -82,6 +84,8 @@ io.on('connection', function(socket) {
                             leftCastle: true,
                             color: 'black',
                             lastMove: item.lastMove,
+                            opponnent: item.p1username,
+                            user: item.p2username,
                         }
                         io.to(item.p1socketID).emit('play_game', wdata);
                         io.to(item.p2socketID).emit('play_game', bdata);
@@ -119,6 +123,8 @@ io.on('connection', function(socket) {
                             leftCastle: true,
                             color: 'white',
                             lastMove: item.lastMove,
+                            opponent: item.p2username,
+                            user: item.p1username,
                         }
 
                         const bdata = {
@@ -128,6 +134,8 @@ io.on('connection', function(socket) {
                             leftCastle: true,
                             color: 'black',
                             lastMove: item.lastMove,
+                            opponent: item.p1username,
+                            user: item.p2username
                         }
                         io.to(item.p1socketID).emit('play_game', wdata);
                         io.to(item.p2socketID).emit('play_game', bdata);

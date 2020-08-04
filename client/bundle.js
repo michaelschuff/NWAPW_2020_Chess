@@ -58,8 +58,10 @@ socket.on('play_game', function(data) {
     board = data.board;
     rightCastle = data.rightCastle;
     leftCastle = data.leftCastle;
+    opponent = data.opponent;
+    user = data.user;
 
-    
+    addElement(opponent, user);
 
     for (item of document.getElementsByClassName('promo')) {
         item.src = '/client/imgs/' + color[0] + item.id + '.png';
@@ -245,6 +247,7 @@ function resized() {
     var playingArea = document.getElementById('playingArea');
     playingArea.style.height = (8 * squareSize).toString() + 'px';
     playingArea.style.width = (8 * squareSize).toString() + 'px';
+    playingArea.style.top = '0px';
 
     var htmlBoard = document.getElementById('board');
     htmlBoard.style.width = (8 * squareSize).toString() + 'px';
@@ -258,10 +261,10 @@ function resized() {
         pieces[i].style.height = squareSize.toString() + 'px';
         if (color == 'white') {
             pieces[i].style.left = (alphabet.indexOf(pieces[i].id[0]) * squareSize).toString() + 'px';
-            pieces[i].style.top = ((8 - parseInt(pieces[i].id[1])) * squareSize).toString() + 'px';
+            pieces[i].style.top = ((8 - parseInt(pieces[i].id[1])) * squareSize + 25).toString() + 'px';
         } else {
             pieces[i].style.left = ((7 - alphabet.indexOf(pieces[i].id[0])) * squareSize).toString() + 'px';
-            pieces[i].style.top = ((parseInt(pieces[i].id[1]) - 1) * squareSize).toString() + 'px';
+            pieces[i].style.top = ((parseInt(pieces[i].id[1]) - 1) * squareSize + 25).toString() + 'px';
         }
         
     }
@@ -302,6 +305,27 @@ function addBorder(id) {
 
 function removeBorder(id) {
     document.getElementById(id).style['outline-width'] = '0px';
+}
+function addElement(opponent, user) {
+    var oppoPar = document.createElement('P');
+    oppoPar.innerText = opponent.toString();
+    document.getElementById('game').insertBefore(oppoPar, document.getElementById('playingArea'));
+    oppoPar.style['position'] = 'relative';
+    oppoPar.style['float'] = 'left';
+    oppoPar.style['text-align'] = 'center';
+    oppoPar.style['font-size'] = '20px';
+    oppoPar.style['color'] = 'rgb(0,0,0)';
+    oppoPar.style['margin'] = '0';
+
+    var userPar = document.createElement('P');
+    userPar.innerText = user.toString();
+    document.getElementById('game').append(userPar);
+    userPar.style['position'] = 'relative';
+    userPar.style['float'] = 'left';
+    userPar.style['text-align'] = 'center';
+    userPar.style['font-size'] = '20px';
+    userPar.style['color'] = 'rgb(0,0,0)';
+    userPar.style['margin'] = '25';
 }
 },{"./illegalMoveCheck.js":2}],2:[function(require,module,exports){
 function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) { //get all legal moves for the selected piece
