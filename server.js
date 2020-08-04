@@ -84,7 +84,7 @@ io.on('connection', function(socket) {
                             leftCastle: true,
                             color: 'black',
                             lastMove: item.lastMove,
-                            opponnent: item.p1username,
+                            opponent: item.p1username,
                             user: item.p2username,
                         }
                         io.to(item.p1socketID).emit('play_game', wdata);
@@ -200,7 +200,6 @@ io.on('connection', function(socket) {
 
     socket.on('new_register', function(data) {
         accounts.find({username: data.username}, function(err, docs) {
-            console.log(docs);
             if (docs.length == 0) { // username is availiable
                 accounts.insert({username: data.username, password: data.password});
                 var SSID = generateUniqueSessionID();

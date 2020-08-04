@@ -25,7 +25,9 @@ body {
 }
 
 #playingArea {
-    position: relative;
+    position: absolute;
+    background-image: url('/client/imgs/board.png');
+    background-size: 100% 100%;
 }
 
 #PromoDiv {

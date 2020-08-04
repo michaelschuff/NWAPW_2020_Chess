@@ -14,6 +14,7 @@ var legalmoves = require('./illegalMoveCheck.js');
 const SSID = document.cookie.split(';').find(row => row.startsWith('sessionID')).split('=')[1];
 var fromSquare = '';
 var toSquare = '';
+var squareSize = 100;
 const alphabet = 'abcdefgh';
 var socket = io();
 var color;
@@ -23,6 +24,8 @@ var rightCastle = true;
 var lMoves = [];
 var outlinedID = '';
 var isGameover = false;
+var opponent;
+var username;
 var board = [
     ['wr','wn','wb','wq','wk','wb','wn','wr'],
     ['wp','wp','wp','wp','wp','wp','wp','wp'],
@@ -45,7 +48,7 @@ socket.on('connect', function() {
     //event listeners
     window.addEventListener('resize', resized, true);
     document.getElementById('logout').addEventListener('click', logoutPressed, true);
-    document.getElementById('board').setAttribute('draggable', false);
+    // document.getElementById('board').setAttribute('draggable', false);
     document.getElementById('home').addEventListener('click', function() {redirect('/client/home.html');}, true);
     document.getElementById('newgame').addEventListener('click', function() {socket.emit('wish_to_play', {sessionID: SSID});}, true);
 });
@@ -55,7 +58,10 @@ socket.on('connect_error', function() {connection_failed();});
 socket.on('connect_timeout', function() {connection_timeout();});
 socket.on('reconnect_attempt', function() {attempting_reconnection();});
 socket.on('reconnect_error', function() {reconnection_failed();});
-socket.on('validation_success', function(data) {validation_success(data);});
+socket.on('validation_success', function(data) {
+    username = data.username;
+    validation_success(data);
+});
 socket.on('validation_failed', function() {validation_failed()});
 socket.on('redirect', function(path) {redirect(path);});
 
@@ -73,8 +79,7 @@ socket.on('play_game', function(data) {//called whenever client connects to /cli
     rightCastle = data.rightCastle;
     leftCastle = data.leftCastle;//get game info from server
     opponent = data.opponent;
-
-    addElement(opponent);
+    addUserNames();
 
     // for (item of document.getElementsByClassName('promo')) {//set source images of promotion pieces
     //     item.src = '/client/imgs/' + color[0] + item.id + '.png';
@@ -145,7 +150,7 @@ function promoPieceClicked() {
     redrawBoard();//update visuals
     myMove = false;
     socket.emit(color + '_moved', {move: z, sessionID: SSID});//send move to server
-    removeBorder(outlinedID);//r
+    removeBorder(outlinedID);
     outlinedID = '';
     fromSquare = '';
     toSquare = '';
@@ -258,7 +263,7 @@ function redrawBoard() {
 
 function resized() {
     const alphabet = 'abcdefgh';
-    var squareSize = 0.75 * Math.min(window.window.innerWidth, window.window.innerHeight) / 8.0;
+    squareSize = 0.75 * Math.min(window.window.innerWidth, window.window.innerHeight) / 8.0;
     
     
     var game = document.getElementById('game');
@@ -270,11 +275,7 @@ function resized() {
     var playingArea = document.getElementById('playingArea');
     playingArea.style.height = (8 * squareSize).toString() + 'px';
     playingArea.style.width = (8 * squareSize).toString() + 'px';
-    playingArea.style.top = '0px';
-
-    var htmlBoard = document.getElementById('board');
-    htmlBoard.style.width = (8 * squareSize).toString() + 'px';
-    htmlBoard.style.height = (8 * squareSize).toString() + 'px';
+    playingArea.style.top = document.getElementById('opponent').offsetHeight.toString() + 'px';
 
 
     var pieces = document.getElementsByClassName('piece');
@@ -296,7 +297,7 @@ function resized() {
     promoDiv.style.width = squareSize.toString() + 'px';
     promoDiv.style.height = (4.0 * squareSize).toString() + 'px';
     promoDiv.style.left = (8.0 * squareSize).toString() + 'px';
-    promoDiv.style.top = '0px';
+    promoDiv.style.top = document.getElementById('opponent').offsetHeight.toString() + 'px';
 
     var promoPieces = document.getElementsByClassName('promo');
 
@@ -305,6 +306,7 @@ function resized() {
         promoPieces[i].style.height = squareSize.toString() + 'px';
     }
 
+    document.getElementById('player').style.top = (document.getElementById('opponent').offsetHeight + 8 * squareSize).toString() + 'px';
 
     var gameover = document.getElementById('gameover');
     gameover.style.width = (3.0 * squareSize).toString() + 'px';
@@ -329,16 +331,24 @@ function addBorder(id) {
 function removeBorder(id) {
     document.getElementById(id).style['outline-width'] = '0px';
 }
-function addElement(opponent) {
-    console.log(opponent);
-    var par = document.createElement('P');
+function addUserNames() {
+    var par = document.getElementById('opponent');
     par.innerText = opponent.toString();
-    document.getElementById('game').insertBefore(par, document.getElementById('playingArea'));
-    par.style['position'] = 'relative';
+    par.style['position'] = 'absolute';
     par.style['float'] = 'left';
     par.style['text-align'] = 'center';
     par.style['font-size'] = '20px';
     par.style['color'] = 'rgb(0,0,0)';
     par.style['fontFamily'] = 'Nova Round';
     par.style['margin'] = '0';
+
+    var userPar = document.getElementById('player');
+    userPar.innerText = username.toString();
+    userPar.style['position'] = 'absolute';
+    userPar.style.top = 'px';
+    userPar.style['float'] = 'left';
+    userPar.style['text-align'] = 'center';
+    userPar.style['font-size'] = '20px';
+    userPar.style['color'] = 'rgb(0,0,0)';
+    userPar.style['margin'] = '0';
 }

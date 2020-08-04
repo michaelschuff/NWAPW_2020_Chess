@@ -1,8 +1,21 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+/*
+    This file gets bundled into the same file with illegalMoveCheck. This is necessary to allow us to call
+    functions from this file on the server or on the client. To bundle together use the module 'browserify'.
+
+    1. navigate to /client
+    2. run the command 'browserify game.js > bundle.js'
+    3. navigate back and start server
+*/
+
+
+
+// vars
 var legalmoves = require('./illegalMoveCheck.js');
 const SSID = document.cookie.split(';').find(row => row.startsWith('sessionID')).split('=')[1];
 var fromSquare = '';
 var toSquare = '';
+var squareSize = 100;
 const alphabet = 'abcdefgh';
 var socket = io();
 var color;
@@ -12,6 +25,8 @@ var rightCastle = true;
 var lMoves = [];
 var outlinedID = '';
 var isGameover = false;
+var opponent;
+var username;
 var board = [
     ['wr','wn','wb','wq','wk','wb','wn','wr'],
     ['wp','wp','wp','wp','wp','wp','wp','wp'],
@@ -24,55 +39,61 @@ var board = [
 
 
 function logoutPressed() {
+    //clear the sessionID cookie
     document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     socket.emit('logout', {sessionID: SSID});
 }
 
 socket.on('connect', function() {
     connection_successful(socket);
+    //event listeners
     window.addEventListener('resize', resized, true);
     document.getElementById('logout').addEventListener('click', logoutPressed, true);
-    document.getElementById('board').setAttribute('draggable', false);
+    // document.getElementById('board').setAttribute('draggable', false);
     document.getElementById('home').addEventListener('click', function() {redirect('/client/home.html');}, true);
     document.getElementById('newgame').addEventListener('click', function() {socket.emit('wish_to_play', {sessionID: SSID});}, true);
 });
+//based on connection status call corresponding functions from socketFunctions.js
 socket.on('reconnect', function() {reconnection_successful(socket);});
 socket.on('connect_error', function() {connection_failed();});
 socket.on('connect_timeout', function() {connection_timeout();});
 socket.on('reconnect_attempt', function() {attempting_reconnection();});
 socket.on('reconnect_error', function() {reconnection_failed();});
-socket.on('validation_success', function(data) {validation_success(data);});
+socket.on('validation_success', function(data) {
+    username = data.username;
+    validation_success(data);
+});
 socket.on('validation_failed', function() {validation_failed()});
 socket.on('redirect', function(path) {redirect(path);});
 
-socket.on('make_a_move', function(data) {
+socket.on('make_a_move', function(data) {//update the board with opponents move and let the client make a move
     board = legalmoves.movepiece(board, data.lastMove.from, data.lastMove.to, data.lastMove.piece);
     redrawBoard();
     myMove = true;
     lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
 });
 
-socket.on('play_game', function(data) {
+socket.on('play_game', function(data) {//called whenever client connects to /client/game.html
     myMove = data.yourMove;
     color = data.color;
     board = data.board;
     rightCastle = data.rightCastle;
-    leftCastle = data.leftCastle;
+    leftCastle = data.leftCastle;//get game info from server
     opponent = data.opponent;
-    user = data.user;
+    addUserNames();
 
-    addElement(opponent, user);
-
-    for (item of document.getElementsByClassName('promo')) {
-        item.src = '/client/imgs/' + color[0] + item.id + '.png';
-    }
+    // for (item of document.getElementsByClassName('promo')) {//set source images of promotion pieces
+    //     item.src = '/client/imgs/' + color[0] + item.id + '.png';
+    // }
     
-    for (var y = 0; y < 8; y++) {
+    for (var y = 0; y < 8; y++) {//create all piece images 
         for (var x = 0; x < 8; x++) {
             var img = document.createElement('img');
             img.src = '/client/imgs/' + board[y][x].toLowerCase() + '.png';
             img.className = 'piece';
             img.id = alphabet[x] + (y + 1).toString();
+            //dont let user drag the images and save them to their desktop
+            //this isnt for security reasons, just aesthetic and function
             img.setAttribute('draggable', false);
             
             
@@ -81,12 +102,14 @@ socket.on('play_game', function(data) {
         }
     }
 
-    var possiblePromoPieces = 'qrbn';
-    for (var i = 0; i < 4; i++) {
+    var possiblePromoPieces = 'qrbn';// Q ueen R ook B ishop K night
+    for (var i = 0; i < 4; i++) {//setup promotion piece choice images
         var img = document.createElement('img');
         img.src = '/client/imgs/' + color[0] + possiblePromoPieces[i] + '.png';
         img.className = 'promo';
         img.id = possiblePromoPieces[i];
+        //dont let user drag the images and save them to their desktop
+        //this isnt for security reasons, just aesthetic and function
         img.setAttribute('draggable', false);
         
         img.addEventListener('click', promoPieceClicked, false);
@@ -94,13 +117,18 @@ socket.on('play_game', function(data) {
     }
 
 
-    document.getElementById('PromoDiv').style.display = 'none';
-    resized();
+    document.getElementById('PromoDiv').style.display = 'none';//hide promotion piece choices until needed
+    resized();//call function to set size of all pieces/board etc
     if (myMove) {
         lMoves = legalmoves.getLegalMoves(board, color[0], data.lastMove, leftCastle, rightCastle);
     }
 });
 
+
+/*
+    called when server determines the game has ended.
+    set the result text and display the gameover popup
+*/
 socket.on('gameover', function(data) {
     isGameover = true;
     document.getElementById('result').innerText = data.textResult;
@@ -109,20 +137,20 @@ socket.on('gameover', function(data) {
 
 function promoPieceClicked() {
     document.getElementById('PromoDiv').style.display = 'none';
-    var z = {
+    var z = {//convert piece notation (ex: e2e4 or f7f6) into index notation (ex: e2e4 -> 4143)
         from: {x: alphabet.indexOf(fromSquare[0]), y: parseInt(fromSquare[1]) - 1},
         to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1},
-        piece: this.id
+        piece: this.id//id of piece, used when promoting
     }
 
-    for (var x = 0; x < 8; x++) {
+    for (var x = 0; x < 8; x++) {//check back ranks, if there is a pawn there it needs to be promoted
         if (board[color == 'white' ? 7 : 0][x] == color[0] + 'p') {
             board[color == 'white' ? 7 : 0][x] = color[0] + z.piece;
         }
     }
-    redrawBoard();
+    redrawBoard();//update visuals
     myMove = false;
-    socket.emit(color + '_moved', {move: z, sessionID: SSID});
+    socket.emit(color + '_moved', {move: z, sessionID: SSID});//send move to server
     removeBorder(outlinedID);
     outlinedID = '';
     fromSquare = '';
@@ -236,7 +264,8 @@ function redrawBoard() {
 
 function resized() {
     const alphabet = 'abcdefgh';
-    var squareSize = 0.75 * Math.min(window.window.innerWidth, window.window.innerHeight) / 8.0;
+    squareSize = 0.75 * Math.min(window.window.innerWidth, window.window.innerHeight) / 8.0;
+    
     
     var game = document.getElementById('game');
     game.style.width = (9.0 * squareSize).toString() + 'px';
@@ -247,11 +276,7 @@ function resized() {
     var playingArea = document.getElementById('playingArea');
     playingArea.style.height = (8 * squareSize).toString() + 'px';
     playingArea.style.width = (8 * squareSize).toString() + 'px';
-    playingArea.style.top = '0px';
-
-    var htmlBoard = document.getElementById('board');
-    htmlBoard.style.width = (8 * squareSize).toString() + 'px';
-    htmlBoard.style.height = (8 * squareSize).toString() + 'px';
+    playingArea.style.top = document.getElementById('opponent').offsetHeight.toString() + 'px';
 
 
     var pieces = document.getElementsByClassName('piece');
@@ -261,10 +286,10 @@ function resized() {
         pieces[i].style.height = squareSize.toString() + 'px';
         if (color == 'white') {
             pieces[i].style.left = (alphabet.indexOf(pieces[i].id[0]) * squareSize).toString() + 'px';
-            pieces[i].style.top = ((8 - parseInt(pieces[i].id[1])) * squareSize + 25).toString() + 'px';
+            pieces[i].style.top = ((8 - parseInt(pieces[i].id[1])) * squareSize).toString() + 'px';
         } else {
             pieces[i].style.left = ((7 - alphabet.indexOf(pieces[i].id[0])) * squareSize).toString() + 'px';
-            pieces[i].style.top = ((parseInt(pieces[i].id[1]) - 1) * squareSize + 25).toString() + 'px';
+            pieces[i].style.top = ((parseInt(pieces[i].id[1]) - 1) * squareSize).toString() + 'px';
         }
         
     }
@@ -273,7 +298,7 @@ function resized() {
     promoDiv.style.width = squareSize.toString() + 'px';
     promoDiv.style.height = (4.0 * squareSize).toString() + 'px';
     promoDiv.style.left = (8.0 * squareSize).toString() + 'px';
-    promoDiv.style.top = '0px';
+    promoDiv.style.top = document.getElementById('opponent').offsetHeight.toString() + 'px';
 
     var promoPieces = document.getElementsByClassName('promo');
 
@@ -282,6 +307,7 @@ function resized() {
         promoPieces[i].style.height = squareSize.toString() + 'px';
     }
 
+    document.getElementById('player').style.top = (document.getElementById('opponent').offsetHeight + 8 * squareSize).toString() + 'px';
 
     var gameover = document.getElementById('gameover');
     gameover.style.width = (3.0 * squareSize).toString() + 'px';
@@ -306,26 +332,26 @@ function addBorder(id) {
 function removeBorder(id) {
     document.getElementById(id).style['outline-width'] = '0px';
 }
-function addElement(opponent, user) {
-    var oppoPar = document.createElement('P');
-    oppoPar.innerText = opponent.toString();
-    document.getElementById('game').insertBefore(oppoPar, document.getElementById('playingArea'));
-    oppoPar.style['position'] = 'relative';
-    oppoPar.style['float'] = 'left';
-    oppoPar.style['text-align'] = 'center';
-    oppoPar.style['font-size'] = '20px';
-    oppoPar.style['color'] = 'rgb(0,0,0)';
-    oppoPar.style['margin'] = '0';
+function addUserNames() {
+    var par = document.getElementById('opponent');
+    par.innerText = opponent.toString();
+    par.style['position'] = 'absolute';
+    par.style['float'] = 'left';
+    par.style['text-align'] = 'center';
+    par.style['font-size'] = '20px';
+    par.style['color'] = 'rgb(0,0,0)';
+    par.style['fontFamily'] = 'Nova Round';
+    par.style['margin'] = '0';
 
-    var userPar = document.createElement('P');
-    userPar.innerText = user.toString();
-    document.getElementById('game').append(userPar);
-    userPar.style['position'] = 'relative';
+    var userPar = document.getElementById('player');
+    userPar.innerText = username.toString();
+    userPar.style['position'] = 'absolute';
+    userPar.style.top = 'px';
     userPar.style['float'] = 'left';
     userPar.style['text-align'] = 'center';
     userPar.style['font-size'] = '20px';
     userPar.style['color'] = 'rgb(0,0,0)';
-    userPar.style['margin'] = '25';
+    userPar.style['margin'] = '0';
 }
 },{"./illegalMoveCheck.js":2}],2:[function(require,module,exports){
 function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) { //get all legal moves for the selected piece
@@ -333,40 +359,40 @@ function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) { //
     var temp;
     for (var row = 0; row < 8; row++) {
         for (var col = 0; col < 8; col++) {
-            if (tempboard[row][col][0] == color) { //check what color the piece is
-                switch (tempboard[row][col][1]) {
+            if (tempboard[row][col][0] == color) { //if this piece is the correct color
+                switch (tempboard[row][col][1]) {//detect which piece we are checking and call the corresponding function
                     case 'p':
-                        temp = getLegalPawnMoves(tempboard, {x: col, y: row}, lastmove); //if piece is pawn get all legal pawn moves
+                        temp = getLegalPawnMoves(tempboard, {x: col, y: row}, lastmove);
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'n':
-                        temp = getLegalKnightMoves(tempboard, {x: col, y: row}); //if piece is knight get all legal knight moves
+                        temp = getLegalKnightMoves(tempboard, {x: col, y: row});
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'b':
-                        temp = getLegalBishopMoves(tempboard, {x: col, y: row}); //if piece is bishop get all legal bishop moves
+                        temp = getLegalBishopMoves(tempboard, {x: col, y: row});
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'r':
-                        temp = getLegalRookMoves(tempboard, {x: col, y: row}); //if piece is rook get all legal rook moves
+                        temp = getLegalRookMoves(tempboard, {x: col, y: row});
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'q':
-                        temp = getLegalQueenMoves(tempboard, {x: col, y: row}); //if piece is queen get all legal queen moves
+                        temp = getLegalQueenMoves(tempboard, {x: col, y: row});
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'k':
-                        temp = getLegalKingMoves(tempboard, {x: col, y: row}, castleleft, castleright); //if piece is king get all legal king moves
+                        temp = getLegalKingMoves(tempboard, {x: col, y: row}, castleleft, castleright);
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
@@ -606,34 +632,42 @@ function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
 		if (onBoard(piece.x + dirs[d].x, piece.y + dirs[d].y)) { //gets all possible king moves from directions
 			if (tempboard[piece.y][piece.x][0] != tempboard[piece.y + dirs[d].y][piece.x + dirs[d].x][0]) {
                 var c = movepiece(tempboard, piece, {x: piece.x + dirs[d].x, y: piece.y + dirs[d].y}); 
-				if (!kingInCheck(c, tempboard[piece.y][piece.x][0])) { //checks if king is in check after king moves
+				if (!kingInCheck(c, tempboard[piece.y][piece.x][0])) { 
                     lmoves.push({from: piece, to: {x: piece.x + dirs[d].x, y: piece.y + dirs[d].y}});
                 }
 			}
         }
     }
-    var temp;
-    if (tempboard[piece.y][piece.x] == 'wk') { //castling is different for white king vs black king
-		if (leftcastle && tempboard[0][3] == '__' && tempboard[0][2] == '__' && tempboard[0][1] == '__') { //checks if squares between king and rook are empty
+    var temp;//temporary storage for list of legal moves
+
+    //castling is different for white king vs black king
+    if (tempboard[piece.y][piece.x] == 'wk') {
+        //checks if squares between king and rook are empty
+		if (leftcastle && tempboard[0][3] == '__' && tempboard[0][2] == '__' && tempboard[0][1] == '__') { 
             temp = castling(tempboard, 'l', 'w');
 			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
-		}
-		if(rightcastle && tempboard[0][5] == '__' && tempboard[0][6] == '__') { //checks if squares between king and rook are empty
+        }
+        
+        //checks if squares between king and rook are empty
+		if(rightcastle && tempboard[0][5] == '__' && tempboard[0][6] == '__') { 
 			temp = castling(tempboard, 'r', 'w');
 			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
 		}
-	} else { //castling is different for white king vs black king
-		if(leftcastle && tempboard[7][3] == '__' && tempboard[7][2] == '__' && tempboard[7][1] == '__'){ //checks if squares between king and rook are empty
+    } else { //castling is different for white king vs black king
+        //checks if squares between king and rook are empty
+		if(leftcastle && tempboard[7][3] == '__' && tempboard[7][2] == '__' && tempboard[7][1] == '__'){ 
 			temp = castling(tempboard, 'l', 'b');
 			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
-		}
-		if(rightcastle && tempboard[7][5] == '__' && tempboard[7][6] == '__'){ //checks if squares between king and rook are empty
+        }
+        
+        //checks if squares between king and rook are empty
+		if(rightcastle && tempboard[7][5] == '__' && tempboard[7][6] == '__'){ 
             temp = castling(tempboard, 'r', 'b');
 			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
@@ -652,7 +686,12 @@ function castling(tempboard, dir, color) {
         }
     }
     var lmoves = [];
-	const ncolor = (color == 'w') ? 0 : 7; //if color is white ncolor = 0, if color is black ncolor = 7
+    /*
+        if color is white ncolor = 0, if color is black ncolor = 7
+        
+        represents each color's back rank
+    */
+	const ncolor = (color == 'w') ? 0 : 7; 
 	if(!kingInCheck(b, color)) {
 		if (dir == 'l') { //if king is castling to the left
 			b[ncolor][3] = b[ncolor][4];
@@ -682,11 +721,11 @@ function castling(tempboard, dir, color) {
 
 function movepiece(tempboard, from, to, promoPiece = '') {
     var color = tempboard[from.y][from.x][0];
-    var b = [];
+    var b = [];//create a temporary board
     for (var y = 0; y < 8; y++) {
         b.push([])
         for (var x = 0; x < 8; x++) {
-            b[y].push(tempboard[y][x]); //creates a temporary board
+            b[y].push(tempboard[y][x]); 
         }
     }
 
@@ -799,7 +838,7 @@ function kingInCheck(tempboard, color) {
 		delta = {x: 0, y: 0};
     }
     
-	for (var di = 0; di < 4; di++){ //checks if a bishop or a queen are putting king in check
+	for (var di = 0; di < 4; di++){ //checks if a bishop or a queen is putting king in check
 		while (onBoard(k.x + delta.x + diag[di].x, k.y + delta.y + diag[di].y)) {
 			delta.x += diag[di].x;
 			delta.y += diag[di].y;
@@ -839,8 +878,9 @@ function kingInCheck(tempboard, color) {
 	return(false);
 }
 
+//check if square is on the board to prevent index error
 function onBoard(x, y) {
-    if (x >= 0 && x <= 7 && y >= 0 && y <= 7) { //checks if a square is on the board
+    if (x >= 0 && x <= 7 && y >= 0 && y <= 7) {
         return true;
     }
     return false;
