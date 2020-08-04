@@ -166,7 +166,7 @@ io.on('connection', function(socket) {
 
     socket.on('new_login', function(data) {
         accounts.find({username: data.username}, function(err, docs) {
-            if (docs == []) {
+            if (docs.length == 0) {
                 io.to(socket.id).emit('login_failure', 'No account with that username');
             } else if (docs[0].password != data.password) {
                 io.to(socket.id).emit('login_failure','Incorrect password');
@@ -192,6 +192,7 @@ io.on('connection', function(socket) {
 
     socket.on('new_register', function(data) {
         accounts.find({username: data.username}, function(err, docs) {
+            console.log(docs);
             if (docs.length == 0) { // username is availiable
                 accounts.insert({username: data.username, password: data.password});
                 var SSID = generateUniqueSessionID();

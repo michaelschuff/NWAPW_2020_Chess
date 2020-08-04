@@ -5,10 +5,9 @@
 */
 function connection_successful(socket) {
     console.log('Connected to server sucessfully.');
-    var row = document.cookie.split(';').find(row => row.startsWith('sessionID='));ie
+    var row = document.cookie.split(';').find(row => row.startsWith('sessionID='));
     const SSID = row ? row.split('=')[1] : 'null';
     socket.emit('validation', {sessionID: SSID});
-    socket.emit('Opponent', username);
 }
 
 //same as connection successful
