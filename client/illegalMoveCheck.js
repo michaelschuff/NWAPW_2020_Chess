@@ -3,40 +3,40 @@ function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) { //
     var temp;
     for (var row = 0; row < 8; row++) {
         for (var col = 0; col < 8; col++) {
-            if (tempboard[row][col][0] == color) { //check what color the piece is
-                switch (tempboard[row][col][1]) {
+            if (tempboard[row][col][0] == color) { //if this piece is the correct color
+                switch (tempboard[row][col][1]) {//detect which piece we are checking and call the corresponding function
                     case 'p':
-                        temp = getLegalPawnMoves(tempboard, {x: col, y: row}, lastmove); //if piece is pawn get all legal pawn moves
+                        temp = getLegalPawnMoves(tempboard, {x: col, y: row}, lastmove);
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'n':
-                        temp = getLegalKnightMoves(tempboard, {x: col, y: row}); //if piece is knight get all legal knight moves
+                        temp = getLegalKnightMoves(tempboard, {x: col, y: row});
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'b':
-                        temp = getLegalBishopMoves(tempboard, {x: col, y: row}); //if piece is bishop get all legal bishop moves
+                        temp = getLegalBishopMoves(tempboard, {x: col, y: row});
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'r':
-                        temp = getLegalRookMoves(tempboard, {x: col, y: row}); //if piece is rook get all legal rook moves
+                        temp = getLegalRookMoves(tempboard, {x: col, y: row});
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'q':
-                        temp = getLegalQueenMoves(tempboard, {x: col, y: row}); //if piece is queen get all legal queen moves
+                        temp = getLegalQueenMoves(tempboard, {x: col, y: row});
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
                         break;
                     case 'k':
-                        temp = getLegalKingMoves(tempboard, {x: col, y: row}, castleleft, castleright); //if piece is king get all legal king moves
+                        temp = getLegalKingMoves(tempboard, {x: col, y: row}, castleleft, castleright);
                         for (var i = 0; i < temp.length; i++) {
                             legalmoves.push(temp[i]);
                         }
@@ -276,34 +276,42 @@ function getLegalKingMoves(tempboard, piece, leftcastle, rightcastle) {
 		if (onBoard(piece.x + dirs[d].x, piece.y + dirs[d].y)) { //gets all possible king moves from directions
 			if (tempboard[piece.y][piece.x][0] != tempboard[piece.y + dirs[d].y][piece.x + dirs[d].x][0]) {
                 var c = movepiece(tempboard, piece, {x: piece.x + dirs[d].x, y: piece.y + dirs[d].y}); 
-				if (!kingInCheck(c, tempboard[piece.y][piece.x][0])) { //checks if king is in check after king moves
+				if (!kingInCheck(c, tempboard[piece.y][piece.x][0])) { 
                     lmoves.push({from: piece, to: {x: piece.x + dirs[d].x, y: piece.y + dirs[d].y}});
                 }
 			}
         }
     }
-    var temp;
-    if (tempboard[piece.y][piece.x] == 'wk') { //castling is different for white king vs black king
-		if (leftcastle && tempboard[0][3] == '__' && tempboard[0][2] == '__' && tempboard[0][1] == '__') { //checks if squares between king and rook are empty
+    var temp;//temporary storage for list of legal moves
+
+    //castling is different for white king vs black king
+    if (tempboard[piece.y][piece.x] == 'wk') {
+        //checks if squares between king and rook are empty
+		if (leftcastle && tempboard[0][3] == '__' && tempboard[0][2] == '__' && tempboard[0][1] == '__') { 
             temp = castling(tempboard, 'l', 'w');
 			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
-		}
-		if(rightcastle && tempboard[0][5] == '__' && tempboard[0][6] == '__') { //checks if squares between king and rook are empty
+        }
+        
+        //checks if squares between king and rook are empty
+		if(rightcastle && tempboard[0][5] == '__' && tempboard[0][6] == '__') { 
 			temp = castling(tempboard, 'r', 'w');
 			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
 		}
-	} else { //castling is different for white king vs black king
-		if(leftcastle && tempboard[7][3] == '__' && tempboard[7][2] == '__' && tempboard[7][1] == '__'){ //checks if squares between king and rook are empty
+    } else { //castling is different for white king vs black king
+        //checks if squares between king and rook are empty
+		if(leftcastle && tempboard[7][3] == '__' && tempboard[7][2] == '__' && tempboard[7][1] == '__'){ 
 			temp = castling(tempboard, 'l', 'b');
 			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
             }
-		}
-		if(rightcastle && tempboard[7][5] == '__' && tempboard[7][6] == '__'){ //checks if squares between king and rook are empty
+        }
+        
+        //checks if squares between king and rook are empty
+		if(rightcastle && tempboard[7][5] == '__' && tempboard[7][6] == '__'){ 
             temp = castling(tempboard, 'r', 'b');
 			for (var i = 0; i < temp.length; i++) {
                 lmoves.push(temp[i]);
@@ -322,7 +330,12 @@ function castling(tempboard, dir, color) {
         }
     }
     var lmoves = [];
-	const ncolor = (color == 'w') ? 0 : 7; //if color is white ncolor = 0, if color is black ncolor = 7
+    /*
+        if color is white ncolor = 0, if color is black ncolor = 7
+        
+        represents each color's back rank
+    */
+	const ncolor = (color == 'w') ? 0 : 7; 
 	if(!kingInCheck(b, color)) {
 		if (dir == 'l') { //if king is castling to the left
 			b[ncolor][3] = b[ncolor][4];
@@ -352,11 +365,11 @@ function castling(tempboard, dir, color) {
 
 function movepiece(tempboard, from, to, promoPiece = '') {
     var color = tempboard[from.y][from.x][0];
-    var b = [];
+    var b = [];//create a temporary board
     for (var y = 0; y < 8; y++) {
         b.push([])
         for (var x = 0; x < 8; x++) {
-            b[y].push(tempboard[y][x]); //creates a temporary board
+            b[y].push(tempboard[y][x]); 
         }
     }
 
@@ -469,7 +482,7 @@ function kingInCheck(tempboard, color) {
 		delta = {x: 0, y: 0};
     }
     
-	for (var di = 0; di < 4; di++){ //checks if a bishop or a queen are putting king in check
+	for (var di = 0; di < 4; di++){ //checks if a bishop or a queen is putting king in check
 		while (onBoard(k.x + delta.x + diag[di].x, k.y + delta.y + diag[di].y)) {
 			delta.x += diag[di].x;
 			delta.y += diag[di].y;
@@ -509,8 +522,9 @@ function kingInCheck(tempboard, color) {
 	return(false);
 }
 
+//check if square is on the board to prevent index error
 function onBoard(x, y) {
-    if (x >= 0 && x <= 7 && y >= 0 && y <= 7) { //checks if a square is on the board
+    if (x >= 0 && x <= 7 && y >= 0 && y <= 7) {
         return true;
     }
     return false;

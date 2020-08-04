@@ -1,10 +1,16 @@
+
+/*
+    Is called when sockets get connected. Once that happends, get the sessionID if it
+    exists and send it to the server. The server will redirect us based on our sessionID
+*/
 function connection_successful(socket) {
     console.log('Connected to server sucessfully.');
-    var row = document.cookie.split(';').find(row => row.startsWith('sessionID='));
+    var row = document.cookie.split(';').find(row => row.startsWith('sessionID='));ie
     const SSID = row ? row.split('=')[1] : 'null';
     socket.emit('validation', {sessionID: SSID});
 }
 
+//same as connection successful
 function reconnection_successful(socket) {
     console.log('Connected to server sucessfully.');
     var row = document.cookie.split(';').find(row => row.startsWith('sessionID='));
@@ -58,6 +64,9 @@ function redirect(path) {
     window.location.href = path;
 }
 
+/*
+    delete the session ID cookie if logout is pressed
+*/
 function logoutPressed() {
     document.cookie = 'sessionID=; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     socket.emit('logout', {sessionID: SSID});
