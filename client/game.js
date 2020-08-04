@@ -57,8 +57,9 @@ socket.on('play_game', function(data) {
     board = data.board;
     rightCastle = data.rightCastle;
     leftCastle = data.leftCastle;
+    opponent = data.opponent;
 
-    
+    addElement(opponent);
 
     for (item of document.getElementsByClassName('promo')) {
         item.src = '/client/imgs/' + color[0] + item.id + '.png';
@@ -235,6 +236,7 @@ function resized() {
     const alphabet = 'abcdefgh';
     var squareSize = 0.75 * Math.min(window.window.innerWidth, window.window.innerHeight) / 8.0;
     
+    
     var game = document.getElementById('game');
     game.style.width = (9.0 * squareSize).toString() + 'px';
     game.style.height = (8.0 * squareSize).toString() + 'px';
@@ -244,6 +246,7 @@ function resized() {
     var playingArea = document.getElementById('playingArea');
     playingArea.style.height = (8 * squareSize).toString() + 'px';
     playingArea.style.width = (8 * squareSize).toString() + 'px';
+    playingArea.style.top = '0px';
 
     var htmlBoard = document.getElementById('board');
     htmlBoard.style.width = (8 * squareSize).toString() + 'px';
@@ -301,4 +304,17 @@ function addBorder(id) {
 
 function removeBorder(id) {
     document.getElementById(id).style['outline-width'] = '0px';
+}
+function addElement(opponent) {
+    console.log(opponent);
+    var par = document.createElement('P');
+    par.innerText = opponent.toString();
+    document.getElementById('game').insertBefore(par, document.getElementById('playingArea'));
+    par.style['position'] = 'relative';
+    par.style['float'] = 'left';
+    par.style['text-align'] = 'center';
+    par.style['font-size'] = '20px';
+    par.style['color'] = 'rgb(0,0,0)';
+    par.style['fontFamily'] = 'Nova Round';
+    par.style['margin'] = '0';
 }
