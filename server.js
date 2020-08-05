@@ -102,7 +102,7 @@ io.on('connection', function(socket) {
                             leftCastle: item.p1LCastle,
                             color: 'white',
                             lastMove: item.lastMove,
-                            opponent: item.p2username
+                            opponent: item.p2username,
                             user: item.p1username
                         }
                         io.to(item.p1socketID).emit('play_game', data);

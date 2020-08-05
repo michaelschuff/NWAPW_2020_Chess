@@ -59,10 +59,7 @@ socket.on('connect_error', function() {connection_failed();});
 socket.on('connect_timeout', function() {connection_timeout();});
 socket.on('reconnect_attempt', function() {attempting_reconnection();});
 socket.on('reconnect_error', function() {reconnection_failed();});
-socket.on('validation_success', function(data) {
-    username = data.username;
-    validation_success(data);
-});
+socket.on('validation_success', function(data) {validation_success(data);});
 socket.on('validation_failed', function() {validation_failed()});
 socket.on('redirect', function(path) {redirect(path);});
 
@@ -80,6 +77,7 @@ socket.on('play_game', function(data) {//called whenever client connects to /cli
     rightCastle = data.rightCastle;
     leftCastle = data.leftCastle;//get game info from server
     opponent = data.opponent;
+    username = data.user;
     addUserNames();
 
     // for (item of document.getElementsByClassName('promo')) {//set source images of promotion pieces
@@ -336,6 +334,7 @@ function addUserNames() {
     par.style['text-align'] = 'center';
     par.style['font-size'] = '20px';
     par.style['color'] = 'rgb(0,0,0)';
+    par.style['fontFamily'] = 'Nova Round';
     par.style['margin'] = '0';
 
     var userPar = document.getElementById('player');
@@ -355,7 +354,7 @@ function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) { //
     for (var row = 0; row < 8; row++) {
         for (var col = 0; col < 8; col++) {
             if (tempboard[row][col][0] == color) { //if this piece is the correct color
-                switch (tempboard[row][col][1]) {//detect which piece we are checking and call the corresponding function
+                switch (tempboard[row][col][1]) { //detect which piece we are checking and call the corresponding function
                     case 'p':
                         temp = getLegalPawnMoves(tempboard, {x: col, y: row}, lastmove);
                         for (var i = 0; i < temp.length; i++) {
@@ -399,7 +398,6 @@ function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) { //
         }
     }
     return legalmoves;
-
 }
 
 
