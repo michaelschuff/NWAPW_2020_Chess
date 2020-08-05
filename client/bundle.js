@@ -336,7 +336,6 @@ function addUserNames() {
     par.style['text-align'] = 'center';
     par.style['font-size'] = '20px';
     par.style['color'] = 'rgb(0,0,0)';
-    par.style['fontFamily'] = 'Nova Round';
     par.style['margin'] = '0';
 
     var userPar = document.getElementById('player');
