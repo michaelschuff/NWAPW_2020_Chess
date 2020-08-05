@@ -102,6 +102,8 @@ io.on('connection', function(socket) {
                             leftCastle: item.p1LCastle,
                             color: 'white',
                             lastMove: item.lastMove,
+                            opponent: item.p2username
+                            user: item.p1username
                         }
                         io.to(item.p1socketID).emit('play_game', data);
                     }
@@ -152,6 +154,8 @@ io.on('connection', function(socket) {
                             leftCastle: item.p2LCastle,
                             color: 'black',
                             lastMove: item.lastMove,
+                            opponent: item.p1username,
+                            user: item.p2username
                         }
                         io.to(item.p2socketID).emit('play_game', data);
                     }

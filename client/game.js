@@ -58,10 +58,7 @@ socket.on('connect_error', function() {connection_failed();});
 socket.on('connect_timeout', function() {connection_timeout();});
 socket.on('reconnect_attempt', function() {attempting_reconnection();});
 socket.on('reconnect_error', function() {reconnection_failed();});
-socket.on('validation_success', function(data) {
-    username = data.username;
-    validation_success(data);
-});
+socket.on('validation_success', function(data) {validation_success(data);});
 socket.on('validation_failed', function() {validation_failed()});
 socket.on('redirect', function(path) {redirect(path);});
 
@@ -79,6 +76,7 @@ socket.on('play_game', function(data) {//called whenever client connects to /cli
     rightCastle = data.rightCastle;
     leftCastle = data.leftCastle;//get game info from server
     opponent = data.opponent;
+    username = data.user;
     addUserNames();
 
     // for (item of document.getElementsByClassName('promo')) {//set source images of promotion pieces
