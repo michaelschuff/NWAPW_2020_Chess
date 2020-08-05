@@ -4,7 +4,7 @@ function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) { //
     for (var row = 0; row < 8; row++) {
         for (var col = 0; col < 8; col++) {
             if (tempboard[row][col][0] == color) { //if this piece is the correct color
-                switch (tempboard[row][col][1]) {//detect which piece we are checking and call the corresponding function
+                switch (tempboard[row][col][1]) { //detect which piece we are checking and call the corresponding function
                     case 'p':
                         temp = getLegalPawnMoves(tempboard, {x: col, y: row}, lastmove);
                         for (var i = 0; i < temp.length; i++) {
@@ -48,7 +48,6 @@ function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) { //
         }
     }
     return legalmoves;
-
 }
 
 
