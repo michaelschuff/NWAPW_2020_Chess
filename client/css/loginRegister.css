@@ -58,6 +58,10 @@ body {
 
 }
 
+#login:hover{
+    cursor: pointer;
+}
+
 #register {
     position: relative;
     float: right;
@@ -66,6 +70,9 @@ body {
     color:#f8f8ff;
     font-family: 'Nova Round', cursive;
 
+}
+#register:hover{
+    cursor: pointer;
 }
 
 .dot {

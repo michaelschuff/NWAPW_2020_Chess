@@ -15,6 +15,9 @@ body {
     color:#f6f6f2;
     font-family: 'Nova Round', cursive;
 }
+#logout:hover{
+    cursor:pointer;
+}
 
 #shape {
     width: 100%;

@@ -38,6 +38,9 @@ body {
     color:black;
     font-family: 'Nova Round', cursive;
 }
+#logout:hover{
+    cursor: pointer;
+}
 
 #playbutton {
     position: relative;
@@ -46,6 +49,9 @@ body {
     background-color:#f6f6f2;
     color:black;
     font-family: 'Nova Round', cursive;
+}
+#playbutton:hover{
+    cursor: pointer;
 }
 
 .line {

@@ -74,6 +74,9 @@ body {
     border-radius:25px;
 
 }
+#home:hover{
+    cursor: pointer;
+}
 
 #newgame {
     position: relative;
@@ -84,6 +87,9 @@ body {
     margin: 5px;
     border-radius:25px;
 
+}
+#newgame:hover{
+    cursor: pointer;
 }
 
 
@@ -115,4 +121,7 @@ body {
     margin: 0;
     background-color:#c2edce;
     border-radius:25px;
+}
+#logout:hover{
+    cursor: pointer;
 }
