@@ -847,9 +847,9 @@ function kingInCheck(tempboard, color) {
 		delta = {x: 0, y: 0};
     }
     
-	for (var k = 0; k < 8; k++){ //checks if a knight is putting king in check
-		if (onBoard(k.x + knight[k].x, k.y + knight[k].y)) {
-			if(tempboard[k.y + knight[k].y][k.x + knight[k].x] == oppo + 'n'){
+	for (var kn = 0; kn < 8; kn++){ //checks if a knight is putting king in check
+		if (onBoard(k.x + knight[kn].x, k.y + knight[kn].y)) {
+			if(tempboard[k.y + knight[kn].y][k.x + knight[kn].x] == oppo + 'n'){
 				return true;
 			}
 		}
