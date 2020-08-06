@@ -35,8 +35,7 @@ io.on('connection', function(socket) {
     });
 
 
-    /*
-        Whenever a new page connects to the server, check its session ID. If it was previously playing a game
+    /*  Whenever a new page connects to the server, check its session ID. If it was previously playing a game
         redirect it to game.html. Otherwise log them in.
     */
     socket.on('validation', function(data) {
@@ -245,7 +244,6 @@ io.on('connection', function(socket) {
         io.to(socket.id).emit('redirect', '/client/loginRegister.html');
     });
 
-
     socket.on('thisIsMySessionID', function(data) {//runs when client is attempting to connect
         if (data.sessionID.length != 20) {
             io.to(socket.id).emit('redirect', '/client/loginRegister.html');
@@ -265,9 +263,7 @@ io.on('connection', function(socket) {
         io.to(socket.id).emit('redirect', '/client/queue.html');
     });
 
-    /*
-        called after white makes a move. Update any server info about the game, and check if the game should end.
-    */
+    //called after white makes a move. Update any server info about the game, and check if the game should end.
     socket.on('white_moved', function(data) {
         for (item of gamerooms) {
             if (item.p1sessionID == data.sessionID) {
@@ -338,9 +334,8 @@ io.on('connection', function(socket) {
     });
 });
 
-/*
-Is called when length of queue > 2.
-When it is, setup a new game, add the players to a gameroom and remove them from the queue
+/*  Is called when length of queue > 2.
+    When it is, setup a new game, add the players to a gameroom and remove them from the queue
 */
 function queueFull() {
     var room = {
@@ -381,7 +376,7 @@ function queueFull() {
 }
 
 
-//geneeratea random string of 20 characters until one is made that has not been taken
+//generate random string of 20 characters until one is made that has not been taken
 function generateUniqueSessionID() {
     while (true) {
         var temp = makeid();

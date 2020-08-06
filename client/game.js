@@ -1,13 +1,10 @@
-/*
-    This file gets bundled into the same file with illegalMoveCheck. This is necessary to allow us to call
+/*  This file gets bundled into the same file with illegalMoveCheck. This is necessary to allow us to call
     functions from this file on the server or on the client. To bundle together use the module 'browserify'.
 
     1. navigate to /client
     2. run the command 'browserify game.js > bundle.js'
     3. navigate back and start server
 */
-
-
 
 // vars
 var legalmoves = require('./illegalMoveCheck.js');
@@ -52,6 +49,7 @@ socket.on('connect', function() {
     document.getElementById('home').addEventListener('click', function() {redirect('/client/home.html');}, true);
     document.getElementById('newgame').addEventListener('click', function() {socket.emit('wish_to_play', {sessionID: SSID});}, true);
 });
+
 //based on connection status call corresponding functions from socketFunctions.js
 socket.on('reconnect', function() {reconnection_successful(socket);});
 socket.on('connect_error', function() {connection_failed();});
@@ -122,8 +120,7 @@ socket.on('play_game', function(data) {//called whenever client connects to /cli
 });
 
 
-/*
-    called when server determines the game has ended.
+/*  called when server determines the game has ended.
     set the result text and display the gameover popup
 */
 socket.on('gameover', function(data) {
@@ -259,7 +256,7 @@ function resized() {
     const alphabet = 'abcdefgh';
     squareSize = 0.75 * Math.min(window.window.innerWidth, window.window.innerHeight) / 8.0;
     
-    
+
     var game = document.getElementById('game');
     game.style.width = (9.0 * squareSize).toString() + 'px';
     game.style.height = (8.0 * squareSize).toString() + 'px';
@@ -325,6 +322,7 @@ function addBorder(id) {
 function removeBorder(id) {
     document.getElementById(id).style['outline-width'] = '0px';
 }
+
 function addUserNames() {
     var par = document.getElementById('opponent');
     par.innerText = opponent.toString();

@@ -50,7 +50,6 @@ function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) { //
     return legalmoves;
 }
 
-
 function getLegalPawnMoves(tempboard, piece, lastmove) {
     const color = tempboard[piece.y][piece.x][0];
     var lmoves = [];
@@ -66,7 +65,6 @@ function getLegalPawnMoves(tempboard, piece, lastmove) {
                     }
                 }
             }
-			
         }
         
 		if (piece.x > 0) {
