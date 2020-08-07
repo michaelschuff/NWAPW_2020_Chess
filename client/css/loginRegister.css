@@ -60,6 +60,7 @@ body {
 
 #login:hover{
     cursor: pointer;
+    box-shadow: 2px 7px #888888;
 }
 
 #register {
@@ -73,6 +74,8 @@ body {
 }
 #register:hover{
     cursor: pointer;
+    box-shadow: 2px 7px #888888;
+
 }
 
 .dot {
