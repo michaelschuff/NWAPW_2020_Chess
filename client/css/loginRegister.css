@@ -61,6 +61,7 @@ body {
 
 #login:hover{
     cursor: pointer;
+    box-shadow: 2px 7px #888888;
 }
 
 #register {
@@ -75,6 +76,8 @@ body {
 }
 #register:hover{
     cursor: pointer;
+    box-shadow: 2px 7px #888888;
+
 }
 
 .dot {
@@ -110,3 +113,15 @@ body {
     left: 16px;
 }
   
+#Videos {
+    padding: 8px;
+    margin: auto;
+    position: absolute;
+    top: 85%;
+    left: 34%;
+    background-color:#BADFE7;
+    border-radius: 10px;
+    color: #000000;
+    text-align: center;
+    font-size: 14px;
+}

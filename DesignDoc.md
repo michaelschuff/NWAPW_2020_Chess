@@ -1,8 +1,9 @@
 # NWAPW_2020_Chess
 "Chess played on a server"
 MVP:
-Two can play chess through their browser with each other as long as they have an internet connection.
-One player will be white and move first, and when they make their move, the other players board will update and the new player will be able to make a move. A simple sign in system will be created to easily identify who is who, and can allow continuation of the game if a player accidently disconnects. A matchmaking system will be needed to be put into place to pair people up. All rules of chess will also need to be implemented, including castling and en passant.
+Two people may open the website and play chess against each other so long as they have an internet connection. One player will be white and move first while the other player will be black and move second. After each turn, the opposing player's board will show the just completed action. That player will then be able to make a move. A simple login/register system lets the program identify who is competing, and permit the continuation of a game if a player disconnects. A matchmaking system/queue is in place to partner competitors. All rules of chess are implemented, including castling and en passant.
+
+
 
 Additional potential features (not in order):
 1. Ranking system with smart matchmaking

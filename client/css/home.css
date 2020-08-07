@@ -41,6 +41,7 @@ body {
 }
 #logout:hover{
     cursor: pointer;
+    box-shadow: 2px 7px #888888;
 }
 
 #playbutton {
@@ -57,6 +58,7 @@ body {
 }
 #playbutton:hover{
     cursor: pointer;
+    box-shadow: 2px 7px #888888;
 }
 
 .line {
