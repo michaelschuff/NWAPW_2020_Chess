@@ -271,7 +271,7 @@ function resized() {
 
 
     var pieces = document.getElementsByClassName('piece');
-
+    
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].style.width = squareSize.toString() + 'px';
         pieces[i].style.height = squareSize.toString() + 'px';
@@ -282,7 +282,6 @@ function resized() {
             pieces[i].style.left = ((7 - alphabet.indexOf(pieces[i].id[0])) * squareSize).toString() + 'px';
             pieces[i].style.top = ((parseInt(pieces[i].id[1]) - 1) * squareSize).toString() + 'px';
         }
-        
     }
 
     var promoDiv = document.getElementById('PromoDiv');

@@ -20,14 +20,14 @@ body {
     position: relative;
 }
 
-#game {
-    position: relative;
-}
-
 #playingArea {
     position: absolute;
     background-image: url('/client/imgs/board.png');
     background-size: 100% 100%;
+}
+
+#game {
+    position: relative;
 }
 
 #PromoDiv {
@@ -36,6 +36,9 @@ body {
 
 .piece {
     position: absolute;
+}
+.piece:hover {
+    cursor: pointer;
 }
 
 .promo {
