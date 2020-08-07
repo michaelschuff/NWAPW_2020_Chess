@@ -61,18 +61,23 @@ body {
 #result {
     position: relative;
     text-align: center;
-    line-height: 400%;
+    line-height: 260%;
     height: 30%;
+    font-size: 3vw;
 }
 
 #home {
-    position: relative;
+    position: absolute;
     box-sizing: border-box;
     background-color:#c2edce;
     color:black;
     margin: 5px;
-    border-radius:25px;
-
+    border-radius: 5px;
+    width: 90%;
+    height: 40%;
+    bottom: 5px;
+    left: 5px;
+    font-size: 2.25vw;
 }
 #home:hover{
     cursor: pointer;
@@ -80,13 +85,16 @@ body {
 
 #newgame {
     position: relative;
-    float: left;
     box-sizing: border-box;
     background-color:#c2edce;
     color:black;
     margin: 5px;
-    border-radius:25px;
-
+    border-radius: 5px;
+    width: 90%;
+    height: 40%;
+    top: 5px;
+    left: 5px;
+    font-size: 2.25vw;
 }
 #newgame:hover{
     cursor: pointer;
@@ -120,7 +128,7 @@ body {
     font-size: 10px;
     margin: 0;
     background-color:#c2edce;
-    border-radius:25px;
+    border-radius: 3px;
 }
 #logout:hover{
     cursor: pointer;

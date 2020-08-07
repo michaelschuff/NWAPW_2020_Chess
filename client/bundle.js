@@ -1,14 +1,11 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-/*
-    This file gets bundled into the same file with illegalMoveCheck. This is necessary to allow us to call
+/*  This file gets bundled into the same file with illegalMoveCheck. This is necessary to allow us to call
     functions from this file on the server or on the client. To bundle together use the module 'browserify'.
 
     1. navigate to /client
     2. run the command 'browserify game.js > bundle.js'
     3. navigate back and start server
 */
-
-
 
 // vars
 var legalmoves = require('./illegalMoveCheck.js');
@@ -53,6 +50,7 @@ socket.on('connect', function() {
     document.getElementById('home').addEventListener('click', function() {redirect('/client/home.html');}, true);
     document.getElementById('newgame').addEventListener('click', function() {socket.emit('wish_to_play', {sessionID: SSID});}, true);
 });
+
 //based on connection status call corresponding functions from socketFunctions.js
 socket.on('reconnect', function() {reconnection_successful(socket);});
 socket.on('connect_error', function() {connection_failed();});
@@ -123,8 +121,7 @@ socket.on('play_game', function(data) {//called whenever client connects to /cli
 });
 
 
-/*
-    called when server determines the game has ended.
+/*  called when server determines the game has ended.
     set the result text and display the gameover popup
 */
 socket.on('gameover', function(data) {
@@ -259,8 +256,8 @@ function redrawBoard() {
 function resized() {
     const alphabet = 'abcdefgh';
     squareSize = 0.75 * Math.min(window.window.innerWidth, window.window.innerHeight) / 8.0;
-    
-    
+    var usernameTextHeight = document.getElementById('opponent').offsetHeight;
+
     var game = document.getElementById('game');
     game.style.width = (9.0 * squareSize).toString() + 'px';
     game.style.height = (8.0 * squareSize).toString() + 'px';
@@ -270,7 +267,7 @@ function resized() {
     var playingArea = document.getElementById('playingArea');
     playingArea.style.height = (8 * squareSize).toString() + 'px';
     playingArea.style.width = (8 * squareSize).toString() + 'px';
-    playingArea.style.top = document.getElementById('opponent').offsetHeight.toString() + 'px';
+    playingArea.style.top = usernameTextHeight.toString() + 'px';
 
 
     var pieces = document.getElementsByClassName('piece');
@@ -301,13 +298,13 @@ function resized() {
         promoPieces[i].style.height = squareSize.toString() + 'px';
     }
 
-    document.getElementById('player').style.top = (document.getElementById('opponent').offsetHeight + 8 * squareSize).toString() + 'px';
+    document.getElementById('player').style.top = (usernameTextHeight + 8 * squareSize).toString() + 'px';
 
     var gameover = document.getElementById('gameover');
     gameover.style.width = (3.0 * squareSize).toString() + 'px';
     gameover.style.height = (3.0 * squareSize).toString() + 'px';
     gameover.style.left = (2.5 * squareSize).toString() + 'px';
-    gameover.style.top = (2.5 * squareSize).toString() + 'px';
+    gameover.style.top = (2.5 * squareSize + usernameTextHeight).toString() + 'px';
     if (!isGameover) {
         gameover.style.display = 'none';
     }
@@ -326,6 +323,7 @@ function addBorder(id) {
 function removeBorder(id) {
     document.getElementById(id).style['outline-width'] = '0px';
 }
+
 function addUserNames() {
     var par = document.getElementById('opponent');
     par.innerText = opponent.toString();
@@ -400,7 +398,6 @@ function getLegalMoves(tempboard, color, lastmove, castleleft, castleright) { //
     return legalmoves;
 }
 
-
 function getLegalPawnMoves(tempboard, piece, lastmove) {
     const color = tempboard[piece.y][piece.x][0];
     var lmoves = [];
@@ -416,7 +413,6 @@ function getLegalPawnMoves(tempboard, piece, lastmove) {
                     }
                 }
             }
-			
         }
         
 		if (piece.x > 0) {
@@ -831,7 +827,7 @@ function kingInCheck(tempboard, color) {
 		delta = {x: 0, y: 0};
     }
     
-	for (var di = 0; di < 4; di++){ //checks if a bishop or a queen is putting king in check
+	for (var di = 0; di < 4; di++) { //checks if a bishop or a queen is putting king in check
 		while (onBoard(k.x + delta.x + diag[di].x, k.y + delta.y + diag[di].y)) {
 			delta.x += diag[di].x;
 			delta.y += diag[di].y;
