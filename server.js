@@ -28,7 +28,6 @@ var gamerooms = [];
 var queue = [];
 
 io.on('connection', function(socket) {
-    // console.log('\nA client has connected.');
 
     socket.on('disconnect', function() {
         // console.log('\nA client has disconnected');
@@ -222,17 +221,19 @@ io.on('connection', function(socket) {
             }
         }
 
-        for (item of gamerooms) {//remove them from all games, and end the games
-            if (item.p1sessionID == data.sessionID) {
-                io.to(item.p2sessionID).emit('gameover', {textResult: 'Your opponent disconnected', numResult: '0-1'});
-                gamerooms.slice(item, 1);
+        for (var i = 0; i < gamerooms.length; i++) {//remove them from all games, and end the games
+            if (gamerooms[i].p1sessionID == data.sessionID) {
+                io.to(gamerooms[i].p2socketID).emit('gameover', {textResult: 'Your opponent disconnected', numResult: '0-1'});
+                gamerooms.splice(gamerooms[i], 1);
                 break;
-            } else if (item.p2sessionID == data.sessionID) {
-                io.to(item.p1sessionID).emit('gameover', {textResult: 'Your opponent disconnected', numResult: '1-0'});
-                gamerooms.slice(item, 1);
+            } else if (gamerooms[i].p2sessionID == data.sessionID) {
+                io.to(gamerooms[i].p1socketID).emit('gameover', {textResult: 'Your opponent disconnected', numResult: '1-0'});
+                gamerooms.splice(gamerooms[i], 1);
                 break;
             }
         }
+
+
 
         for (item of queue) {//remove them from queue
             if (item.sessionID == data.sessionID) {
