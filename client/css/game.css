@@ -67,9 +67,9 @@ body {
 #result {
     position: relative;
     text-align: center;
-    line-height: 260%;
+    line-height: 10vh;
     height: 30%;
-    font-size: 3vw;
+    font-size: 3vh;
 }
 
 #home {
@@ -83,7 +83,7 @@ body {
     height: 40%;
     bottom: 5px;
     left: 5px;
-    font-size: 2.25vw;
+    font-size: 3vh;
 }
 #home:hover{
     cursor: pointer;
@@ -100,7 +100,7 @@ body {
     height: 40%;
     top: 5px;
     left: 5px;
-    font-size: 2.25vw;
+    font-size: 3vh;
 }
 #newgame:hover{
     cursor: pointer;
