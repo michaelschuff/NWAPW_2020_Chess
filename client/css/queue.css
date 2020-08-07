@@ -14,6 +14,7 @@ body {
     background-color:#388087;
     color:#f6f6f2;
     font-family: 'Nova Round', cursive;
+    border-radius: 3px;
 }
 #logout:hover{
     cursor:pointer;

@@ -55,6 +55,7 @@ body {
     background-color:#388087;
     color:#f8f8ff;
     font-family: 'Nova Round', cursive;
+    border-radius: 3px;
 
 }
 
@@ -69,6 +70,7 @@ body {
     background-color:#388087;
     color:#f8f8ff;
     font-family: 'Nova Round', cursive;
+    border-radius: 3px;
 
 }
 #register:hover{
