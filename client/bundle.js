@@ -260,9 +260,9 @@ function resized() {
 
     var game = document.getElementById('game');
     game.style.width = (9.0 * squareSize).toString() + 'px';
-    game.style.height = (8.0 * squareSize).toString() + 'px';
+    game.style.height = (8.0 * squareSize + usernameTextHeight * 2).toString() + 'px';
     game.style.left = (window.window.innerWidth / 2.0 - 4.0 * squareSize).toString() + 'px';
-    game.style.top = (window.window.innerHeight / 2.0 - 4.0 * squareSize).toString() + 'px';
+    game.style.top = (window.window.innerHeight / 2.0 - 4.0 * squareSize - usernameTextHeight).toString() + 'px';
     
     var playingArea = document.getElementById('playingArea');
     playingArea.style.height = (8 * squareSize).toString() + 'px';
