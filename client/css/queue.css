@@ -18,6 +18,7 @@ body {
 }
 #logout:hover{
     cursor:pointer;
+    box-shadow: 2px 7px #888888;
 }
 
 #shape {
