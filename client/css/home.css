@@ -37,6 +37,7 @@ body {
     background-color:#f6f6f2;
     color:black;
     font-family: 'Nova Round', cursive;
+    border-radius: 3px;
 }
 #logout:hover{
     cursor: pointer;
@@ -44,11 +45,15 @@ body {
 
 #playbutton {
     position: relative;
-    top: 50%;
-    left: 50%;
+    top: 45%;
+    left: 45%;
     background-color:#f6f6f2;
     color:black;
     font-family: 'Nova Round', cursive;
+    font-size: larger;
+    border-radius: 5px;
+    width: 10%;
+    height: 10%;
 }
 #playbutton:hover{
     cursor: pointer;

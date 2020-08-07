@@ -20,14 +20,14 @@ body {
     position: relative;
 }
 
-#game {
-    position: relative;
-}
-
 #playingArea {
     position: absolute;
     background-image: url('/client/imgs/board.png');
     background-size: 100% 100%;
+}
+
+#game {
+    position: relative;
 }
 
 #PromoDiv {
@@ -37,9 +37,15 @@ body {
 .piece {
     position: absolute;
 }
+.piece:hover {
+    cursor: pointer;
+}
 
 .promo {
     position: relative;
+}
+.promo:hover {
+    cursor: pointer;
 }
 
 #result {
@@ -61,18 +67,23 @@ body {
 #result {
     position: relative;
     text-align: center;
-    line-height: 400%;
+    line-height: 10vh;
     height: 30%;
+    font-size: 3vh;
 }
 
 #home {
-    position: relative;
+    position: absolute;
     box-sizing: border-box;
     background-color:#c2edce;
     color:black;
     margin: 5px;
-    border-radius:25px;
-
+    border-radius: 5px;
+    width: 90%;
+    height: 40%;
+    bottom: 5px;
+    left: 5px;
+    font-size: 3vh;
 }
 #home:hover{
     cursor: pointer;
@@ -80,13 +91,16 @@ body {
 
 #newgame {
     position: relative;
-    float: left;
     box-sizing: border-box;
     background-color:#c2edce;
     color:black;
     margin: 5px;
-    border-radius:25px;
-
+    border-radius: 5px;
+    width: 90%;
+    height: 40%;
+    top: 5px;
+    left: 5px;
+    font-size: 3vh;
 }
 #newgame:hover{
     cursor: pointer;
@@ -120,7 +134,7 @@ body {
     font-size: 10px;
     margin: 0;
     background-color:#c2edce;
-    border-radius:25px;
+    border-radius: 3px;
 }
 #logout:hover{
     cursor: pointer;

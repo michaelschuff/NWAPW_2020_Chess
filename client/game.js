@@ -255,22 +255,22 @@ function redrawBoard() {
 function resized() {
     const alphabet = 'abcdefgh';
     squareSize = 0.75 * Math.min(window.window.innerWidth, window.window.innerHeight) / 8.0;
-    
+    var usernameTextHeight = document.getElementById('opponent').offsetHeight;
 
     var game = document.getElementById('game');
     game.style.width = (9.0 * squareSize).toString() + 'px';
-    game.style.height = (8.0 * squareSize).toString() + 'px';
+    game.style.height = (8.0 * squareSize + usernameTextHeight * 2).toString() + 'px';
     game.style.left = (window.window.innerWidth / 2.0 - 4.0 * squareSize).toString() + 'px';
-    game.style.top = (window.window.innerHeight / 2.0 - 4.0 * squareSize).toString() + 'px';
+    game.style.top = (window.window.innerHeight / 2.0 - 4.0 * squareSize - usernameTextHeight).toString() + 'px';
     
     var playingArea = document.getElementById('playingArea');
     playingArea.style.height = (8 * squareSize).toString() + 'px';
     playingArea.style.width = (8 * squareSize).toString() + 'px';
-    playingArea.style.top = document.getElementById('opponent').offsetHeight.toString() + 'px';
+    playingArea.style.top = usernameTextHeight.toString() + 'px';
 
 
     var pieces = document.getElementsByClassName('piece');
-
+    
     for (var i = 0; i < pieces.length; i++) {
         pieces[i].style.width = squareSize.toString() + 'px';
         pieces[i].style.height = squareSize.toString() + 'px';
@@ -281,7 +281,6 @@ function resized() {
             pieces[i].style.left = ((7 - alphabet.indexOf(pieces[i].id[0])) * squareSize).toString() + 'px';
             pieces[i].style.top = ((parseInt(pieces[i].id[1]) - 1) * squareSize).toString() + 'px';
         }
-        
     }
 
     var promoDiv = document.getElementById('PromoDiv');
@@ -297,13 +296,13 @@ function resized() {
         promoPieces[i].style.height = squareSize.toString() + 'px';
     }
 
-    document.getElementById('player').style.top = (document.getElementById('opponent').offsetHeight + 8 * squareSize).toString() + 'px';
+    document.getElementById('player').style.top = (usernameTextHeight + 8 * squareSize).toString() + 'px';
 
     var gameover = document.getElementById('gameover');
     gameover.style.width = (3.0 * squareSize).toString() + 'px';
     gameover.style.height = (3.0 * squareSize).toString() + 'px';
     gameover.style.left = (2.5 * squareSize).toString() + 'px';
-    gameover.style.top = (2.5 * squareSize).toString() + 'px';
+    gameover.style.top = (2.5 * squareSize + usernameTextHeight).toString() + 'px';
     if (!isGameover) {
         gameover.style.display = 'none';
     }
