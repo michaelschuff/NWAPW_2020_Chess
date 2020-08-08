@@ -126,6 +126,9 @@ socket.on('play_game', function(data) {//called whenever client connects to /cli
 */
 socket.on('gameover', function(data) {
     isGameover = true;
+    if (data.textResult.indexOf('disconnected') != -1) {
+        document.getElementById('result').style['line-height'] = '5vh';
+    }
     document.getElementById('result').innerText = data.textResult;
     document.getElementById('gameover').style.display = 'block';
 })
@@ -170,16 +173,16 @@ function squareReleased() {
                 to: {x: alphabet.indexOf(toSquare[0]), y: parseInt(toSquare[1]) - 1},
                 piece: ''
             }
-            if (board[z.to.y][z.to.x][0] == color[0]) {
+            if (fromSquare == toSquare) {
+                removeBorder(outlinedID);
+                outlinedID = '';
+                fromSquare = '';
+                toSquare = '';
+            } else if (board[z.to.y][z.to.x][0] == color[0]) {
                 removeBorder(outlinedID);
                 fromSquare = toSquare;
                 addBorder(fromSquare);
                 outlinedID = fromSquare;
-                toSquare = '';
-            } else if (fromSquare == toSquare) {
-                removeBorder(outlinedID);
-                outlinedID = '';
-                fromSquare = '';
                 toSquare = '';
             } else {
                 for (item of lMoves) {
