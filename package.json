@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/michaelschuff/NWAPW_2020_Chess#readme",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "nedb": "^1.8.0",
     "socket.io": "^2.3.0"
   }
